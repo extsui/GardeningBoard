@@ -140,12 +140,6 @@ Wire Wire Line
 	3250 2150 3500 2150
 Wire Wire Line
 	3250 2250 3500 2250
-Wire Wire Line
-	3050 5800 3050 5750
-Wire Wire Line
-	2850 5800 2850 5650
-Wire Wire Line
-	2450 5800 2450 5450
 $Comp
 L power:+5V #PWR02
 U 1 1 5C2D1124
@@ -207,13 +201,13 @@ Wire Wire Line
 	2200 4250 2200 4550
 Wire Wire Line
 	2200 3950 2200 4250
-Text GLabel 2450 5350 1    50   Input ~ 0
+Text GLabel 2500 5400 1    50   Input ~ 0
 +5V
-Text GLabel 2650 5350 1    50   Input ~ 0
+Text GLabel 2700 5400 1    50   Input ~ 0
 SCL
-Text GLabel 2850 5350 1    50   Input ~ 0
+Text GLabel 2600 5400 1    50   Input ~ 0
 SDA
-Text GLabel 3050 5350 1    50   Input ~ 0
+Text GLabel 2900 5400 1    50   Input ~ 0
 GND
 Text GLabel 3500 2150 2    50   Input ~ 0
 SDA
@@ -541,124 +535,26 @@ F 3 "~" H 1450 1150 50  0001 C CNN
 	1    1450 1150
 	1    0    0    -1  
 $EndComp
+Text Notes 2200 6100 0    50   ~ 0
+2.54mm pitch to Mother Board (both sides)\n(Card Edge Connector)
 $Comp
-L Connector:TestPoint TP1
-U 1 1 5C36C2C4
-P 2450 5800
-F 0 "TP1" H 2500 6050 50  0000 R CNN
-F 1 "TestPoint" H 2392 5918 50  0001 R CNN
-F 2 "TestPoint:TestPoint_Keystone_5015_Micro-Minature" H 2650 5800 50  0001 C CNN
-F 3 "~" H 2650 5800 50  0001 C CNN
-	1    2450 5800
-	-1   0    0    1   
-$EndComp
-$Comp
-L Connector:TestPoint TP2
-U 1 1 5C36E622
-P 2650 5800
-F 0 "TP2" H 2700 6050 50  0000 R CNN
-F 1 "TestPoint" H 2592 5918 50  0001 R CNN
-F 2 "TestPoint:TestPoint_Keystone_5015_Micro-Minature" H 2850 5800 50  0001 C CNN
-F 3 "~" H 2850 5800 50  0001 C CNN
-	1    2650 5800
-	-1   0    0    1   
-$EndComp
-$Comp
-L Connector:TestPoint TP3
-U 1 1 5C370496
-P 2850 5800
-F 0 "TP3" H 2900 6050 50  0000 R CNN
-F 1 "TestPoint" H 2792 5918 50  0001 R CNN
-F 2 "TestPoint:TestPoint_Keystone_5015_Micro-Minature" H 3050 5800 50  0001 C CNN
-F 3 "~" H 3050 5800 50  0001 C CNN
-	1    2850 5800
-	-1   0    0    1   
-$EndComp
-$Comp
-L Connector:TestPoint TP4
-U 1 1 5C372307
-P 3050 5800
-F 0 "TP4" H 3100 6050 50  0000 R CNN
-F 1 "TestPoint" H 2992 5918 50  0001 R CNN
-F 2 "TestPoint:TestPoint_Keystone_5015_Micro-Minature" H 3250 5800 50  0001 C CNN
-F 3 "~" H 3250 5800 50  0001 C CNN
-	1    3050 5800
-	-1   0    0    1   
-$EndComp
-Text Notes 2400 6250 0    50   ~ 0
-2.54mm pitch to Mother Board (both sides)
-Wire Wire Line
-	3650 5800 3650 5550
-Wire Wire Line
-	4050 5800 4050 5750
-Wire Wire Line
-	3450 5800 3450 5450
-$Comp
-L Connector:TestPoint TP5
-U 1 1 5C387CC7
-P 3450 5800
-F 0 "TP5" H 3500 6050 50  0000 R CNN
-F 1 "TestPoint" H 3392 5918 50  0001 R CNN
-F 2 "TestPoint:TestPoint_Keystone_5015_Micro-Minature" H 3650 5800 50  0001 C CNN
-F 3 "~" H 3650 5800 50  0001 C CNN
-	1    3450 5800
-	-1   0    0    1   
-$EndComp
-$Comp
-L Connector:TestPoint TP6
-U 1 1 5C387CCE
-P 3650 5800
-F 0 "TP6" H 3700 6050 50  0000 R CNN
-F 1 "TestPoint" H 3592 5918 50  0001 R CNN
-F 2 "TestPoint:TestPoint_Keystone_5015_Micro-Minature" H 3850 5800 50  0001 C CNN
-F 3 "~" H 3850 5800 50  0001 C CNN
-	1    3650 5800
-	-1   0    0    1   
-$EndComp
-$Comp
-L Connector:TestPoint TP7
-U 1 1 5C387CD5
-P 3850 5800
-F 0 "TP7" H 3900 6050 50  0000 R CNN
-F 1 "TestPoint" H 3792 5918 50  0001 R CNN
-F 2 "TestPoint:TestPoint_Keystone_5015_Micro-Minature" H 4050 5800 50  0001 C CNN
-F 3 "~" H 4050 5800 50  0001 C CNN
-	1    3850 5800
-	-1   0    0    1   
-$EndComp
-$Comp
-L Connector:TestPoint TP8
-U 1 1 5C387CDC
-P 4050 5800
-F 0 "TP8" H 4100 6050 50  0000 R CNN
-F 1 "TestPoint" H 3992 5918 50  0001 R CNN
-F 2 "TestPoint:TestPoint_Keystone_5015_Micro-Minature" H 4250 5800 50  0001 C CNN
-F 3 "~" H 4250 5800 50  0001 C CNN
-	1    4050 5800
-	-1   0    0    1   
+L Connector_Generic:Conn_01x05 J1
+U 1 1 5CEBBC43
+P 2700 5800
+F 0 "J1" V 2573 5512 50  0000 R CNN
+F 1 "Conn_01x05" V 2664 5512 50  0000 R CNN
+F 2 "extsui:EDAC_5P_P2.54mm" H 2700 5800 50  0001 C CNN
+F 3 "~" H 2700 5800 50  0001 C CNN
+	1    2700 5800
+	0    -1   1    0   
 $EndComp
 Wire Wire Line
-	2450 5450 3450 5450
-Connection ~ 2450 5450
+	2500 5400 2500 5600
 Wire Wire Line
-	2450 5450 2450 5350
+	2600 5600 2600 5400
 Wire Wire Line
-	2650 5550 3650 5550
-Connection ~ 2650 5550
+	2700 5400 2700 5600
 Wire Wire Line
-	2650 5550 2650 5350
-Wire Wire Line
-	2650 5550 2650 5800
-Wire Wire Line
-	2850 5650 3850 5650
-Connection ~ 2850 5650
-Wire Wire Line
-	2850 5650 2850 5350
-Wire Wire Line
-	3850 5650 3850 5800
-Wire Wire Line
-	3050 5750 4050 5750
-Connection ~ 3050 5750
-Wire Wire Line
-	3050 5750 3050 5350
+	2900 5600 2900 5400
+NoConn ~ 2800 5600
 $EndSCHEMATC
