@@ -1,3 +1,3 @@
 (fp_lib_table
-  (lib (name extsui)(type KiCad)(uri C:/Users/wall3/Documents/KiCad/lib/extsui.pretty)(options "")(descr ""))
+  (lib (name extsui)(type KiCad)(uri ${EXTSUI}/extsui.pretty)(options "")(descr ""))
 )
