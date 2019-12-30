@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name Grass-rescue)(type Legacy)(uri ${KIPRJMOD}/Grass-rescue.lib)(options "")(descr ""))
+  (lib (name House-rescue)(type Legacy)(uri ${KIPRJMOD}/House-rescue.lib)(options "")(descr ""))
+)
