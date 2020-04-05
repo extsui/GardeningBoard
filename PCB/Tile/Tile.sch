@@ -195,12 +195,12 @@ Wire Wire Line
 	2200 3950 2200 4250
 Wire Wire Line
 	2200 3650 2200 3950
-Text GLabel 4100 2200 2    50   Input ~ 0
+Text GLabel 3500 2200 2    50   Input ~ 0
 SDA
-Text GLabel 4100 2300 2    50   Input ~ 0
+Text GLabel 3500 2300 2    50   Input ~ 0
 SCL
-Text GLabel 4100 2100 2    50   Input ~ 0
-VCC
+Text GLabel 3700 2100 2    50   Input ~ 0
++5V
 Text GLabel 1150 2100 0    50   Input ~ 0
 GND
 Wire Wire Line
@@ -814,40 +814,116 @@ Wire Wire Line
 Wire Wire Line
 	900  6700 5400 6700
 Wire Wire Line
-	3250 2200 4100 2200
+	3250 2200 3500 2200
 Wire Wire Line
-	3250 2300 4100 2300
+	3250 2300 3500 2300
 Wire Wire Line
-	3450 2100 4100 2100
+	3450 2100 3700 2100
 Connection ~ 3450 2100
 Wire Wire Line
 	3450 1600 3450 1800
-Text GLabel 5850 950  1    50   Input ~ 0
+Text GLabel 7450 2200 1    50   Input ~ 0
 +5V
-Text GLabel 5950 950  1    50   Input ~ 0
+Text GLabel 7550 2200 1    50   Input ~ 0
 SDA
-Text GLabel 6050 950  1    50   Input ~ 0
+Text GLabel 7650 2200 1    50   Input ~ 0
 SCL
-Text GLabel 6250 950  1    50   Input ~ 0
+Text GLabel 7850 2200 1    50   Input ~ 0
 GND
 Wire Wire Line
-	6250 950  6250 1150
+	7850 2200 7850 2400
 Wire Wire Line
-	6050 950  6050 1150
+	7650 2200 7650 2400
 Wire Wire Line
-	5950 950  5950 1150
+	7550 2200 7550 2400
 Wire Wire Line
-	5850 950  5850 1150
-NoConn ~ 6150 1150
+	7450 2200 7450 2400
+NoConn ~ 7750 2400
 $Comp
-L Connector:Conn_01x05_Female J?
+L Connector:Conn_01x05_Female J1
 U 1 1 5E6B51BB
-P 6050 1350
-F 0 "J?" V 5897 1062 50  0000 R CNN
-F 1 "Conn_01x05_Female" V 5988 1062 50  0000 R CNN
-F 2 "" H 6050 1350 50  0001 C CNN
-F 3 "~" H 6050 1350 50  0001 C CNN
-	1    6050 1350
+P 7650 2600
+F 0 "J1" V 7497 2312 50  0000 R CNN
+F 1 "Conn_01x05_Female" V 7588 2312 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical" H 7650 2600 50  0001 C CNN
+F 3 "~" H 7650 2600 50  0001 C CNN
+	1    7650 2600
 	0    -1   1    0   
+$EndComp
+Text Notes 7200 1750 0    50   ~ 0
+The Conn_01x05_Female connector is \n   connected to the ground board.
+Wire Notes Line
+	7200 1900 8800 1900
+Wire Notes Line
+	8800 1900 8800 2700
+Wire Notes Line
+	8800 2700 7200 2700
+Wire Notes Line
+	7200 2700 7200 1900
+$Comp
+L Mechanical:MountingHole H1
+U 1 1 5E8E347E
+P 7300 3250
+F 0 "H1" H 7400 3296 50  0000 L CNN
+F 1 "MountingHole" H 7400 3205 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 7300 3250 50  0001 C CNN
+F 3 "~" H 7300 3250 50  0001 C CNN
+	1    7300 3250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H2
+U 1 1 5E8E3566
+P 7300 3500
+F 0 "H2" H 7400 3546 50  0000 L CNN
+F 1 "MountingHole" H 7400 3455 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 7300 3500 50  0001 C CNN
+F 3 "~" H 7300 3500 50  0001 C CNN
+	1    7300 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H3
+U 1 1 5E8E35F4
+P 7300 3750
+F 0 "H3" H 7400 3796 50  0000 L CNN
+F 1 "MountingHole" H 7400 3705 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 7300 3750 50  0001 C CNN
+F 3 "~" H 7300 3750 50  0001 C CNN
+	1    7300 3750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H4
+U 1 1 5E8E3892
+P 7300 4000
+F 0 "H4" H 7400 4046 50  0000 L CNN
+F 1 "MountingHole" H 7400 3955 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 7300 4000 50  0001 C CNN
+F 3 "~" H 7300 4000 50  0001 C CNN
+	1    7300 4000
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H5
+U 1 1 5E8E3899
+P 7300 4250
+F 0 "H5" H 7400 4296 50  0000 L CNN
+F 1 "MountingHole" H 7400 4205 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 7300 4250 50  0001 C CNN
+F 3 "~" H 7300 4250 50  0001 C CNN
+	1    7300 4250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H6
+U 1 1 5E8E38A0
+P 7300 4500
+F 0 "H6" H 7400 4546 50  0000 L CNN
+F 1 "MountingHole" H 7400 4455 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 7300 4500 50  0001 C CNN
+F 3 "~" H 7300 4500 50  0001 C CNN
+	1    7300 4500
+	1    0    0    -1  
 $EndComp
 $EndSCHEMATC
