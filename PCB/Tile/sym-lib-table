@@ -1,0 +1,6 @@
+(sym_lib_table
+  (lib (name Gerden-rescue)(type Legacy)(uri ${KIPRJMOD}/Gerden-rescue.lib)(options "")(descr ""))
+  (lib (name Garden-rescue)(type Legacy)(uri ${KIPRJMOD}/Garden-rescue.lib)(options "")(descr ""))
+  (lib (name Land-rescue)(type Legacy)(uri ${KIPRJMOD}/Land-rescue.lib)(options "")(descr ""))
+  (lib (name Tile-rescue)(type Legacy)(uri ${KIPRJMOD}/Tile-rescue.lib)(options "")(descr ""))
+)
