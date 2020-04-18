@@ -839,19 +839,8 @@ Wire Wire Line
 Wire Wire Line
 	7450 2200 7450 2400
 NoConn ~ 7750 2400
-$Comp
-L Connector:Conn_01x05_Female J1
-U 1 1 5E6B51BB
-P 7650 2600
-F 0 "J1" V 7497 2312 50  0000 R CNN
-F 1 "Conn_01x05_Female" V 7588 2312 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical" H 7650 2600 50  0001 C CNN
-F 3 "~" H 7650 2600 50  0001 C CNN
-	1    7650 2600
-	0    -1   1    0   
-$EndComp
 Text Notes 7200 1750 0    50   ~ 0
-The Conn_01x05_Female connector is \n   connected to the ground board.
+The Conn_01x05_Male connector is \n   connected to the ground board.
 Wire Notes Line
 	7200 1900 8800 1900
 Wire Notes Line
@@ -925,5 +914,16 @@ F 2 "MountingHole:MountingHole_3.2mm_M3" H 7300 4500 50  0001 C CNN
 F 3 "~" H 7300 4500 50  0001 C CNN
 	1    7300 4500
 	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:Conn_01x05_Male J1
+U 1 1 5E9B605A
+P 7650 2600
+F 0 "J1" V 7803 2313 50  0000 R CNN
+F 1 "Conn_01x05_Male" V 7712 2313 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical" H 7650 2600 50  0001 C CNN
+F 3 "~" H 7650 2600 50  0001 C CNN
+	1    7650 2600
+	0    -1   -1   0   
 $EndComp
 $EndSCHEMATC
