@@ -190,9 +190,9 @@ F 3 "http://www.st.com/st-web-ui/static/active/en/resource/technical/document/da
 	1    3850 5950
 	1    0    0    -1  
 $EndComp
-Text GLabel 4650 6650 2    50   Input ~ 0
+Text GLabel 4550 6650 2    50   Input ~ 0
 SWCLK
-Text GLabel 4650 6550 2    50   Input ~ 0
+Text GLabel 4550 6550 2    50   Input ~ 0
 SWDIO
 $Comp
 L Connector_Generic:Conn_01x06 CN7
@@ -266,34 +266,34 @@ $EndComp
 $Comp
 L Device:R R3
 U 1 1 5E9AA02E
-P 5200 5300
-F 0 "R3" V 5100 5300 50  0000 C CNN
-F 1 "10k" V 5200 5300 50  0000 C CNN
-F 2 "extsui:C_1608_HandSolderingCustom" V 5130 5300 50  0001 C CNN
-F 3 "~" H 5200 5300 50  0001 C CNN
-	1    5200 5300
+P 5550 5400
+F 0 "R3" V 5500 5200 50  0000 C CNN
+F 1 "10k" V 5550 5400 50  0000 C CNN
+F 2 "extsui:C_1608_HandSolderingCustom" V 5480 5400 50  0001 C CNN
+F 3 "~" H 5550 5400 50  0001 C CNN
+	1    5550 5400
 	1    0    0    -1  
 $EndComp
 $Comp
 L Device:R R4
 U 1 1 5E9AA0AB
-P 5400 5300
-F 0 "R4" V 5300 5300 50  0000 C CNN
-F 1 "10k" V 5400 5300 50  0000 C CNN
-F 2 "extsui:C_1608_HandSolderingCustom" V 5330 5300 50  0001 C CNN
-F 3 "~" H 5400 5300 50  0001 C CNN
-	1    5400 5300
+P 5700 5400
+F 0 "R4" V 5650 5200 50  0000 C CNN
+F 1 "10k" V 5700 5400 50  0000 C CNN
+F 2 "extsui:C_1608_HandSolderingCustom" V 5630 5400 50  0001 C CNN
+F 3 "~" H 5700 5400 50  0001 C CNN
+	1    5700 5400
 	1    0    0    -1  
 $EndComp
 $Comp
 L Device:LED D3
 U 1 1 5E9AA11C
-P 5400 6400
-F 0 "D3" H 5391 6616 50  0000 C CNN
-F 1 "LED" H 5391 6525 50  0000 C CNN
-F 2 "extsui:LED_1608_HandSolderingCustom" H 5400 6400 50  0001 C CNN
-F 3 "~" H 5400 6400 50  0001 C CNN
-	1    5400 6400
+P 5500 6400
+F 0 "D3" H 5491 6616 50  0000 C CNN
+F 1 "LED" H 5491 6525 50  0000 C CNN
+F 2 "extsui:LED_1608_HandSolderingCustom" H 5500 6400 50  0001 C CNN
+F 3 "~" H 5500 6400 50  0001 C CNN
+	1    5500 6400
 	0    -1   -1   0   
 $EndComp
 $Comp
@@ -405,7 +405,7 @@ Connection ~ 3850 4850
 Wire Wire Line
 	3850 4850 3950 4850
 Wire Wire Line
-	3850 4650 3850 4850
+	3850 4750 3850 4850
 $Comp
 L Switch:SW_Push SW1
 U 1 1 5E9E7CF3
@@ -564,7 +564,7 @@ Wire Wire Line
 	1650 5250 1650 5450
 Connection ~ 1650 5450
 Wire Wire Line
-	1650 5150 1650 4850
+	1650 5150 1650 5000
 Wire Wire Line
 	3750 6950 3750 7050
 Wire Wire Line
@@ -608,18 +608,18 @@ Text GLabel 1400 2300 2    50   Input ~ 0
 UPPER_SCL
 Text GLabel 1400 2400 2    50   Input ~ 0
 UPPER_SDA
-Text GLabel 5650 5850 2    50   Input ~ 0
+Text GLabel 5800 5850 2    50   Input ~ 0
 LOWER_SCL
-Text GLabel 5650 5950 2    50   Input ~ 0
+Text GLabel 5800 5950 2    50   Input ~ 0
 LOWER_SDA
-Text GLabel 2950 4850 1    50   Input ~ 0
+Text GLabel 2950 4950 1    50   Input ~ 0
 NRST
 Text GLabel 3050 6350 0    50   Input ~ 0
 SWO
 Wire Wire Line
-	4350 6550 4650 6550
+	4350 6550 4550 6550
 Wire Wire Line
-	4650 6650 4350 6650
+	4550 6650 4350 6650
 Wire Wire Line
 	2900 6650 3250 6650
 Wire Wire Line
@@ -646,7 +646,7 @@ Wire Wire Line
 Wire Wire Line
 	2950 5250 3250 5250
 Wire Wire Line
-	2950 4850 2950 5050
+	2950 4950 2950 5050
 Connection ~ 2950 5050
 Wire Wire Line
 	2650 5750 3100 5750
@@ -725,17 +725,13 @@ Wire Wire Line
 	5600 3600 5600 3500
 Wire Wire Line
 	4400 2650 4400 3100
-Text GLabel 4650 5450 2    50   Input ~ 0
+Text GLabel 5000 5450 2    50   Input ~ 0
 RXD
-Text GLabel 4650 6750 2    50   Input ~ 0
+Text GLabel 5000 6750 2    50   Input ~ 0
 TXD
-Wire Wire Line
-	4650 5450 4350 5450
-Wire Wire Line
-	4350 6750 4650 6750
-Text Notes 4500 5650 0    50   ~ 0
+Text Notes 4850 5650 0    50   ~ 0
 Cross wiring \n   (UART)
-Text Notes 4500 6950 0    50   ~ 0
+Text Notes 4850 6950 0    50   ~ 0
 Cross wiring\n   (UART)
 Wire Notes Line
 	6950 3750 6950 6250
@@ -790,48 +786,26 @@ F 3 "" H 2450 5150 50  0001 C CNN
 	1    2450 5150
 	1    0    0    -1  
 $EndComp
-$Comp
-L Device:Jumper_NO_Small JP2
-U 1 1 5EBD7372
-P 5200 5550
-F 0 "JP2" V 5200 5598 50  0000 L CNN
-F 1 "Jumper_NO_Small" V 5245 5598 50  0001 L CNN
-F 2 "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm" H 5200 5550 50  0001 C CNN
-F 3 "~" H 5200 5550 50  0001 C CNN
-	1    5200 5550
-	0    1    1    0   
-$EndComp
-$Comp
-L Device:Jumper_NO_Small JP3
-U 1 1 5EBDA269
-P 5400 5550
-F 0 "JP3" V 5400 5598 50  0000 L CNN
-F 1 "Jumper_NO_Small" V 5445 5598 50  0001 L CNN
-F 2 "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm" H 5400 5550 50  0001 C CNN
-F 3 "~" H 5400 5550 50  0001 C CNN
-	1    5400 5550
-	0    1    1    0   
-$EndComp
 Wire Wire Line
-	5200 4950 5200 5050
+	5550 5000 5550 5100
 Wire Wire Line
-	5200 5050 5400 5050
+	5550 5100 5700 5100
 Wire Wire Line
-	5400 5050 5400 5150
-Connection ~ 5200 5050
+	5700 5100 5700 5250
+Connection ~ 5550 5100
 Wire Wire Line
-	5200 5050 5200 5150
+	5550 5100 5550 5250
 Wire Wire Line
-	5400 6550 5400 6750
+	5500 6550 5500 6750
 $Comp
 L power:GND #PWR0116
 U 1 1 5EC36494
-P 5400 6750
-F 0 "#PWR0116" H 5400 6500 50  0001 C CNN
-F 1 "GND" H 5405 6577 50  0000 C CNN
-F 2 "" H 5400 6750 50  0001 C CNN
-F 3 "" H 5400 6750 50  0001 C CNN
-	1    5400 6750
+P 5500 6750
+F 0 "#PWR0116" H 5500 6500 50  0001 C CNN
+F 1 "GND" H 5505 6577 50  0000 C CNN
+F 2 "" H 5500 6750 50  0001 C CNN
+F 3 "" H 5500 6750 50  0001 C CNN
+	1    5500 6750
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -913,28 +887,26 @@ Wire Notes Line
 $Comp
 L Switch:SW_Push SW2
 U 1 1 5EA4D072
-P 5700 6450
-F 0 "SW2" V 5650 6750 50  0000 R CNN
-F 1 "MODE" V 5750 6800 50  0000 R CNN
-F 2 "Button_Switch_THT:SW_PUSH_6mm_H8mm" H 5700 6650 50  0001 C CNN
-F 3 "" H 5700 6650 50  0001 C CNN
-	1    5700 6450
+P 5800 6450
+F 0 "SW2" V 5750 6750 50  0000 R CNN
+F 1 "MODE" V 5850 6800 50  0000 R CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm_H8mm" H 5800 6650 50  0001 C CNN
+F 3 "" H 5800 6650 50  0001 C CNN
+	1    5800 6450
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	4350 5850 5200 5850
+	4350 5850 5550 5850
 Wire Wire Line
-	5650 5950 5400 5950
+	5800 5950 5700 5950
 Wire Wire Line
-	5200 5650 5200 5850
-Connection ~ 5200 5850
+	5550 5550 5550 5850
 Wire Wire Line
-	5200 5850 5650 5850
+	5550 5850 5800 5850
 Wire Wire Line
-	5400 5650 5400 5950
-Connection ~ 5400 5950
+	5700 5550 5700 5950
 Wire Wire Line
-	5400 5950 4350 5950
+	5700 5950 4350 5950
 NoConn ~ 10000 2800
 $Comp
 L Connector:Conn_01x05_Female CN9
@@ -1000,22 +972,19 @@ NoConn ~ 3250 6550
 NoConn ~ 4350 6450
 NoConn ~ 4350 6350
 NoConn ~ 4350 6250
-NoConn ~ 4350 5750
-NoConn ~ 4350 5650
-NoConn ~ 4350 5550
 NoConn ~ 4350 5350
 NoConn ~ 4350 5250
 Wire Wire Line
-	5700 6650 5700 6750
+	5800 6650 5800 6750
 $Comp
 L power:GND #PWR0117
 U 1 1 5EC27331
-P 5700 6750
-F 0 "#PWR0117" H 5700 6500 50  0001 C CNN
-F 1 "GND" H 5705 6577 50  0000 C CNN
-F 2 "" H 5700 6750 50  0001 C CNN
-F 3 "" H 5700 6750 50  0001 C CNN
-	1    5700 6750
+P 5800 6750
+F 0 "#PWR0117" H 5800 6500 50  0001 C CNN
+F 1 "GND" H 5805 6577 50  0000 C CNN
+F 2 "" H 5800 6750 50  0001 C CNN
+F 3 "" H 5800 6750 50  0001 C CNN
+	1    5800 6750
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -1032,13 +1001,13 @@ $EndComp
 Wire Wire Line
 	4350 6150 4550 6150
 Wire Wire Line
-	4850 6150 5400 6150
+	4850 6150 5500 6150
 Wire Wire Line
-	4350 6050 5700 6050
+	4350 6050 5800 6050
 Wire Wire Line
-	5700 6050 5700 6250
+	5800 6050 5800 6250
 Wire Wire Line
-	5400 6250 5400 6150
+	5500 6250 5500 6150
 $Comp
 L Device:CP_Small C1
 U 1 1 5ED47556
@@ -1145,14 +1114,116 @@ Wire Notes Line
 	3100 3450 3100 3750
 NoConn ~ 1300 3500
 NoConn ~ 1300 3900
-Text GLabel 5200 4950 1    50   Input ~ 0
+Text GLabel 5550 5000 1    50   Input ~ 0
 3V3
-Text GLabel 3850 4650 1    50   Input ~ 0
+Text GLabel 3850 4750 1    50   Input ~ 0
 3V3
-Text GLabel 1650 4850 1    50   Input ~ 0
+Text GLabel 1650 5000 1    50   Input ~ 0
 3V3
 Text GLabel 4550 1100 1    50   Input ~ 0
 3V3
 Wire Wire Line
 	5600 3100 5800 3100
+Wire Wire Line
+	4350 5550 4550 5550
+Wire Wire Line
+	4550 5550 4550 5150
+Wire Wire Line
+	4350 5650 4700 5650
+Wire Wire Line
+	4700 5650 4700 5150
+Wire Wire Line
+	4350 5750 4850 5750
+Wire Wire Line
+	4850 5750 4850 5150
+$Comp
+L Device:Jumper_NO_Small JP2
+U 1 1 5EA714EB
+P 4550 5050
+F 0 "JP2" H 4600 5000 50  0000 L CNN
+F 1 "Jumper_NO_Small" V 4595 5098 50  0001 L CNN
+F 2 "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm" H 4550 5050 50  0001 C CNN
+F 3 "~" H 4550 5050 50  0001 C CNN
+	1    4550 5050
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:Jumper_NO_Small JP3
+U 1 1 5EA78E49
+P 4700 5050
+F 0 "JP3" H 4750 5000 50  0000 L CNN
+F 1 "Jumper_NO_Small" V 4745 5098 50  0001 L CNN
+F 2 "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm" H 4700 5050 50  0001 C CNN
+F 3 "~" H 4700 5050 50  0001 C CNN
+	1    4700 5050
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:Jumper_NO_Small JP4
+U 1 1 5EA807A8
+P 4850 5050
+F 0 "JP4" H 4900 5000 50  0000 L CNN
+F 1 "Jumper_NO_Small" V 4895 5098 50  0001 L CNN
+F 2 "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm" H 4850 5050 50  0001 C CNN
+F 3 "~" H 4850 5050 50  0001 C CNN
+	1    4850 5050
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4550 4950 4550 4850
+Wire Wire Line
+	4850 4850 4850 4950
+Wire Wire Line
+	4700 4950 4700 4850
+Wire Wire Line
+	5000 5450 4350 5450
+Wire Wire Line
+	4350 6750 5000 6750
+Connection ~ 5700 5950
+Connection ~ 5550 5850
+Text Notes 6500 5450 2    50   ~ 0
+Pull-up register\nof Lower I2C
+Text Notes 5150 4700 2    50   ~ 0
+I2C slave address \n  of Upper I2C (3bit)
+Wire Wire Line
+	4700 4850 4850 4850
+Wire Wire Line
+	4550 4850 4700 4850
+Connection ~ 4700 4850
+Wire Wire Line
+	4850 4850 5100 4850
+Wire Wire Line
+	5100 4850 5100 5050
+Connection ~ 4850 4850
+$Comp
+L power:GND #PWR0105
+U 1 1 5EA734A4
+P 5100 5050
+F 0 "#PWR0105" H 5100 4800 50  0001 C CNN
+F 1 "GND" H 5105 4877 50  0000 C CNN
+F 2 "" H 5100 5050 50  0001 C CNN
+F 3 "" H 5100 5050 50  0001 C CNN
+	1    5100 5050
+	1    0    0    -1  
+$EndComp
+Text Notes 5100 4800 2    50   ~ 0
+(Internal pull-up)\n
+Wire Notes Line
+	4400 4950 4950 4950
+Wire Notes Line
+	4950 4950 4950 5250
+Wire Notes Line
+	4950 5250 4400 5250
+Wire Notes Line
+	4400 5250 4400 4950
+Text Notes 6500 5650 2    50   ~ 0
+Do not populate\n  if not used.
+Wire Notes Line
+	5400 5200 5850 5200
+Wire Notes Line
+	5400 5700 5400 5200
+Wire Notes Line
+	5400 5700 5850 5700
+Wire Notes Line
+	5850 5700 5850 5200
 $EndSCHEMATC
