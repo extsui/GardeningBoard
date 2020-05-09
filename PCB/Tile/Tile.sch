@@ -916,10 +916,10 @@ F 3 "~" H 7300 4500 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Connector:Conn_01x05_Male J1
+L Connector:Conn_01x05_Male CN1
 U 1 1 5E9B605A
 P 7650 2600
-F 0 "J1" V 7803 2313 50  0000 R CNN
+F 0 "CN1" V 7803 2313 50  0000 R CNN
 F 1 "Conn_01x05_Male" V 7712 2313 50  0000 R CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical" H 7650 2600 50  0001 C CNN
 F 3 "~" H 7650 2600 50  0001 C CNN
