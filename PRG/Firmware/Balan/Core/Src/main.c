@@ -23,7 +23,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include <stdint.h>
+#include "stm32f3xx_hal_uart.h"
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,14 +47,26 @@
 I2C_HandleTypeDef hi2c1;
 
 UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USER CODE BEGIN PV */
+#ifdef __GNUC__
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
 
+PUTCHAR_PROTOTYPE
+{
+	HAL_UART_Transmit(&huart2, &ch, 1, 0xFFFF);
+	return ch;
+}
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
@@ -60,6 +75,42 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+#define CIRC_BUF_SZ       64  /* must be power of two */
+static uint8_t rx_dma_circ_buf[CIRC_BUF_SZ];
+static UART_HandleTypeDef *huart_cobs;
+static uint32_t rd_ptr;
+
+#define DMA_WRITE_PTR ( (CIRC_BUF_SZ - huart_cobs->hdmarx->Instance->CNDTR) & (CIRC_BUF_SZ - 1) )
+
+void msgrx_init(UART_HandleTypeDef *huart)
+{
+    huart_cobs = huart;
+    HAL_UART_Receive_DMA(huart_cobs, rx_dma_circ_buf, CIRC_BUF_SZ);
+    rd_ptr = 0;
+}
+
+static bool msgrx_circ_buf_is_empty(void)
+{
+    if (rd_ptr == DMA_WRITE_PTR) {
+        return true;
+    }
+    return false;
+}
+
+static uint8_t msgrx_circ_buf_length(void)
+{
+	return ((DMA_WRITE_PTR - rd_ptr + CIRC_BUF_SZ) & (CIRC_BUF_SZ - 1));
+}
+
+static uint8_t msgrx_circ_buf_get(void)
+{
+    uint8_t c = 0;
+    if(rd_ptr != DMA_WRITE_PTR) {
+        c = rx_dma_circ_buf[rd_ptr++];
+        rd_ptr &= (CIRC_BUF_SZ - 1);
+    }
+    return c;
+}
 
 /* USER CODE END 0 */
 
@@ -91,21 +142,29 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_I2C1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  msgrx_init(&huart2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	//printf("Hello World!\n");
 	HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);
-	HAL_Delay(500);
+	HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	printf("%d", msgrx_circ_buf_length());
+	while (!msgrx_circ_buf_is_empty()) {
+	  uint8_t ch = msgrx_circ_buf_get();
+	  printf("%c", ch);
+	}
+	printf("\n");
   }
   /* USER CODE END 3 */
 }
@@ -216,7 +275,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 9600;
+  huart2.Init.BaudRate = 115200;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -232,6 +291,22 @@ static void MX_USART2_UART_Init(void)
   /* USER CODE BEGIN USART2_Init 2 */
 
   /* USER CODE END USART2_Init 2 */
+
+}
+
+/** 
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void) 
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel6_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel6_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel6_IRQn);
 
 }
 
