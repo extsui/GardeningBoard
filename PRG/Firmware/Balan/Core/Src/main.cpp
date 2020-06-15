@@ -27,6 +27,8 @@
 #include <stdint.h>
 #include "stm32f3xx_hal_uart.h"
 #include <stdbool.h>
+
+#include "Libraries/SoftwareI2c.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,7 +60,7 @@ DMA_HandleTypeDef hdma_usart2_rx;
 
 PUTCHAR_PROTOTYPE
 {
-	HAL_UART_Transmit(&huart2, &ch, 1, 0xFFFF);
+	HAL_UART_Transmit(&huart2, (uint8_t*)&ch, 1, 0xFFFF);
 	return ch;
 }
 /* USER CODE END PV */
@@ -121,7 +123,7 @@ static uint8_t msgrx_circ_buf_get(void)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	SoftwareI2c lowerI2c;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -159,12 +161,18 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+/*
 	printf("%d", msgrx_circ_buf_length());
 	while (!msgrx_circ_buf_is_empty()) {
 	  uint8_t ch = msgrx_circ_buf_get();
 	  printf("%c", ch);
 	}
 	printf("\n");
+*/
+	lowerI2c.StartCondition();
+	lowerI2c.Write(0x55);
+	lowerI2c.Write(0xcc);
+	lowerI2c.StopCondition();
   }
   /* USER CODE END 3 */
 }
