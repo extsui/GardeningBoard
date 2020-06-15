@@ -29,6 +29,7 @@
 #include <stdbool.h>
 
 #include "Libraries/SoftwareI2c.hpp"
+#include "Libraries/Grass.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -149,6 +150,9 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   msgrx_init(&huart2);
+  Grass *grass = new Grass(0x72);
+  grass->config(1);
+  grass->test();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -169,10 +173,6 @@ int main(void)
 	}
 	printf("\n");
 */
-	lowerI2c.StartCondition();
-	lowerI2c.Write(0x55);
-	lowerI2c.Write(0xcc);
-	lowerI2c.StopCondition();
   }
   /* USER CODE END 3 */
 }
