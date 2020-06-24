@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include <stdint.h>
+#include <stdarg.h>
 #include "stm32f3xx_hal_uart.h"
 #include <stdbool.h>
 
@@ -117,6 +118,22 @@ static uint8_t msgrx_circ_buf_get(void)
     return c;
 }
 
+void log(const char *fmt, ...)
+{
+	static char buf[256];
+
+	va_list ap;
+	va_start(ap, fmt);
+	vsprintf(buf, fmt, ap);
+	va_end(ap);
+
+	char *p = buf;
+	while (*p != '\0') {
+		HAL_UART_Transmit(&huart2, (uint8_t*)p, 1, 0xFFFF);
+		p++;
+	}
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -152,6 +169,11 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   msgrx_init(&huart2);
+
+  log("Hello World!\n");
+  while (1);
+
+
   while (1){
   // 草
   printf("Grass\n");
