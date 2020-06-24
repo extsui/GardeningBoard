@@ -31,6 +31,7 @@
 #include "Libraries/SoftwareI2c.hpp"
 #include "Libraries/Grass.hpp"
 #include "Libraries/Tree.hpp"
+#include "Libraries/House.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -151,14 +152,23 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   msgrx_init(&huart2);
+  while (1){
   // 草
+  printf("Grass\n");
   Grass *grass = new Grass(0x72);
   grass->config(1);
   grass->test();
   // 木
+  printf("Tree\n");
   Tree *tree = new Tree(0x73);
   tree->config(1);
   tree->test();
+  // 家
+  printf("House\n");
+  House *house = new House(0x70);
+  house->config(1);
+  house->test();
+  }
   /* USER CODE END 2 */
 
   /* Infinite loop */
