@@ -10,7 +10,8 @@ public:
     void BeginTransmission(uint8_t addr);
     void EndTransmission();
     void Write(uint8_t *buf, uint16_t len);
-    void Write(uint8_t data);
+    bool Write(uint8_t data);
+    bool IsDeviceReady(uint8_t addr);
 
 private:
     enum : uint8_t {

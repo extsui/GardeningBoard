@@ -170,10 +170,15 @@ int main(void)
   /* USER CODE BEGIN 2 */
   msgrx_init(&huart2);
 
-  log("Hello World!\n");
-  while (1);
-
-
+  do {
+	  log("Address Test\n");
+	  for (uint8_t addr = 0x70; addr <= 0x77; addr++) {
+		  log("[0x%02X] %s\n", addr, lowerI2c.IsDeviceReady(addr) ? "1" : "0");
+		  HAL_Delay(200);
+	  }
+	  log("\n");
+  } while (1);
+  /*
   while (1){
   // 草
   printf("Grass\n");
@@ -191,6 +196,7 @@ int main(void)
   house->config(1);
   house->test();
   }
+  */
   /* USER CODE END 2 */
 
   /* Infinite loop */
