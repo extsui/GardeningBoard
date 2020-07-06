@@ -26,9 +26,9 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdarg.h>
-#include "stm32f3xx_hal_uart.h"
 #include <stdbool.h>
 
+#include "Libraries/Console.hpp"
 #include "Libraries/SoftwareI2c.hpp"
 #include "Libraries/Grass.hpp"
 #include "Libraries/Tree.hpp"
@@ -56,17 +56,7 @@ UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USER CODE BEGIN PV */
-#ifdef __GNUC__
-#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
-#else
-#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
-#endif /* __GNUC__ */
 
-PUTCHAR_PROTOTYPE
-{
-	HAL_UART_Transmit(&huart2, (uint8_t*)&ch, 1, 0xFFFF);
-	return ch;
-}
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -81,58 +71,6 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-#define CIRC_BUF_SZ       64  /* must be power of two */
-static uint8_t rx_dma_circ_buf[CIRC_BUF_SZ];
-static UART_HandleTypeDef *huart_cobs;
-static uint32_t rd_ptr;
-
-#define DMA_WRITE_PTR ( (CIRC_BUF_SZ - huart_cobs->hdmarx->Instance->CNDTR) & (CIRC_BUF_SZ - 1) )
-
-void msgrx_init(UART_HandleTypeDef *huart)
-{
-    huart_cobs = huart;
-    HAL_UART_Receive_DMA(huart_cobs, rx_dma_circ_buf, CIRC_BUF_SZ);
-    rd_ptr = 0;
-}
-
-static bool msgrx_circ_buf_is_empty(void)
-{
-    if (rd_ptr == DMA_WRITE_PTR) {
-        return true;
-    }
-    return false;
-}
-
-static uint8_t msgrx_circ_buf_length(void)
-{
-	return ((DMA_WRITE_PTR - rd_ptr + CIRC_BUF_SZ) & (CIRC_BUF_SZ - 1));
-}
-
-static uint8_t msgrx_circ_buf_get(void)
-{
-    uint8_t c = 0;
-    if(rd_ptr != DMA_WRITE_PTR) {
-        c = rx_dma_circ_buf[rd_ptr++];
-        rd_ptr &= (CIRC_BUF_SZ - 1);
-    }
-    return c;
-}
-
-void log(const char *fmt, ...)
-{
-	static char buf[256];
-
-	va_list ap;
-	va_start(ap, fmt);
-	vsprintf(buf, fmt, ap);
-	va_end(ap);
-
-	char *p = buf;
-	while (*p != '\0') {
-		HAL_UART_Transmit(&huart2, (uint8_t*)p, 1, 0xFFFF);
-		p++;
-	}
-}
 
 /* USER CODE END 0 */
 
@@ -143,7 +81,6 @@ void log(const char *fmt, ...)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	SoftwareI2c lowerI2c;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -168,55 +105,17 @@ int main(void)
   MX_I2C1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  msgrx_init(&huart2);
-
-  do {
-	  log("Address Test\n");
-	  for (uint8_t addr = 0x70; addr <= 0x77; addr++) {
-		  log("[0x%02X] %s\n", addr, lowerI2c.IsDeviceReady(addr) ? "1" : "0");
-		  HAL_Delay(200);
-	  }
-	  log("\n");
-  } while (1);
-  /*
-  while (1){
-  // 草
-  printf("Grass\n");
-  Grass *grass = new Grass(0x72);
-  grass->config(1);
-  grass->test();
-  // 木
-  printf("Tree\n");
-  Tree *tree = new Tree(0x73);
-  tree->config(1);
-  tree->test();
-  // 家
-  printf("House\n");
-  House *house = new House(0x70);
-  house->config(1);
-  house->test();
-  }
-  */
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  Console *console = new Console(&huart2);
+  console->Run();
   while (1)
   {
-	//printf("Hello World!\n");
-	HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);
-	HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-/*
-	printf("%d", msgrx_circ_buf_length());
-	while (!msgrx_circ_buf_is_empty()) {
-	  uint8_t ch = msgrx_circ_buf_get();
-	  printf("%c", ch);
-	}
-	printf("\n");
-*/
   }
   /* USER CODE END 3 */
 }
