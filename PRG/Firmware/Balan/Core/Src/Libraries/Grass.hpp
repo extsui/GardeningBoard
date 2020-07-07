@@ -1,5 +1,5 @@
-#ifndef GRASS_H
-#define GRASS_H
+#ifndef GRASS_HPP
+#define GRASS_HPP
 
 #include "SoftwareI2c.hpp"
 
@@ -52,4 +52,4 @@ private:
   int m_frame_index;
 };
 
-#endif /* GRASS_H */
+#endif /* GRASS_HPP */

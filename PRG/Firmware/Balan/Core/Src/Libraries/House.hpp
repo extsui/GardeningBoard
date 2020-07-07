@@ -1,5 +1,5 @@
-#ifndef HOUSE_H
-#define HOUSE_H
+#ifndef HOUSE_HPP
+#define HOUSE_HPP
 
 #include "SoftwareI2c.hpp"
 
@@ -43,4 +43,4 @@ private:
   int m_frame_index;
 };
 
-#endif /* HOUSE_H */
+#endif /* HOUSE_HPP */

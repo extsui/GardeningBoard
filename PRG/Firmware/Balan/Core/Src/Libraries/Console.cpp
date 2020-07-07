@@ -1,9 +1,12 @@
-
 #include "main.h"
 #include "stm32f3xx_hal_uart.h"
 
 #include "Console.hpp"
-#include "SoftwareI2c.hpp"
+
+#include "Grass.hpp"
+#include "Tree.hpp"
+#include "House.hpp"
+#include "Tile.hpp"
 
 #include <stdio.h>
 #include <string.h>
@@ -20,9 +23,6 @@
 Console::Console(UART_HandleTypeDef *uartHandle)
 {
 	m_uartHandle = uartHandle;
-
-	// MEMO: SoftwareI2c lowerI2c;
-
 }
 
 Console::~Console()
@@ -49,9 +49,7 @@ void Console::Run(void)
 
 			if (data == '\n') {
 				// コマンド確定
-				commandBuffer[commandBufferIndex] = '\0';
-				commandBufferIndex++;
-
+				commandBuffer[commandBufferIndex - 1] = '\0';
 			    ExecuteCommand(commandBuffer);
 
 			    memset(commandBuffer, 0, sizeof(commandBuffer));
@@ -62,7 +60,6 @@ void Console::Run(void)
 		//HAL_Delay(1);
 	}
 }
-
 
 void Console::Log(const char *fmt, ...)
 {
@@ -114,5 +111,49 @@ uint8_t Console::GetReceivedByte()
 
 void Console::ExecuteCommand(const uint8_t *command)
 {
-	Log("[%s]\n", command);
+	Log("Commnad: [%s]\n", command);
+
+	if (strncmp((const char*)command, "test", 4) == 0) {
+		Log("Test: Begin.\n");
+
+		Log("0x70\n");
+		House house(0x70);
+		house.config(1);
+		house.test();
+
+		Log("0x71\n");
+		Grass grass1(0x71);
+		grass1.config(1);
+		grass1.test();
+
+		Log("0x72\n");
+		Grass grass2(0x72);
+		grass2.config(1);
+		grass2.test();
+
+		Log("0x73\n");
+		Tree tree(0x73);
+		tree.config(1);
+		tree.test();
+
+		Log("0x74\n");
+		Tile tile1(0x74);
+		tile1.config(1);
+		tile1.test();
+
+		Log("0x75\n");
+		Tile tile2(0x75);
+		tile2.config(1);
+		tile2.test();
+
+		Log("0x76\n");
+		Tile tile3(0x76);
+		tile3.config(1);
+		tile3.test();
+
+		Log("0x77\n");
+		Tile tile4(0x77);
+		tile4.config(1);
+		tile4.test();
+	}
 }
