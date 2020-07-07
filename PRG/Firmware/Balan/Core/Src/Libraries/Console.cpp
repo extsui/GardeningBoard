@@ -38,6 +38,8 @@ void Console::Run(void)
 
 	StartReceive();
 
+	Log("-- Gardening Board --\n> ");
+
 	// コマンドループ
 	while (1) {
 		// 1 ループで溜まった分だけ回収
@@ -111,8 +113,6 @@ uint8_t Console::GetReceivedByte()
 
 void Console::ExecuteCommand(const uint8_t *command)
 {
-	Log("Commnad: [%s]\n", command);
-
 	if (strncmp((const char*)command, "test", 4) == 0) {
 		Log("Test: Begin.\n");
 
@@ -155,5 +155,31 @@ void Console::ExecuteCommand(const uint8_t *command)
 		Tile tile4(0x77);
 		tile4.config(1);
 		tile4.test();
+
+	} else if (strncmp((const char*)command, "addr", 4) == 0) {
+		Log("I2C Address Check (0x70-0x77)\n");
+
+		const int CheckCount = 1000;
+		int ackCount[8] = { 0 };
+		SoftwareI2c softwareI2c;
+
+		for (int i = 0; i < CheckCount; i++) {
+			for (uint8_t addr = 0x70; addr <= 0x77; addr++) {
+				bool ack = softwareI2c.IsDeviceReady(addr);
+				if (ack) {
+					ackCount[addr - 0x70]++;
+				}
+			}
+		}
+
+		for (int i = 0; i < 8; i++) {
+			Log("[0x%02x] %d\n", (0x70 + i), ackCount[i]);
+		}
+
+	} else {
+		Log("[Error] Command not found: \"%s\"\n", command);
+
 	}
+
+	Log("> ");
 }
