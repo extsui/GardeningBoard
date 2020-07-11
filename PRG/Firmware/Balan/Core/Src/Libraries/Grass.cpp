@@ -1,3 +1,4 @@
+#include "Ht16k33.hpp"
 #include "Grass.hpp"
 #include "SoftwareI2c.hpp"
 #include <string.h>
@@ -341,21 +342,8 @@ Grass::Grass(uint8_t addr)
 
 void Grass::config(uint8_t brightness)
 {
-  // オシレータON
-  m_comm->BeginTransmission(m_addr);
-  m_comm->Write(0x21);
-  m_comm->EndTransmission();
-
-  // 輝度設定(0~15)
-  m_comm->BeginTransmission(m_addr);
-  m_comm->Write(0xE0 | brightness);
-  m_comm->EndTransmission();
-  
-  // 点滅設定
-  m_comm->BeginTransmission(m_addr);
-  m_comm->Write(0x80 | 0x01 | 0);
-  m_comm->EndTransmission();
-  
+  Ht16k33::Init(m_comm, m_addr);
+  Ht16k33::SetBrightness(m_comm, m_addr, brightness);
   update();
 }
 
@@ -409,12 +397,7 @@ void Grass::update()
   data[1] |= ((m_data[9]  == 1) ? 0x02 : 0);
   data[1] |= ((m_data[10] == 1) ? 0x04 : 0);
   
-  m_comm->BeginTransmission(m_addr);
-  m_comm->Write(0x00);
-  for (int i = 0; i < (int)sizeof(data); i++) {
-	  m_comm->Write(data[i]);
-  }
-  m_comm->EndTransmission();
+  Ht16k33::SetData(m_comm, m_addr, data, sizeof(data));
 }
 
 /************************************************************

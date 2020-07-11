@@ -1,3 +1,4 @@
+#include "Ht16k33.hpp"
 #include "House.hpp"
 #include "SoftwareI2c.hpp"
 #include <string.h>
@@ -179,21 +180,8 @@ House::House(uint8_t addr)
 
 void House::config(uint8_t brightness)
 {
-  // オシレータON
-  m_comm->BeginTransmission(m_addr);
-  m_comm->Write(0x21);
-  m_comm->EndTransmission();
-
-  // 輝度設定(0~15)
-  m_comm->BeginTransmission(m_addr);
-  m_comm->Write(0xE0 | brightness);
-  m_comm->EndTransmission();
-  
-  // 点滅設定
-  m_comm->BeginTransmission(m_addr);
-  m_comm->Write(0x80 | 0x01 | 0);
-  m_comm->EndTransmission();
-  
+  Ht16k33::Init(m_comm, m_addr);
+  Ht16k33::SetBrightness(m_comm, m_addr, brightness);
   update();
 }
 
@@ -265,13 +253,8 @@ void House::update()
   data[3] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[25] - 1] == 1) ? 0x02 : 0);
   data[3] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[26] - 1] == 1) ? 0x04 : 0);
   data[3] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[27] - 1] == 1) ? 0x08 : 0);
-  
-  m_comm->BeginTransmission(m_addr);
-  m_comm->Write(0x00);
-  for (int i = 0; i < (int)sizeof(data); i++) {
-    m_comm->Write(data[i]);
-  }
-  m_comm->EndTransmission();
+
+  Ht16k33::SetData(m_comm, m_addr, data, sizeof(data));
 }
 
 /************************************************************
