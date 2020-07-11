@@ -308,10 +308,10 @@ static const uint8_t PATTERN_RIGHT_TO_LEFT_VERTICAL[][GRASS_LED_NUM] = {
  ************************************************************/
 typedef struct {
   const uint8_t (*pattern)[GRASS_LED_NUM];
-  int frame_count;
+  int stepCount;
 } GrassPatternRecord;
 
-static const GrassPatternRecord GRASS_PATTERN_TABLE[] = {
+static const GrassPatternRecord GrassPatternTable[] = {
   { PATTERN_ALL_ON,                     1   },
   { PATTERN_ALL_OFF,                    1   },
   { PATTERN_LEFT_TO_RIGHT_1,            12  },
@@ -328,164 +328,150 @@ static const GrassPatternRecord GRASS_PATTERN_TABLE[] = {
 };
 
 /************************************************************
- *  メソッド定義
+ *  public
  ************************************************************/
-Grass::Grass(uint8_t addr)
+Grass::Grass(SoftwareI2c *dev, uint8_t addr)
+	: m_dev(dev),
+	  m_addr(addr),
+	  m_currentPatternId(0),
+	  m_currentStepIndex(0)
 {
-  m_addr = addr;
-  memset(m_data, 0x00, sizeof(m_data));
-  m_pattern_index = 0;
-  m_frame_index = 0;
-
-  m_comm = new SoftwareI2c();
 }
 
-void Grass::config(uint8_t brightness)
+Grass::~Grass()
 {
-  Ht16k33::Init(m_comm, m_addr);
-  Ht16k33::SetBrightness(m_comm, m_addr, brightness);
-  update();
 }
 
-int Grass::set(GrassPattern pattern)
+void Grass::Config(uint8_t brightness)
 {
-  if (pattern >= GRASS_PATTERN_NUM) {
-    return -1;
-  }
-
-  m_pattern_index = pattern;
-  m_frame_index = 0;
-
-  // パターンをセットした時点で表示を更新されても
-  // 問題ないようにするため先頭データを読み込んでおく。
-  next();
-    
-  return 0;
+	Ht16k33::Init(m_dev, m_addr);
+	Ht16k33::SetBrightness(m_dev, m_addr, brightness);
+	Update();
 }
 
-int Grass::length(void)
+int Grass::Set(int patternId)
 {
-  return GRASS_PATTERN_TABLE[m_pattern_index].frame_count;
+	if (patternId >= GRASS_PATTERN_NUM) {
+		return -1;
+	}
+
+	m_currentPatternId = patternId;
+	m_currentStepIndex = 0;
+	return 0;
 }
 
-void Grass::next(void)
-{ 
-  const uint8_t (*current_pattern)[GRASS_LED_NUM] = GRASS_PATTERN_TABLE[m_pattern_index].pattern;
-  int frame_count = GRASS_PATTERN_TABLE[m_pattern_index].frame_count;
-  
-  // ループ可能にするためにフレーム数を超えたら先頭フレームに戻す
-  memcpy(m_data, current_pattern[m_frame_index], GRASS_LED_NUM);
-  m_frame_index = (m_frame_index + 1) % frame_count;
+void Grass::Next(void)
+{
+	const int stepCount = GrassPatternTable[m_currentPatternId].stepCount;
+
+	// ループ可能にするためにフレーム数を超えたら先頭フレームに戻す
+	m_currentStepIndex = (m_currentStepIndex + 1) % stepCount;
 }
 
-void Grass::update()
+void Grass::Update()
 {
-  uint8_t data[GRASS_LED_NUM/8 + 1];
-  
-  memset(data, 0, sizeof(data));
-  
-  data[0] |= ((m_data[0] == 1) ? 0x01 : 0);
-  data[0] |= ((m_data[1] == 1) ? 0x02 : 0);
-  data[0] |= ((m_data[2] == 1) ? 0x04 : 0);
-  data[0] |= ((m_data[3] == 1) ? 0x08 : 0);
-  data[0] |= ((m_data[4] == 1) ? 0x10 : 0);
-  data[0] |= ((m_data[5] == 1) ? 0x20 : 0);
-  data[0] |= ((m_data[6] == 1) ? 0x40 : 0);
-  data[0] |= ((m_data[7] == 1) ? 0x80 : 0);
-  
-  data[1] |= ((m_data[8]  == 1) ? 0x01 : 0);
-  data[1] |= ((m_data[9]  == 1) ? 0x02 : 0);
-  data[1] |= ((m_data[10] == 1) ? 0x04 : 0);
-  
-  Ht16k33::SetData(m_comm, m_addr, data, sizeof(data));
+	uint8_t data[GRASS_LED_NUM/8 + 1];
+	Make(data);
+	Ht16k33::SetData(m_dev, m_addr, data, sizeof(data));
+}
+
+bool Grass::IsLastStep()
+{
+	if (m_currentStepIndex == (GrassPatternTable[m_currentPatternId].stepCount - 1)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+void Grass::Test(uint8_t stepInterval)
+{
+	TestPattern(GRASS_PATTERN_ALL_ON, stepInterval);
+	TestPattern(GRASS_PATTERN_ALL_OFF, stepInterval);
+	TestPattern(GRASS_PATTERN_LEFT_TO_RIGHT_1, stepInterval);
+	TestPattern(GRASS_PATTERN_RIGHT_TO_LEFT_1, stepInterval);
+	TestPattern(GRASS_PATTERN_LEFT_TO_RIGHT_3, stepInterval);
+	TestPattern(GRASS_PATTERN_RIGHT_TO_LEFT_3, stepInterval);
+	TestPattern(GRASS_PATTERN_BOTH_EDGE_TO_MIDDLE, stepInterval);
+	TestPattern(GRASS_PATTERN_VIBRATION, stepInterval);
+	TestPattern(GRASS_PATTERN_LEFT_TO_RIGHT_BUFFER, stepInterval);
+	TestPattern(GRASS_PATTERN_LEFT_TO_RIGHT_NEG, stepInterval);
+	TestPattern(GRASS_PATTERN_RIGHT_TO_LEFT_NEG, stepInterval);
+	TestPattern(GRASS_PATTERN_LEFT_TO_RIGHT_VERTICAL, stepInterval);
+	TestPattern(GRASS_PATTERN_RIGHT_TO_LEFT_VERTICAL, stepInterval);
 }
 
 /************************************************************
- *  サンプル
+ *  private
  ************************************************************/
-void Grass::test()
+void Grass::Make(uint8_t *outData)
 {
-  int delay_ms = 100;
-  
-  this->set(GRASS_PATTERN_LEFT_TO_RIGHT_3);
+	const uint8_t (*pattern)[GRASS_LED_NUM] = GrassPatternTable[m_currentPatternId].pattern;
+	const uint8_t *stepData = pattern[m_currentStepIndex];
 
-  for (int i = 0; i < this->length(); i++) {
-    this->update();
-    HAL_Delay(delay_ms);
-    this->next();
-  }
+	outData[0] = 0x00;
+	outData[0] |= ((stepData[0] == 1) ? 0x01 : 0);
+	outData[0] |= ((stepData[1] == 1) ? 0x02 : 0);
+	outData[0] |= ((stepData[2] == 1) ? 0x04 : 0);
+	outData[0] |= ((stepData[3] == 1) ? 0x08 : 0);
+	outData[0] |= ((stepData[4] == 1) ? 0x10 : 0);
+	outData[0] |= ((stepData[5] == 1) ? 0x20 : 0);
+	outData[0] |= ((stepData[6] == 1) ? 0x40 : 0);
+	outData[0] |= ((stepData[7] == 1) ? 0x80 : 0);
 
-  this->set(GRASS_PATTERN_RIGHT_TO_LEFT_3);
+	outData[1] = 0x00;
+	outData[1] |= ((stepData[8]  == 1) ? 0x01 : 0);
+	outData[1] |= ((stepData[9]  == 1) ? 0x02 : 0);
+	outData[1] |= ((stepData[10] == 1) ? 0x04 : 0);
+}
 
-  for (int i = 0; i < this->length(); i++) {
-    this->update();
-    HAL_Delay(delay_ms);
-    this->next();
-  }
+void Grass::TestPattern(int patternId, uint8_t stepInterval)
+{
+	// -- 1 ステップの場合 --
+	//   Set()
+	//   Update()
+	//   Delay()
+	//   IsLastStep() --> true
+	//
+	// -- 2 ステップの場合 --
+	//   Set()
+	//   Update()
+	//   Delay()
+	//   IsLastStep() --> false
+	//
+	//   Next()
+	//   Update()
+	//   Delay()
+	//   IsLastStep() --> true
+	//
+	// -- 3 ステップの場合 --
+	//   Set()
+	//   Update()
+	//   Delay()
+	//   IsLastStep() --> false
+	//
+	//   Next()
+	//   Update()
+	//   Delay()
+	//   IsLastStep() --> false
+	//
+	//   Next()
+	//   Update()
+	//   Delay()
+	//   IsLastStep() --> true
 
-  this->set(GRASS_PATTERN_BOTH_EDGE_TO_MIDDLE);
+	// 1 個目は特別
+	Set(patternId);
+	Update();
+	HAL_Delay(stepInterval);
+	if (IsLastStep()) {
+		return;
+	}
 
-  for (int i = 0; i < this->length(); i++) {
-    this->update();
-    HAL_Delay(delay_ms);
-    this->next();
-  }
-
-  this->set(GRASS_PATTERN_VIBRATION);
-
-  for (int i = 0; i < this->length() * 10; i++) {
-    this->update();
-    HAL_Delay(delay_ms);
-    this->next();
-  }
-
-  for (int i = 0; i < this->length(); i++) {
-    this->set(GRASS_PATTERN_ALL_ON);
-    this->update();
-    HAL_Delay(delay_ms * 4);
-    
-    this->set(GRASS_PATTERN_ALL_OFF);
-    this->update();
-    HAL_Delay(delay_ms * 4);
-  }
-  
-  this->set(GRASS_PATTERN_LEFT_TO_RIGHT_BUFFER);
-
-  for (int i = 0; i < this->length(); i++) {
-    this->update();
-    HAL_Delay(delay_ms / 2);
-    this->next();
-  }
-  
-  this->set(GRASS_PATTERN_LEFT_TO_RIGHT_NEG);
-
-  for (int i = 0; i < this->length(); i++) {
-    this->update();
-    HAL_Delay(delay_ms);
-    this->next();
-  }
-  
-  this->set(GRASS_PATTERN_RIGHT_TO_LEFT_NEG);
-
-  for (int i = 0; i < this->length(); i++) {
-    this->update();
-    HAL_Delay(delay_ms);
-    this->next();
-  }
-  
-  this->set(GRASS_PATTERN_LEFT_TO_RIGHT_VERTICAL);
-
-  for (int i = 0; i < this->length(); i++) {
-    this->update();
-    HAL_Delay(delay_ms / 2);
-    this->next();
-  }
-  
-  this->set(GRASS_PATTERN_RIGHT_TO_LEFT_VERTICAL);
-
-  for (int i = 0; i < this->length(); i++) {
-    this->update();
-    HAL_Delay(delay_ms / 2);
-    this->next();
-  }
+	// 2 個目以降は同様
+	do {
+		Next();
+		Update();
+		HAL_Delay(stepInterval);
+	} while (!IsLastStep());
 }

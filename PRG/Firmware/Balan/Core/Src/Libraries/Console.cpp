@@ -3,6 +3,7 @@
 
 #include "Console.hpp"
 
+#include "IBrick.hpp"
 #include "Grass.hpp"
 #include "Tree.hpp"
 #include "House.hpp"
@@ -115,6 +116,7 @@ void Console::ExecuteCommand(const uint8_t *command)
 {
 	if (strncmp((const char*)command, "test", 4) == 0) {
 		Log("Test: Begin.\n");
+		SoftwareI2c dev;
 
 		Log("0x70\n");
 		House house(0x70);
@@ -122,14 +124,15 @@ void Console::ExecuteCommand(const uint8_t *command)
 		house.test();
 
 		Log("0x71\n");
-		Grass grass1(0x71);
-		grass1.config(1);
-		grass1.test();
+		Grass grass1(&dev, 0x71);
+		grass1.Config(1);
+		grass1.Test(100);
 
 		Log("0x72\n");
-		Grass grass2(0x72);
-		grass2.config(1);
-		grass2.test();
+		IBrick *brick = new Grass(&dev, 0x72);
+		brick->Config(1);
+		brick->Test(100);
+		delete brick;
 
 		Log("0x73\n");
 		Tree tree(0x73);

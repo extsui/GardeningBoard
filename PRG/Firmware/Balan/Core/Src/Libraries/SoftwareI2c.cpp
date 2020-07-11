@@ -12,7 +12,7 @@
 #define SDA_L()		HAL_GPIO_WritePin(I2C_LOWER_SDA_GPIO_Port, I2C_LOWER_SDA_Pin, GPIO_PIN_RESET)
 #define SDA_H()		HAL_GPIO_WritePin(I2C_LOWER_SDA_GPIO_Port, I2C_LOWER_SDA_Pin, GPIO_PIN_SET)
 
-#define DELAY()		{ for (int i = 0; i < 40; i++) { } }
+#define DELAY()
 
 /************************************************************
  *  Public Functions

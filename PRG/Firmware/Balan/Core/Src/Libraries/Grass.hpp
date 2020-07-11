@@ -1,6 +1,7 @@
 #ifndef GRASS_HPP
 #define GRASS_HPP
 
+#include "IBrick.hpp"
 #include "SoftwareI2c.hpp"
 
 #define GRASS_LED_NUM   (11)
@@ -23,33 +24,29 @@ typedef enum {
   GRASS_PATTERN_NUM,
 } GrassPattern;
 
-class Grass
+class Grass : public IBrick
 {
 public:
-  Grass(uint8_t addr);
-  /** 輝度設定(I2C通信有) */
-  void config(uint8_t brightness);
-  /** パターン設定 */
-  int set(GrassPattern pattern);
-  /** 現在のパターンの長さ */
-  int length();
-  /** 現在のパターンを進める */
-  void next();
-  /** 表示更新(I2C通信有) */
-  void update();
-  /** テスト */
-  void test();
+	Grass(SoftwareI2c *dev, uint8_t addr);
+	~Grass();
+	void Config(uint8_t brightness);
+	int Set(int patternId);
+	void Next();
+	void Update();
+	bool IsLastStep();
+	void Test(uint8_t stepInterval);
 
 private:
-  SoftwareI2c *m_comm;
-  /** I2Cアドレス */
-  uint8_t m_addr;
-  /** 現在の設定データ */
-  uint8_t m_data[GRASS_LED_NUM];
-  /** 現在のパターンのインデックス */
-  int m_pattern_index;
-  /** 現在のパターンのフレームのインデックス */
-  int m_frame_index;
+	SoftwareI2c *m_dev;
+	/** I2Cアドレス */
+	uint8_t m_addr;
+	/** 現在のパターンのインデックス */
+	int m_currentPatternId;
+	/** 現在のパターンのフレームのインデックス */
+	int m_currentStepIndex;
+
+	void Make(uint8_t *outData);
+	void TestPattern(int patternId, uint8_t stepInterval);
 };
 
 #endif /* GRASS_HPP */
