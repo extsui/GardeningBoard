@@ -371,7 +371,7 @@ void Grass::Next(void)
 void Grass::Update()
 {
 	uint8_t data[GRASS_LED_NUM/8 + 1];
-	Make(data);
+	Make(data, sizeof(data));
 	Ht16k33::SetData(m_dev, m_addr, data, sizeof(data));
 }
 
@@ -404,12 +404,12 @@ void Grass::Test(uint8_t stepInterval)
 /************************************************************
  *  private
  ************************************************************/
-void Grass::Make(uint8_t *outData)
+void Grass::Make(uint8_t *outData, int length)
 {
 	const uint8_t (*pattern)[GRASS_LED_NUM] = GrassPatternTable[m_currentPatternId].pattern;
 	const uint8_t *stepData = pattern[m_currentStepIndex];
+	memset(outData, 0, length);
 
-	outData[0] = 0x00;
 	outData[0] |= ((stepData[0] == 1) ? 0x01 : 0);
 	outData[0] |= ((stepData[1] == 1) ? 0x02 : 0);
 	outData[0] |= ((stepData[2] == 1) ? 0x04 : 0);
@@ -419,7 +419,6 @@ void Grass::Make(uint8_t *outData)
 	outData[0] |= ((stepData[6] == 1) ? 0x40 : 0);
 	outData[0] |= ((stepData[7] == 1) ? 0x80 : 0);
 
-	outData[1] = 0x00;
 	outData[1] |= ((stepData[8]  == 1) ? 0x01 : 0);
 	outData[1] |= ((stepData[9]  == 1) ? 0x02 : 0);
 	outData[1] |= ((stepData[10] == 1) ? 0x04 : 0);

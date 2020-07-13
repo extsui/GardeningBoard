@@ -45,7 +45,7 @@ private:
 	/** 現在のパターンのフレームのインデックス */
 	int m_currentStepIndex;
 
-	void Make(uint8_t *outData);
+	void Make(uint8_t *outData, int length);
 	void TestPattern(int patternId, uint8_t stepInterval);
 };
 

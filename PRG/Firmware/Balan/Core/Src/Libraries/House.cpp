@@ -156,135 +156,136 @@ static const uint8_t PATTERN_STREAM[][HOUSE_LED_NUM] = {
  *  点灯パターン一覧
  ************************************************************/
 typedef struct {
-  const uint8_t (*pattern)[HOUSE_LED_NUM];
-  int frame_count;
+	const uint8_t (*pattern)[HOUSE_LED_NUM];
+	int stepCount;
 } HousePatternRecord;
 
-static const HousePatternRecord HOUSE_PATTERN_TABLE[] = {
-  { PATTERN_ALL_ON,                     1   },
-  { PATTERN_ALL_OFF,                    1   },
-  { PATTERN_ONE_BY_ONE,                 28  },
-  { PATTERN_STREAM,                     54  },
+static const HousePatternRecord HousePatternTable[] = {
+	{ PATTERN_ALL_ON,                     1   },
+	{ PATTERN_ALL_OFF,                    1   },
+	{ PATTERN_ONE_BY_ONE,                 28  },
+	{ PATTERN_STREAM,                     54  },
 };
 
 /************************************************************
- *  メソッド定義
+ *  private
  ************************************************************/
-House::House(uint8_t addr)
+House::House(SoftwareI2c *dev, uint8_t addr)
+	: m_dev(dev),
+	  m_addr(addr),
+	  m_currentPatternId(0),
+	  m_currentStepIndex(0)
 {
-  m_addr = addr;
-  memset(m_data, 0x00, sizeof(m_data));
-  m_pattern_index = 0;
-  m_frame_index = 0;
 }
 
-void House::config(uint8_t brightness)
+House::~House()
 {
-  Ht16k33::Init(m_comm, m_addr);
-  Ht16k33::SetBrightness(m_comm, m_addr, brightness);
-  update();
 }
 
-int House::set(HousePattern pattern)
+void House::Config(uint8_t brightness)
 {
-  if (pattern >= HOUSE_PATTERN_NUM) {
-    return -1;
-  }
-
-  m_pattern_index = pattern;
-  m_frame_index = 0;
-
-  // パターンをセットした時点で表示を更新されても
-  // 問題ないようにするため先頭データを読み込んでおく。
-  next();
-    
-  return 0;
+	Ht16k33::Init(m_dev, m_addr);
+	Ht16k33::SetBrightness(m_dev, m_addr, brightness);
+	Update();
 }
 
-int House::length(void)
+int House::Set(int patternId)
 {
-  return HOUSE_PATTERN_TABLE[m_pattern_index].frame_count;
+	if (patternId >= HOUSE_PATTERN_NUM) {
+		return -1;
+	}
+	
+	m_currentPatternId = patternId;
+	m_currentStepIndex = 0;
+	return 0;
 }
 
-void House::next(void)
+void House::Next(void)
 { 
-  const uint8_t (*current_pattern)[HOUSE_LED_NUM] = HOUSE_PATTERN_TABLE[m_pattern_index].pattern;
-  int frame_count = HOUSE_PATTERN_TABLE[m_pattern_index].frame_count;
-  
-  // ループ可能にするためにフレーム数を超えたら先頭フレームに戻す
-  memcpy(m_data, current_pattern[m_frame_index], HOUSE_LED_NUM);
-  m_frame_index = (m_frame_index + 1) % frame_count;
+	const int stepCount = HousePatternTable[m_currentPatternId].stepCount;
+	m_currentStepIndex = (m_currentStepIndex + 1) % stepCount;
 }
 
-void House::update()
+void House::Update()
 {
-  uint8_t data[HOUSE_LED_NUM/8 + 1];
+	uint8_t data[HOUSE_LED_NUM/8 + 1];
+	Make(data, sizeof(data));
+	Ht16k33::SetData(m_dev, m_addr, data, sizeof(data));
+}
 
-  memset(data, 0, sizeof(data));
+bool House::IsLastStep()
+{
+	if (m_currentStepIndex == (HousePatternTable[m_currentPatternId].stepCount - 1)) {
+		return true;
+	} else {
+		return false;
+	}
+}
 
-  data[0] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[0] - 1] == 1) ? 0x01 : 0);
-  data[0] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[1] - 1] == 1) ? 0x02 : 0);
-  data[0] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[2] - 1] == 1) ? 0x04 : 0);
-  data[0] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[3] - 1] == 1) ? 0x08 : 0);
-  data[0] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[4] - 1] == 1) ? 0x10 : 0);
-  data[0] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[5] - 1] == 1) ? 0x20 : 0);
-  data[0] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[6] - 1] == 1) ? 0x40 : 0);
-  data[0] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[7] - 1] == 1) ? 0x80 : 0);
-
-  data[1] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[8] - 1]  == 1) ? 0x01 : 0);
-  data[1] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[9] - 1]  == 1) ? 0x02 : 0);
-  data[1] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[10] - 1] == 1) ? 0x04 : 0);
-  data[1] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[11] - 1] == 1) ? 0x08 : 0);
-  data[1] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[12] - 1] == 1) ? 0x10 : 0);
-  data[1] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[13] - 1] == 1) ? 0x20 : 0);
-  data[1] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[14] - 1] == 1) ? 0x40 : 0);
-  data[1] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[15] - 1] == 1) ? 0x80 : 0);
-
-  data[2] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[16] - 1] == 1) ? 0x01 : 0);
-  data[2] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[17] - 1] == 1) ? 0x02 : 0);
-  data[2] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[18] - 1] == 1) ? 0x04 : 0);
-  data[2] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[19] - 1] == 1) ? 0x08 : 0);
-  data[2] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[20] - 1] == 1) ? 0x10 : 0);
-  data[2] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[21] - 1] == 1) ? 0x20 : 0);
-  data[2] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[22] - 1] == 1) ? 0x40 : 0);
-  data[2] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[23] - 1] == 1) ? 0x80 : 0);
-
-  data[3] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[24] - 1] == 1) ? 0x01 : 0);
-  data[3] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[25] - 1] == 1) ? 0x02 : 0);
-  data[3] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[26] - 1] == 1) ? 0x04 : 0);
-  data[3] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[27] - 1] == 1) ? 0x08 : 0);
-
-  Ht16k33::SetData(m_comm, m_addr, data, sizeof(data));
+void House::Test(uint8_t stepInterval)
+{
+	TestPattern(HOUSE_PATTERN_ALL_ON, stepInterval);
+	TestPattern(HOUSE_PATTERN_ALL_OFF, stepInterval);
+	TestPattern(HOUSE_PATTERN_ONE_BY_ONE, stepInterval);
+	TestPattern(HOUSE_PATTERN_STREAM, stepInterval);
 }
 
 /************************************************************
- *  サンプル
+ *  private
  ************************************************************/
-void House::test()
+void House::TestPattern(int patternId, uint8_t stepInterval)
 {
-  int delay_ms = 100;
-  
-  for (int i = 0; i < this->length(); i++) {
-    this->set(HOUSE_PATTERN_ALL_ON);
-    this->update();
-    HAL_Delay(delay_ms * 4);
-    
-    this->set(HOUSE_PATTERN_ALL_OFF);
-    this->update();
-    HAL_Delay(delay_ms * 4);
-  }
+	// 1 個目は特別
+	Set(patternId);
+	Update();
+	HAL_Delay(stepInterval);
+	if (IsLastStep()) {
+		return;
+	}
 
-  this->set(HOUSE_PATTERN_ONE_BY_ONE);
-  for (int i = 0; i < this->length(); i++) {
-    this->update();
-    HAL_Delay(delay_ms);
-    this->next();
-  }
+	// 2 個目以降は同様
+	do {
+		Next();
+		Update();
+		HAL_Delay(stepInterval);
+	} while (!IsLastStep());
+}
 
-  this->set(HOUSE_PATTERN_STREAM);
-  for (int i = 0; i < this->length(); i++) {
-    this->update();
-    HAL_Delay(delay_ms);
-    this->next();
-  }
+void House::Make(uint8_t *outData, int length)
+{
+	const uint8_t (*pattern)[HOUSE_LED_NUM] = HousePatternTable[m_currentPatternId].pattern;
+	const uint8_t *stepData = pattern[m_currentStepIndex];
+	memset(outData, 0, length);
+
+	outData[0] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[0] - 1] == 1) ? 0x01 : 0);
+	outData[0] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[1] - 1] == 1) ? 0x02 : 0);
+	outData[0] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[2] - 1] == 1) ? 0x04 : 0);
+	outData[0] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[3] - 1] == 1) ? 0x08 : 0);
+	outData[0] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[4] - 1] == 1) ? 0x10 : 0);
+	outData[0] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[5] - 1] == 1) ? 0x20 : 0);
+	outData[0] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[6] - 1] == 1) ? 0x40 : 0);
+	outData[0] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[7] - 1] == 1) ? 0x80 : 0);
+	
+	outData[1] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[8] - 1]  == 1) ? 0x01 : 0);
+	outData[1] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[9] - 1]  == 1) ? 0x02 : 0);
+	outData[1] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[10] - 1] == 1) ? 0x04 : 0);
+	outData[1] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[11] - 1] == 1) ? 0x08 : 0);
+	outData[1] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[12] - 1] == 1) ? 0x10 : 0);
+	outData[1] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[13] - 1] == 1) ? 0x20 : 0);
+	outData[1] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[14] - 1] == 1) ? 0x40 : 0);
+	outData[1] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[15] - 1] == 1) ? 0x80 : 0);
+	
+	outData[2] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[16] - 1] == 1) ? 0x01 : 0);
+	outData[2] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[17] - 1] == 1) ? 0x02 : 0);
+	outData[2] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[18] - 1] == 1) ? 0x04 : 0);
+	outData[2] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[19] - 1] == 1) ? 0x08 : 0);
+	outData[2] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[20] - 1] == 1) ? 0x10 : 0);
+	outData[2] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[21] - 1] == 1) ? 0x20 : 0);
+	outData[2] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[22] - 1] == 1) ? 0x40 : 0);
+	outData[2] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[23] - 1] == 1) ? 0x80 : 0);
+	
+	outData[3] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[24] - 1] == 1) ? 0x01 : 0);
+	outData[3] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[25] - 1] == 1) ? 0x02 : 0);
+	outData[3] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[26] - 1] == 1) ? 0x04 : 0);
+	outData[3] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[27] - 1] == 1) ? 0x08 : 0);
 }

@@ -119,9 +119,10 @@ void Console::ExecuteCommand(const uint8_t *command)
 		SoftwareI2c dev;
 
 		Log("0x70\n");
-		House house(0x70);
-		house.config(1);
-		house.test();
+		IBrick *brick1 = new House(&dev, 0x70);
+		brick1->Config(1);
+		brick1->Test(100);
+		delete brick1;
 
 		Log("0x71\n");
 		Grass grass1(&dev, 0x71);
@@ -129,10 +130,10 @@ void Console::ExecuteCommand(const uint8_t *command)
 		grass1.Test(100);
 
 		Log("0x72\n");
-		IBrick *brick = new Grass(&dev, 0x72);
-		brick->Config(1);
-		brick->Test(100);
-		delete brick;
+		IBrick *brick2 = new Grass(&dev, 0x72);
+		brick2->Config(1);
+		brick2->Test(100);
+		delete brick2;
 
 		Log("0x73\n");
 		Tree tree(0x73);
