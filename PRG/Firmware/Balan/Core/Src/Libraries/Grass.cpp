@@ -330,23 +330,12 @@ static const GrassPatternRecord GrassPatternTable[] = {
 /************************************************************
  *  public
  ************************************************************/
-Grass::Grass(SoftwareI2c *dev, uint8_t addr)
-	: m_dev(dev),
-	  m_addr(addr),
-	  m_currentPatternId(0),
-	  m_currentStepIndex(0)
+Grass::Grass(SoftwareI2c *dev, uint8_t addr) : Brick(dev, addr)
 {
 }
 
 Grass::~Grass()
 {
-}
-
-void Grass::Config(uint8_t brightness)
-{
-	Ht16k33::Init(m_dev, m_addr);
-	Ht16k33::SetBrightness(m_dev, m_addr, brightness);
-	Update();
 }
 
 int Grass::Set(int patternId)
@@ -422,55 +411,4 @@ void Grass::Make(uint8_t *outData, int length)
 	outData[1] |= ((stepData[8]  == 1) ? 0x01 : 0);
 	outData[1] |= ((stepData[9]  == 1) ? 0x02 : 0);
 	outData[1] |= ((stepData[10] == 1) ? 0x04 : 0);
-}
-
-void Grass::TestPattern(int patternId, uint8_t stepInterval)
-{
-	// -- 1 ステップの場合 --
-	//   Set()
-	//   Update()
-	//   Delay()
-	//   IsLastStep() --> true
-	//
-	// -- 2 ステップの場合 --
-	//   Set()
-	//   Update()
-	//   Delay()
-	//   IsLastStep() --> false
-	//
-	//   Next()
-	//   Update()
-	//   Delay()
-	//   IsLastStep() --> true
-	//
-	// -- 3 ステップの場合 --
-	//   Set()
-	//   Update()
-	//   Delay()
-	//   IsLastStep() --> false
-	//
-	//   Next()
-	//   Update()
-	//   Delay()
-	//   IsLastStep() --> false
-	//
-	//   Next()
-	//   Update()
-	//   Delay()
-	//   IsLastStep() --> true
-
-	// 1 個目は特別
-	Set(patternId);
-	Update();
-	HAL_Delay(stepInterval);
-	if (IsLastStep()) {
-		return;
-	}
-
-	// 2 個目以降は同様
-	do {
-		Next();
-		Update();
-		HAL_Delay(stepInterval);
-	} while (!IsLastStep());
 }

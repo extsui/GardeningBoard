@@ -1,7 +1,7 @@
 #ifndef HOUSE_HPP
 #define HOUSE_HPP
 
-#include "IBrick.hpp"
+#include "Brick.hpp"
 #include "SoftwareI2c.hpp"
 
 #define HOUSE_LED_NUM   (27)
@@ -15,12 +15,11 @@ typedef enum {
   HOUSE_PATTERN_NUM,
 } HousePattern;
 
-class House : public IBrick
+class House : public Brick
 {
 public:
 	House(SoftwareI2c *dev, uint8_t addr);
 	~House();
-	void Config(uint8_t brightness);
 	int Set(int patternId);
 	void Next();
 	void Update();
@@ -28,16 +27,7 @@ public:
 	void Test(uint8_t stepInterval);
 
 private:
-	SoftwareI2c *m_dev;
-	/** I2Cアドレス */
-	uint8_t m_addr;
-	/** 現在のパターンのインデックス */
-	int m_currentPatternId;
-	/** 現在のパターンのフレームのインデックス */
-	int m_currentStepIndex;
-	
 	void Make(uint8_t *outData, int length);
-	void TestPattern(int patternId, uint8_t stepInterval);
 };
 
 #endif /* HOUSE_HPP */

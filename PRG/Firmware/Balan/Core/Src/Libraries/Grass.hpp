@@ -1,7 +1,7 @@
 #ifndef GRASS_HPP
 #define GRASS_HPP
 
-#include "IBrick.hpp"
+#include "Brick.hpp"
 #include "SoftwareI2c.hpp"
 
 #define GRASS_LED_NUM   (11)
@@ -24,12 +24,11 @@ typedef enum {
   GRASS_PATTERN_NUM,
 } GrassPattern;
 
-class Grass : public IBrick
+class Grass : public Brick
 {
 public:
 	Grass(SoftwareI2c *dev, uint8_t addr);
 	~Grass();
-	void Config(uint8_t brightness);
 	int Set(int patternId);
 	void Next();
 	void Update();
@@ -37,16 +36,7 @@ public:
 	void Test(uint8_t stepInterval);
 
 private:
-	SoftwareI2c *m_dev;
-	/** I2Cアドレス */
-	uint8_t m_addr;
-	/** 現在のパターンのインデックス */
-	int m_currentPatternId;
-	/** 現在のパターンのフレームのインデックス */
-	int m_currentStepIndex;
-
 	void Make(uint8_t *outData, int length);
-	void TestPattern(int patternId, uint8_t stepInterval);
 };
 
 #endif /* GRASS_HPP */

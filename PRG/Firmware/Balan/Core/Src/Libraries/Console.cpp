@@ -3,7 +3,7 @@
 
 #include "Console.hpp"
 
-#include "IBrick.hpp"
+#include "Brick.hpp"
 #include "Grass.hpp"
 #include "Tree.hpp"
 #include "House.hpp"
@@ -119,20 +119,20 @@ void Console::ExecuteCommand(const uint8_t *command)
 		SoftwareI2c dev;
 
 		Log("0x70\n");
-		IBrick *brick1 = new House(&dev, 0x70);
+		Brick *brick1 = new House(&dev, 0x70);
 		brick1->Config(1);
-		brick1->Test(100);
+		brick1->Test(1);
 		delete brick1;
 
 		Log("0x71\n");
 		Grass grass1(&dev, 0x71);
 		grass1.Config(1);
-		grass1.Test(100);
+		grass1.Test(1);
 
 		Log("0x72\n");
-		IBrick *brick2 = new Grass(&dev, 0x72);
+		Brick *brick2 = new Grass(&dev, 0x72);
 		brick2->Config(1);
-		brick2->Test(100);
+		brick2->Test(1);
 		delete brick2;
 
 		Log("0x73\n");
