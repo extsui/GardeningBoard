@@ -119,46 +119,52 @@ void Console::ExecuteCommand(const uint8_t *command)
 		SoftwareI2c dev;
 
 		Log("0x70\n");
-		Brick *brick1 = new House(&dev, 0x70);
-		brick1->Config(1);
-		brick1->Test(1);
-		delete brick1;
+		Brick *brick0 = new House(&dev, 0x70);
+		brick0->Config(1);
+		brick0->Test(10);
+		delete brick0;
 
 		Log("0x71\n");
-		Grass grass1(&dev, 0x71);
-		grass1.Config(1);
-		grass1.Test(1);
+		Brick *brick1 = new Grass(&dev, 0x71);
+		brick1->Config(1);
+		brick1->Test(10);
+		delete brick1;
 
 		Log("0x72\n");
 		Brick *brick2 = new Grass(&dev, 0x72);
 		brick2->Config(1);
-		brick2->Test(1);
+		brick2->Test(10);
 		delete brick2;
 
 		Log("0x73\n");
-		Tree tree(0x73);
-		tree.config(1);
-		tree.test();
+		Brick *brick3 = new Tree(&dev, 0x73);
+		brick3->Config(1);
+		brick3->Test(10);
+		delete brick3;
 
 		Log("0x74\n");
-		Tile tile1(0x74);
-		tile1.config(1);
-		tile1.test();
+		Brick *brick4 = new Tile(&dev, 0x74);
+		brick4->Config(1);
+		brick4->Test(10);
+		delete brick4;
 
 		Log("0x75\n");
-		Tile tile2(0x75);
-		tile2.config(1);
-		tile2.test();
+		Brick *brick5 = new Tile(&dev, 0x75);
+		brick5->Config(1);
+		brick5->Test(10);
+		delete brick5;
 
 		Log("0x76\n");
-		Tile tile3(0x76);
-		tile3.config(1);
-		tile3.test();
+		Brick *brick6 = new Tile(&dev, 0x76);
+		brick6->Config(1);
+		brick6->Test(10);
+		delete brick6;
 
 		Log("0x77\n");
-		Tile tile4(0x77);
-		tile4.config(1);
-		tile4.test();
+		Brick *brick7 = new Tile(&dev, 0x77);
+		brick7->Config(1);
+		brick7->Test(10);
+		delete brick7;
 
 	} else if (strncmp((const char*)command, "addr", 4) == 0) {
 		Log("I2C Address Check (0x70-0x77)\n");

@@ -23,16 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
-#include <stdint.h>
-#include <stdarg.h>
-#include <stdbool.h>
-
 #include "Libraries/Console.hpp"
-#include "Libraries/SoftwareI2c.hpp"
-#include "Libraries/Grass.hpp"
-#include "Libraries/Tree.hpp"
-#include "Libraries/House.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

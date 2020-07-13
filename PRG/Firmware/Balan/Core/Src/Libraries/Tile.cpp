@@ -142,132 +142,102 @@ static const uint8_t PATTERN_STREAM[][TILE_LED_NUM] = {
  *  点灯パターン一覧
  ************************************************************/
 typedef struct {
-  const uint8_t (*pattern)[TILE_LED_NUM];
-  int frame_count;
+	const uint8_t (*pattern)[TILE_LED_NUM];
+	int stepCount;
 } TilePatternRecord;
 
-static const TilePatternRecord TILE_PATTERN_TABLE[] = {
-  { PATTERN_ALL_ON,                     1   },
-  { PATTERN_ALL_OFF,                    1   },
-  { PATTERN_ONE_BY_ONE,                 24  },
-  { PATTERN_STREAM,                     48  },
+static const TilePatternRecord TilePatternTable[] = {
+	{ PATTERN_ALL_ON,                     1   },
+	{ PATTERN_ALL_OFF,                    1   },
+	{ PATTERN_ONE_BY_ONE,                 24  },
+	{ PATTERN_STREAM,                     48  },
 };
 
 /************************************************************
- *  メソッド定義
+ *  public
  ************************************************************/
-Tile::Tile(uint8_t addr)
+Tile::Tile(SoftwareI2c *dev, uint8_t addr) : Brick(dev, addr)
 {
-  m_addr = addr;
-  memset(m_data, 0x00, sizeof(m_data));
-  m_pattern_index = 0;
-  m_frame_index = 0;
-
-  m_comm = new SoftwareI2c();
 }
 
-void Tile::config(uint8_t brightness)
+Tile::~Tile()
 {
-  Ht16k33::Init(m_comm, m_addr);
-  Ht16k33::SetBrightness(m_comm, m_addr, brightness);
-  update();
 }
 
-int Tile::set(TilePattern pattern)
+int Tile::Set(int patternId)
 {
-  if (pattern >= TILE_PATTERN_NUM) {
-    return -1;
-  }
+	if (patternId >= TILE_PATTERN_NUM) {
+		return -1;
+	}
 
-  m_pattern_index = pattern;
-  m_frame_index = 0;
-
-  // パターンをセットした時点で表示を更新されても
-  // 問題ないようにするため先頭データを読み込んでおく。
-  next();
-    
-  return 0;
+	m_currentPatternId = patternId;
+	m_currentStepIndex = 0;
+	return 0;
 }
 
-int Tile::length(void)
+void Tile::Next(void)
 {
-  return TILE_PATTERN_TABLE[m_pattern_index].frame_count;
+	const int stepCount = TilePatternTable[m_currentPatternId].stepCount;
+	m_currentStepIndex = (m_currentStepIndex + 1) % stepCount;
 }
 
-void Tile::next(void)
-{ 
-  const uint8_t (*current_pattern)[TILE_LED_NUM] = TILE_PATTERN_TABLE[m_pattern_index].pattern;
-  int frame_count = TILE_PATTERN_TABLE[m_pattern_index].frame_count;
-  
-  // ループ可能にするためにフレーム数を超えたら先頭フレームに戻す
-  memcpy(m_data, current_pattern[m_frame_index], TILE_LED_NUM);
-  m_frame_index = (m_frame_index + 1) % frame_count;
+void Tile::Update()
+{
+	uint8_t data[TILE_LED_NUM/8 + 1];
+	Make(data, sizeof(data));
+	Ht16k33::SetData(m_dev, m_addr, data, sizeof(data));
 }
 
-void Tile::update()
+bool Tile::IsLastStep()
 {
-  uint8_t data[TILE_LED_NUM/8];
+	if (m_currentStepIndex == (TilePatternTable[m_currentPatternId].stepCount - 1)) {
+		return true;
+	} else {
+		return false;
+	}
+}
 
-  memset(data, 0, sizeof(data));
-
-  data[0] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[0] - 1] == 1) ? 0x01 : 0);
-  data[0] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[1] - 1] == 1) ? 0x02 : 0);
-  data[0] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[2] - 1] == 1) ? 0x04 : 0);
-  data[0] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[3] - 1] == 1) ? 0x08 : 0);
-  data[0] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[4] - 1] == 1) ? 0x10 : 0);
-  data[0] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[5] - 1] == 1) ? 0x20 : 0);
-  data[0] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[6] - 1] == 1) ? 0x40 : 0);
-  data[0] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[7] - 1] == 1) ? 0x80 : 0);
-
-  data[1] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[8] - 1]  == 1) ? 0x01 : 0);
-  data[1] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[9] - 1]  == 1) ? 0x02 : 0);
-  data[1] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[10] - 1] == 1) ? 0x04 : 0);
-  data[1] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[11] - 1] == 1) ? 0x08 : 0);
-  data[1] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[12] - 1] == 1) ? 0x10 : 0);
-  data[1] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[13] - 1] == 1) ? 0x20 : 0);
-  data[1] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[14] - 1] == 1) ? 0x40 : 0);
-  data[1] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[15] - 1] == 1) ? 0x80 : 0);
-
-  data[2] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[16] - 1] == 1) ? 0x01 : 0);
-  data[2] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[17] - 1] == 1) ? 0x02 : 0);
-  data[2] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[18] - 1] == 1) ? 0x04 : 0);
-  data[2] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[19] - 1] == 1) ? 0x08 : 0);
-  data[2] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[20] - 1] == 1) ? 0x10 : 0);
-  data[2] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[21] - 1] == 1) ? 0x20 : 0);
-  data[2] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[22] - 1] == 1) ? 0x40 : 0);
-  data[2] |= ((m_data[PHYSICAL_TO_LOGICAL_POS_TABLE[23] - 1] == 1) ? 0x80 : 0);
-
-  Ht16k33::SetData(m_comm, m_addr, data, sizeof(data));
+void Tile::Test(uint8_t stepInterval)
+{
+	TestPattern(TILE_PATTERN_ALL_ON, stepInterval);
+	TestPattern(TILE_PATTERN_ALL_OFF, stepInterval);
+	TestPattern(TILE_PATTERN_ONE_BY_ONE, stepInterval);
+	TestPattern(TILE_PATTERN_STREAM, stepInterval);
 }
 
 /************************************************************
- *  サンプル
+ *  private
  ************************************************************/
-void Tile::test()
+void Tile::Make(uint8_t *outData, int length)
 {
-  int delay_ms = 100;
-  
-  for (int i = 0; i < this->length(); i++) {
-    this->set(TILE_PATTERN_ALL_ON);
-    this->update();
-    HAL_Delay(delay_ms * 4);
-    
-    this->set(TILE_PATTERN_ALL_OFF);
-    this->update();
-    HAL_Delay(delay_ms * 4);
-  }
+	const uint8_t (*pattern)[TILE_LED_NUM] = TilePatternTable[m_currentPatternId].pattern;
+	const uint8_t *stepData = pattern[m_currentStepIndex];
+	memset(outData, 0, length);
 
-  this->set(TILE_PATTERN_ONE_BY_ONE);
-  for (int i = 0; i < this->length(); i++) {
-    this->update();
-    HAL_Delay(delay_ms);
-    this->next();
-  }
+	outData[0] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[0] - 1] == 1) ? 0x01 : 0);
+	outData[0] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[1] - 1] == 1) ? 0x02 : 0);
+	outData[0] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[2] - 1] == 1) ? 0x04 : 0);
+	outData[0] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[3] - 1] == 1) ? 0x08 : 0);
+	outData[0] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[4] - 1] == 1) ? 0x10 : 0);
+	outData[0] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[5] - 1] == 1) ? 0x20 : 0);
+	outData[0] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[6] - 1] == 1) ? 0x40 : 0);
+	outData[0] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[7] - 1] == 1) ? 0x80 : 0);
 
-  this->set(TILE_PATTERN_STREAM);
-  for (int i = 0; i < this->length(); i++) {
-    this->update();
-    HAL_Delay(delay_ms);
-    this->next();
-  }
+	outData[1] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[8] - 1]  == 1) ? 0x01 : 0);
+	outData[1] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[9] - 1]  == 1) ? 0x02 : 0);
+	outData[1] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[10] - 1] == 1) ? 0x04 : 0);
+	outData[1] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[11] - 1] == 1) ? 0x08 : 0);
+	outData[1] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[12] - 1] == 1) ? 0x10 : 0);
+	outData[1] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[13] - 1] == 1) ? 0x20 : 0);
+	outData[1] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[14] - 1] == 1) ? 0x40 : 0);
+	outData[1] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[15] - 1] == 1) ? 0x80 : 0);
+
+    outData[2] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[16] - 1] == 1) ? 0x01 : 0);
+	outData[2] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[17] - 1] == 1) ? 0x02 : 0);
+	outData[2] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[18] - 1] == 1) ? 0x04 : 0);
+	outData[2] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[19] - 1] == 1) ? 0x08 : 0);
+	outData[2] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[20] - 1] == 1) ? 0x10 : 0);
+	outData[2] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[21] - 1] == 1) ? 0x20 : 0);
+	outData[2] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[22] - 1] == 1) ? 0x40 : 0);
+	outData[2] |= ((stepData[PHYSICAL_TO_LOGICAL_POS_TABLE[23] - 1] == 1) ? 0x80 : 0);
 }

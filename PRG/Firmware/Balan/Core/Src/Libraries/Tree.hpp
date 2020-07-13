@@ -1,6 +1,7 @@
 #ifndef TREE_HPP
 #define TREE_HPP
 
+#include "Brick.hpp"
 #include "SoftwareI2c.hpp"
 
 #define TREE_LED_NUM   (19)
@@ -21,33 +22,19 @@ typedef enum {
   TREE_PATTERN_NUM,
 } TreePattern;
 
-class Tree
+class Tree : public Brick
 {
 public:
-  Tree(uint8_t addr);
-  /** 輝度設定(I2C通信有) */
-  void config(uint8_t brightness);
-  /** パターン設定 */
-  int set(TreePattern pattern);
-  /** 現在のパターンの長さ */
-  int length();
-  /** 現在のパターンを進める */
-  void next();
-  /** 表示更新(I2C通信有) */
-  void update();
-  /** テスト */
-  void test();
+	Tree(SoftwareI2c *dev, uint8_t addr);
+	~Tree();
+	int Set(int patternId);
+	void Next();
+	void Update();
+	bool IsLastStep();
+	void Test(uint8_t stepInterval);
 
 private:
-  SoftwareI2c *m_comm;
-  /** I2Cアドレス */
-  uint8_t m_addr;
-  /** 現在の設定データ */
-  uint8_t m_data[TREE_LED_NUM];
-  /** 現在のパターンのインデックス */
-  int m_pattern_index;
-  /** 現在のパターンのフレームのインデックス */
-  int m_frame_index;
+	void Make(uint8_t *outData, int length);
 };
 
 #endif /* TREE_HPP */
