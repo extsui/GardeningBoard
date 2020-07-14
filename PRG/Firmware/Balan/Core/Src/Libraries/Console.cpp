@@ -9,6 +9,8 @@
 #include "House.hpp"
 #include "Tile.hpp"
 
+#include "StepScheduler.hpp"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -16,7 +18,7 @@
 /************************************************************
  *  Defines
  ************************************************************/
-
+StepScheduler *stepScheduler = NULL;
 
 /************************************************************
  *  Public Functions
@@ -39,6 +41,8 @@ void Console::Run(void)
 
 	StartReceive();
 
+	stepScheduler = new StepScheduler();
+
 	Log("-- Gardening Board --\n> ");
 
 	// コマンドループ
@@ -60,7 +64,8 @@ void Console::Run(void)
 			}
 		}
 
-		//HAL_Delay(1);
+		uint32_t currentTick = HAL_GetTick();
+		stepScheduler->Process(currentTick);
 	}
 }
 
@@ -185,6 +190,29 @@ void Console::ExecuteCommand(const uint8_t *command)
 		for (int i = 0; i < 8; i++) {
 			Log("[0x%02x] %d\n", (0x70 + i), ackCount[i]);
 		}
+
+	} else if (strncmp((const char*)command, "0", 1) == 0) {
+		// TODO: 様々な箇所で HAL_GetTick() するのは本当は禁止
+		uint32_t currentTick = HAL_GetTick();
+
+		stepScheduler->BeginPattern(currentTick, 2, GRASS_PATTERN_ALL_ON, 100, false);
+		stepScheduler->BeginPattern(currentTick, 3, TREE_PATTERN_ALL_ON, 50, true);
+
+	} else if (strncmp((const char*)command, "1", 1) == 0) {
+		// TODO: 様々な箇所で HAL_GetTick() するのは本当は禁止
+		uint32_t currentTick = HAL_GetTick();
+
+		stepScheduler->BeginPattern(currentTick, 0, HOUSE_PATTERN_STREAM, 100, false);
+		stepScheduler->BeginPattern(currentTick, 1, GRASS_PATTERN_BOTH_EDGE_TO_MIDDLE, 50, true);
+
+	} else if (strncmp((const char*)command, "2", 1) == 0) {
+		// TODO: 様々な箇所で HAL_GetTick() するのは本当は禁止
+		uint32_t currentTick = HAL_GetTick();
+
+		stepScheduler->BeginPattern(currentTick, 4, TILE_PATTERN_STREAM, 40, true);
+		stepScheduler->BeginPattern(currentTick, 5, TILE_PATTERN_STREAM, 50, true);
+		stepScheduler->BeginPattern(currentTick, 6, TILE_PATTERN_STREAM, 60, true);
+		stepScheduler->BeginPattern(currentTick, 7, TILE_PATTERN_STREAM, 70, true);
 
 	} else {
 		Log("[Error] Command not found: \"%s\"\n", command);
