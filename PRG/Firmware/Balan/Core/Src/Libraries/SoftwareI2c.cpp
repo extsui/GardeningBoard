@@ -6,13 +6,42 @@
 /************************************************************
  *  Defines
  ************************************************************/
-#define SCL_L()		HAL_GPIO_WritePin(I2C_LOWER_SCL_GPIO_Port, I2C_LOWER_SCL_Pin, GPIO_PIN_RESET)
-#define SCL_H()		HAL_GPIO_WritePin(I2C_LOWER_SCL_GPIO_Port, I2C_LOWER_SCL_Pin, GPIO_PIN_SET)
+// -----------------------
+//   CLK   LOOP   周波数
+// -----------------------
+//  16MHz  None  約300kHz
+//  16MHz  i=0   約200kHz
+//  16MHz  i=1   約150kHz
+//  16MHz  i=2   約120kHz
+//  16MHz  i=3   約100kHz
+// -----------------------
+// ※参考: 16MHz・遅延無し・分岐無しでトグルさせた場合は 約500kHz
+#define DELAY()		do { for (int i = 0; i < 3; i++); } while (0)
 
-#define SDA_L()		HAL_GPIO_WritePin(I2C_LOWER_SDA_GPIO_Port, I2C_LOWER_SDA_Pin, GPIO_PIN_RESET)
-#define SDA_H()		HAL_GPIO_WritePin(I2C_LOWER_SDA_GPIO_Port, I2C_LOWER_SDA_Pin, GPIO_PIN_SET)
+static inline void SCL_L()
+{
+	GPIOA->BRR = (uint32_t)I2C_LOWER_SCL_Pin;
+}
 
-#define DELAY()
+static inline void SCL_H()
+{
+	GPIOA->BSRR = (uint32_t)I2C_LOWER_SCL_Pin;
+}
+
+static inline void SDA_L()
+{
+	GPIOA->BRR = (uint32_t)I2C_LOWER_SDA_Pin;
+}
+
+static inline void SDA_H()
+{
+	GPIOA->BSRR = (uint32_t)I2C_LOWER_SDA_Pin;
+}
+
+static inline bool IS_SDA_L()
+{
+	return ((GPIOA->IDR & I2C_LOWER_SDA_Pin) == 0);
+}
 
 /************************************************************
  *  Public Functions
@@ -24,7 +53,7 @@ SoftwareI2c::SoftwareI2c()
 }
 
 /**
-  * 指定したアドレスでマスタ通信を開始する (Write 方向)
+ * 指定したアドレスでマスタ通信を開始する (Write 方向)
  * @param [in] addr 7 ビットアドレス
  */
 void SoftwareI2c::BeginTransmission(uint8_t addr)
@@ -40,8 +69,7 @@ void SoftwareI2c::EndTransmission()
 
 void SoftwareI2c::Write(uint8_t *buf, uint16_t len)
 {
-	int i;
-	for (i = 0; i < len; i++) {
+	for (int i = 0; i < len; i++) {
 		Write(buf[i]);
 	}
 }
@@ -50,7 +78,7 @@ bool SoftwareI2c::Write(uint8_t data)
 {
 	// 1
 	SCL_L();
-	DELAY();
+	DELAY();	// TODO: この DELAY() は不要かも。if 文処理時間が案外大きい。
 	if (data & 0x80) SDA_H(); else SDA_L();
 	DELAY();
 	SCL_H();
@@ -115,37 +143,18 @@ bool SoftwareI2c::Write(uint8_t data)
 	// 9 (ACK)
 	SCL_L();
 	DELAY();
-
+	// ACK を検出できるように SDA ピンを H に固定して開放する
+	// NACK の場合は H、ACK の場合は L が読み込める
 	SDA_H();
-
-	// SDA ピンを入力に変更
-	GPIO_InitTypeDef GPIO_InitStruct = {0};
-	GPIO_InitStruct.Pin = I2C_LOWER_SDA_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-	// 安定するまで少し待つ
 	DELAY();
-
-	GPIO_PinState pin = HAL_GPIO_ReadPin(I2C_LOWER_SDA_GPIO_Port, I2C_LOWER_SDA_Pin);
-	bool ack = (pin == GPIO_PIN_RESET) ? true : false;
-
 	SCL_H();
 	DELAY();
 
-	// SDA ピンを出力に戻したときに L-->H にされるとストップコンディションになるので SCL を L にしておく
+	// 出力のままでもピンの電圧は読み込める
+	bool ack = IS_SDA_L();
+
+	// 10 (SCL 保持)
 	SCL_L();
-	DELAY();
-
-	// SDA ピンを出力に戻す
-	GPIO_InitStruct.Pin = I2C_LOWER_SDA_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
 	DELAY();
 
 	return ack;
@@ -181,4 +190,5 @@ void SoftwareI2c::StopCondition(void)
 void SoftwareI2c::RestartCondition(void)
 {
 	/* Not Implemented */
+	while (1);
 }
