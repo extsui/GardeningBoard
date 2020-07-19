@@ -23,6 +23,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include "Balan.hpp"
 #include "Libraries/Console.hpp"
 /* USER CODE END Includes */
 
@@ -62,7 +64,14 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+extern "C" int _write(int file, char *ptr, int len)
+{
+	for(int i = 0; i < len; i++)
+	{
+		ITM_SendChar(*ptr++);
+	}
+	return len;
+}
 /* USER CODE END 0 */
 
 /**
@@ -100,6 +109,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  DEBUG_LOG("Hello World!\n");
   Console *console = new Console(&huart2);
   console->Run();
   while (1)
