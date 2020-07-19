@@ -125,6 +125,9 @@ uint8_t Console::GetReceivedByte()
 
 void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 {
+	// TODO: test コマンドを 1 個にまとめる
+	// - "test 1" --> 点灯テスト
+	// - "test 2" --> アドレステスト
 	if (strncmp((const char*)command, "test", 4) == 0) {
 		Log("Test: Begin.\n");
 		SoftwareI2c dev;
@@ -219,8 +222,7 @@ void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 	} else if (strncmp((const char*)command, "bright", 6) == 0) {
 		// bright <brightness> : Set brightness level. (0-15)
 		int params[1];
-		int count = 0;
-		count = GetParameter(&command[6], params, 1);
+		int count = GetParameter(&command[6], params, 1);
 		if (count != 1) {
 			Log("[Error] Bad parameter counts.\n");
 		} else {
@@ -229,6 +231,28 @@ void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 				stepScheduler->SetBrightnessAll(brightness);
 			} else {
 				Log("[Error] Out of range. (%d)\n", brightness);
+			}
+		}
+
+	} else if (strncmp((const char*)command, "pattern", 7) == 0) {
+		// pattern <brick-id> <pattern-id> <step-timing> <is-repeat> : Set pattern.
+		//  - brick-id    : Brick Id. (0-7)
+		//  - pattern-id  : Pattern Id.
+		//  - step-timing : Step timing. (unit: msec)
+		//  - is-repeat   : Repeat On/Off.
+		int params[4];
+		int count = GetParameter(&command[7], params, 4);
+		if (count != 4) {
+			Log("[Error] Bad parameter counts.\n");
+		} else {
+			uint8_t brickId = static_cast<uint8_t>(params[0]);
+			int patternId = params[1];
+			uint8_t stepTiming = static_cast<uint8_t>(params[2]);
+			bool isRepeat = (params[3] != 0) ? true : false;
+
+			int result = stepScheduler->BeginPattern(currentTick, brickId, patternId, stepTiming, isRepeat);
+			if (result != 0) {
+				Log("[Error] Bad parameter. (%d, %d, %d, %d)\n", brickId, patternId, stepTiming, isRepeat);
 			}
 		}
 
