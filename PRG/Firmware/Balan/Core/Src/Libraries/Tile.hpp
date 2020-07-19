@@ -20,7 +20,7 @@ class Tile : public Brick
 public:
 	Tile(SoftwareI2c *dev, uint8_t addr);
 	~Tile();
-	int Set(int patternId);
+	int SetPattern(int patternId);
 	void Next();
 	void Update();
 	bool IsLastStep();

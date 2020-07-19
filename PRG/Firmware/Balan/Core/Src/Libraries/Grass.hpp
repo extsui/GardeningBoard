@@ -29,7 +29,7 @@ class Grass : public Brick
 public:
 	Grass(SoftwareI2c *dev, uint8_t addr);
 	~Grass();
-	int Set(int patternId);
+	int SetPattern(int patternId);
 	void Next();
 	void Update();
 	bool IsLastStep();

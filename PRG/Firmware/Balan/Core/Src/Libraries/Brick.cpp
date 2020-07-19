@@ -14,17 +14,16 @@ Brick::Brick(SoftwareI2c *dev, uint8_t addr)
 	  m_currentPatternId(0),
 	  m_currentStepIndex(0)
 {
+	Ht16k33::Init(m_dev, m_addr);
 }
 
 Brick::~Brick()
 {
 }
 
-void Brick::Config(uint8_t brightness)
+void Brick::SetBrightness(uint8_t brightness)
 {
-	Ht16k33::Init(m_dev, m_addr);
 	Ht16k33::SetBrightness(m_dev, m_addr, brightness);
-	Update();
 }
 
 /************************************************************
@@ -66,7 +65,7 @@ void Brick::TestPattern(int patternId, uint8_t stepInterval)
 	//   IsLastStep() --> true
 
 	// 1 個目は特別
-	Set(patternId);
+	SetPattern(patternId);
 	Update();
 	HAL_Delay(stepInterval);
 	if (IsLastStep()) {

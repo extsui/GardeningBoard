@@ -27,7 +27,7 @@ class Tree : public Brick
 public:
 	Tree(SoftwareI2c *dev, uint8_t addr);
 	~Tree();
-	int Set(int patternId);
+	int SetPattern(int patternId);
 	void Next();
 	void Update();
 	bool IsLastStep();

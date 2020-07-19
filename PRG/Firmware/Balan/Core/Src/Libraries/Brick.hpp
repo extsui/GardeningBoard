@@ -16,9 +16,9 @@ public:
 	Brick(SoftwareI2c *dev, uint8_t addr);
 	virtual ~Brick();
     /** 輝度設定(I2C通信有) */
-    void Config(uint8_t brightness);
+    void SetBrightness(uint8_t brightness);
     /** パターン設定 */
-	virtual int Set(int patternId) = 0;
+	virtual int SetPattern(int patternId) = 0;
     /** 現在のパターンを進める */
     virtual void Next() = 0;
     /** 表示更新(I2C通信有) */

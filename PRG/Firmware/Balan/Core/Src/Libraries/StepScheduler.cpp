@@ -40,9 +40,9 @@ StepScheduler::StepScheduler()
 		}
 
 		// パターン送信ですぐ光らせるために HT16K33 を初期化しておく
-		schedule->brick->Set(1);	// OFF
+		schedule->brick->SetPattern(1);	// OFF
 		schedule->brick->Update();
-		schedule->brick->Config(1);
+		schedule->brick->SetBrightness(1);
 
 		schedule->stepTiming = 0;	// TODO: 配列化
 		schedule->stepTimingLength = 0;
@@ -67,7 +67,7 @@ int StepScheduler::BeginPattern(uint32_t currentTick, uint8_t brickId, int patte
 
 	BrickSchedule *schedule = &m_scheduleList[brickId];
 	
-	int result = schedule->brick->Set(patternId);
+	int result = schedule->brick->SetPattern(patternId);
 	if (result == -1) {
 		return -1;
 	}
@@ -86,6 +86,14 @@ int StepScheduler::BeginPattern(uint32_t currentTick, uint8_t brickId, int patte
 	}
 
 	return 0;
+}
+
+void StepScheduler::SetBrightnessAll(uint8_t brightness)
+{
+	for (int i = 0; i < BrickNum; i++) {
+		Brick *brick = m_scheduleList[i].brick;
+		brick->SetBrightness(brightness);
+	}
 }
 
 /**
@@ -122,7 +130,7 @@ void StepScheduler::Process(uint32_t currentTick)
 		// 更新タイミングになった場合
 		if (schedule->brick->IsLastStep() && !schedule->isRepeat) {
 			// 更新停止
-			schedule->brick->Set(0);
+			schedule->brick->SetPattern(0);
 			schedule->nextStepTiming = 0;
 		} else {
 			// Brick の各パターンは最終ステップで Next() した場合は最初のステップに自動で戻る

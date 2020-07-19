@@ -178,7 +178,7 @@ House::~House()
 {
 }
 
-int House::Set(int patternId)
+int House::SetPattern(int patternId)
 {
 	if (patternId >= HOUSE_PATTERN_NUM) {
 		return -1;

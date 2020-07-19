@@ -164,7 +164,7 @@ Tile::~Tile()
 {
 }
 
-int Tile::Set(int patternId)
+int Tile::SetPattern(int patternId)
 {
 	if (patternId >= TILE_PATTERN_NUM) {
 		return -1;

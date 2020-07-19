@@ -26,13 +26,13 @@ int Ht16k33::SetBrightness(SoftwareI2c *dev, uint8_t addr, uint8_t brightness)
 {
     // TODO: 通信エラー時の return -1
 
-    if (brightness < 15) {
+    if (brightness > BrightnessMax) {
         return -1;
     }
 
     // 輝度設定 (0~15)
     dev->BeginTransmission(addr);
-    dev->Write(0xE0 | 0);
+    dev->Write(0xE0 | brightness);
     dev->EndTransmission();
 
     return 0;    

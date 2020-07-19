@@ -26,6 +26,7 @@ private:
     uint8_t GetReceivedByte();
 
     void ExecuteCommand(const uint8_t *command, uint32_t currentTick);
+    int GetParameter(const uint8_t *str, int params[], int count);
 };
 
 #endif /* CONSOLE_HPP */

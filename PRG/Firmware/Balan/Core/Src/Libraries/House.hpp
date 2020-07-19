@@ -20,7 +20,7 @@ class House : public Brick
 public:
 	House(SoftwareI2c *dev, uint8_t addr);
 	~House();
-	int Set(int patternId);
+	int SetPattern(int patternId);
 	void Next();
 	void Update();
 	bool IsLastStep();

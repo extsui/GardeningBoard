@@ -338,7 +338,7 @@ Grass::~Grass()
 {
 }
 
-int Grass::Set(int patternId)
+int Grass::SetPattern(int patternId)
 {
 	if (patternId >= GRASS_PATTERN_NUM) {
 		return -1;

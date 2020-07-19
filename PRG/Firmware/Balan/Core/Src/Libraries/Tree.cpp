@@ -227,7 +227,7 @@ Tree::~Tree()
 {
 }
 
-int Tree::Set(int patternId)
+int Tree::SetPattern(int patternId)
 {
 	if (patternId >= TREE_PATTERN_NUM) {
 		return -1;
