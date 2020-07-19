@@ -25,7 +25,7 @@ private:
     uint8_t GetAvailableSize();
     uint8_t GetReceivedByte();
 
-    void ExecuteCommand(const uint8_t *command);
+    void ExecuteCommand(const uint8_t *command, uint32_t currentTick);
 };
 
 #endif /* CONSOLE_HPP */

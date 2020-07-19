@@ -1,5 +1,6 @@
 #include "main.h"
 #include "stm32f3xx_hal_uart.h"
+#include "Balan.hpp"
 
 #include "Console.hpp"
 
@@ -47,6 +48,9 @@ void Console::Run(void)
 
 	// コマンドループ
 	while (1) {
+		
+		uint32_t currentTick = HAL_GetTick();
+
 		// 1 ループで溜まった分だけ回収
 		while (IsAvailable()) {
 			uint8_t data = GetReceivedByte();
@@ -57,14 +61,13 @@ void Console::Run(void)
 			if (data == '\n') {
 				// コマンド確定
 				commandBuffer[commandBufferIndex - 1] = '\0';
-			    ExecuteCommand(commandBuffer);
+			    ExecuteCommand(commandBuffer, currentTick);
 
 			    memset(commandBuffer, 0, sizeof(commandBuffer));
 			    commandBufferIndex = 0;
 			}
 		}
 
-		uint32_t currentTick = HAL_GetTick();
 		stepScheduler->Process(currentTick);
 	}
 }
@@ -117,7 +120,7 @@ uint8_t Console::GetReceivedByte()
     return c;
 }
 
-void Console::ExecuteCommand(const uint8_t *command)
+void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 {
 	if (strncmp((const char*)command, "test", 4) == 0) {
 		Log("Test: Begin.\n");
@@ -192,31 +195,29 @@ void Console::ExecuteCommand(const uint8_t *command)
 		}
 
 	} else if (strncmp((const char*)command, "0", 1) == 0) {
-		// TODO: 様々な箇所で HAL_GetTick() するのは本当は禁止
-		uint32_t currentTick = HAL_GetTick();
-
 		stepScheduler->BeginPattern(currentTick, 2, GRASS_PATTERN_ALL_ON, 100, false);
 		stepScheduler->BeginPattern(currentTick, 3, TREE_PATTERN_ALL_ON, 50, true);
 
 	} else if (strncmp((const char*)command, "1", 1) == 0) {
-		// TODO: 様々な箇所で HAL_GetTick() するのは本当は禁止
-		uint32_t currentTick = HAL_GetTick();
-
 		stepScheduler->BeginPattern(currentTick, 0, HOUSE_PATTERN_STREAM, 100, false);
 		stepScheduler->BeginPattern(currentTick, 1, GRASS_PATTERN_BOTH_EDGE_TO_MIDDLE, 50, true);
 
 	} else if (strncmp((const char*)command, "2", 1) == 0) {
-		// TODO: 様々な箇所で HAL_GetTick() するのは本当は禁止
-		uint32_t currentTick = HAL_GetTick();
-
 		stepScheduler->BeginPattern(currentTick, 4, TILE_PATTERN_STREAM, 40, true);
 		stepScheduler->BeginPattern(currentTick, 5, TILE_PATTERN_STREAM, 50, true);
 		stepScheduler->BeginPattern(currentTick, 6, TILE_PATTERN_STREAM, 60, true);
 		stepScheduler->BeginPattern(currentTick, 7, TILE_PATTERN_STREAM, 70, true);
 
+	} else if (strncmp((const char*)command, "stop", 4) == 0) {
+		for (int i = 0; i < StepScheduler::BrickNum; i++) {
+			stepScheduler->BeginPattern(currentTick, i, GRASS_PATTERN_ALL_OFF, 0, false);
+		}
+
+	} else if (strncmp((const char*)command, "", 1) == 0) {
+		// 空改行は何も表示しない
+
 	} else {
 		Log("[Error] Command not found: \"%s\"\n", command);
-
 	}
 
 	Log("> ");

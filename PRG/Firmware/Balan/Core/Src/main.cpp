@@ -24,7 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-#include "Balan.hpp"
+#include "Libraries/Balan.hpp"
 #include "Libraries/Console.hpp"
 /* USER CODE END Includes */
 
