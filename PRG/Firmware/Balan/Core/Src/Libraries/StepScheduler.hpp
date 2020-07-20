@@ -18,7 +18,9 @@ public:
     // TBD
     //int BeginPattern(uint32_t currentTick, uint8_t brickId, int patternId, const uint8_t stepTiming[], int stepTimingLength, bool isRepeat);
 
-    void SetBrightnessAll(uint8_t brightness);
+    void SetBrightness(uint8_t brightness);
+    int SetBrightness(uint8_t brickId, uint8_t brightness);
+
     void Process(uint32_t currentTick);
 
 private:

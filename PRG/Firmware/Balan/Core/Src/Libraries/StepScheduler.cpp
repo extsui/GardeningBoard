@@ -88,12 +88,23 @@ int StepScheduler::BeginPattern(uint32_t currentTick, uint8_t brickId, int patte
 	return 0;
 }
 
-void StepScheduler::SetBrightnessAll(uint8_t brightness)
+void StepScheduler::SetBrightness(uint8_t brightness)
 {
 	for (int i = 0; i < BrickNum; i++) {
-		Brick *brick = m_scheduleList[i].brick;
-		brick->SetBrightness(brightness);
+		SetBrightness(i, brightness);
 	}
+}
+
+int StepScheduler::SetBrightness(uint8_t brickId, uint8_t brightness)
+{
+	if (brickId >= BrickNum) {
+		return -1;
+	}
+
+	Brick *brick = m_scheduleList[brickId].brick;
+	brick->SetBrightness(brightness);
+
+	return 0;
 }
 
 /**

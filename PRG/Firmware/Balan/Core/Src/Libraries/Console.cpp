@@ -220,18 +220,24 @@ void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 		}
 
 	} else if (strncmp((const char*)command, "bright", 6) == 0) {
-		// bright <brightness> : Set brightness level. (0-15)
-		int params[1];
-		int count = GetParameter(&command[6], params, 1);
-		if (count != 1) {
-			Log("[Error] Bad parameter counts.\n");
-		} else {
+		// bright <brightness>            : Set all brightness level.
+		// bright <brick-id> <brightness> : Set brightness level.
+		//  - brick-id    : Brick Id. (0-7)
+		//  - brightness  : Brightness level. (0-15:MAX)
+		int params[2];
+		int count = GetParameter(&command[6], params, 2);
+		if (count == 1) {
+			// 一括
 			uint8_t brightness = static_cast<uint8_t>(params[0]);
-			if (brightness <= Ht16k33::BrightnessMax) {
-				stepScheduler->SetBrightnessAll(brightness);
-			} else {
-				Log("[Error] Out of range. (%d)\n", brightness);
-			}
+			stepScheduler->SetBrightness(brightness);
+		} else if (count == 2) {
+			// 個別
+			uint8_t brickId = static_cast<uint8_t>(params[0]);
+			uint8_t brightness = static_cast<uint8_t>(params[1]);
+			stepScheduler->SetBrightness(brickId, brightness);
+		} else {
+			// エラー
+			Log("[Error] Bad parameter counts.\n");
 		}
 
 	} else if (strncmp((const char*)command, "pattern", 7) == 0) {
