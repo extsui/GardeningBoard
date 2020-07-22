@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.serialPort = new System.IO.Ports.SerialPort(this.components);
+            this.m_serialPort = new System.IO.Ports.SerialPort(this.components);
             this.buttonBrightness0 = new System.Windows.Forms.Button();
             this.domainUpDownPattern0 = new System.Windows.Forms.DomainUpDown();
             this.label2 = new System.Windows.Forms.Label();
@@ -104,18 +104,20 @@
             this.label14 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // serialPort
+            // m_serialPort
             // 
-            this.serialPort.BaudRate = 115200;
+            this.m_serialPort.BaudRate = 115200;
             // 
             // buttonBrightness0
             // 
+            this.buttonBrightness0.Enabled = false;
             this.buttonBrightness0.Location = new System.Drawing.Point(568, 129);
             this.buttonBrightness0.Name = "buttonBrightness0";
             this.buttonBrightness0.Size = new System.Drawing.Size(75, 23);
             this.buttonBrightness0.TabIndex = 0;
             this.buttonBrightness0.Text = "Update";
             this.buttonBrightness0.UseVisualStyleBackColor = true;
+            this.buttonBrightness0.Click += new System.EventHandler(this.buttonBrightness0_Click);
             // 
             // domainUpDownPattern0
             // 
@@ -283,12 +285,14 @@
             // 
             // buttonBrightness1
             // 
+            this.buttonBrightness1.Enabled = false;
             this.buttonBrightness1.Location = new System.Drawing.Point(568, 158);
             this.buttonBrightness1.Name = "buttonBrightness1";
             this.buttonBrightness1.Size = new System.Drawing.Size(75, 23);
             this.buttonBrightness1.TabIndex = 19;
             this.buttonBrightness1.Text = "Update";
             this.buttonBrightness1.UseVisualStyleBackColor = true;
+            this.buttonBrightness1.Click += new System.EventHandler(this.buttonBrightness1_Click);
             // 
             // domainUpDownBrightness2
             // 
@@ -347,12 +351,14 @@
             // 
             // buttonBrightness2
             // 
+            this.buttonBrightness2.Enabled = false;
             this.buttonBrightness2.Location = new System.Drawing.Point(568, 187);
             this.buttonBrightness2.Name = "buttonBrightness2";
             this.buttonBrightness2.Size = new System.Drawing.Size(75, 23);
             this.buttonBrightness2.TabIndex = 26;
             this.buttonBrightness2.Text = "Update";
             this.buttonBrightness2.UseVisualStyleBackColor = true;
+            this.buttonBrightness2.Click += new System.EventHandler(this.buttonBrightness2_Click);
             // 
             // domainUpDownBrightness3
             // 
@@ -411,12 +417,14 @@
             // 
             // buttonBrightness3
             // 
+            this.buttonBrightness3.Enabled = false;
             this.buttonBrightness3.Location = new System.Drawing.Point(568, 216);
             this.buttonBrightness3.Name = "buttonBrightness3";
             this.buttonBrightness3.Size = new System.Drawing.Size(75, 23);
             this.buttonBrightness3.TabIndex = 33;
             this.buttonBrightness3.Text = "Update";
             this.buttonBrightness3.UseVisualStyleBackColor = true;
+            this.buttonBrightness3.Click += new System.EventHandler(this.buttonBrightness3_Click);
             // 
             // domainUpDownBrightness4
             // 
@@ -475,12 +483,14 @@
             // 
             // buttonBrightness4
             // 
+            this.buttonBrightness4.Enabled = false;
             this.buttonBrightness4.Location = new System.Drawing.Point(568, 245);
             this.buttonBrightness4.Name = "buttonBrightness4";
             this.buttonBrightness4.Size = new System.Drawing.Size(75, 23);
             this.buttonBrightness4.TabIndex = 40;
             this.buttonBrightness4.Text = "Update";
             this.buttonBrightness4.UseVisualStyleBackColor = true;
+            this.buttonBrightness4.Click += new System.EventHandler(this.buttonBrightness4_Click);
             // 
             // domainUpDownBrightness5
             // 
@@ -539,12 +549,14 @@
             // 
             // buttonBrightness5
             // 
+            this.buttonBrightness5.Enabled = false;
             this.buttonBrightness5.Location = new System.Drawing.Point(568, 274);
             this.buttonBrightness5.Name = "buttonBrightness5";
             this.buttonBrightness5.Size = new System.Drawing.Size(75, 23);
             this.buttonBrightness5.TabIndex = 47;
             this.buttonBrightness5.Text = "Update";
             this.buttonBrightness5.UseVisualStyleBackColor = true;
+            this.buttonBrightness5.Click += new System.EventHandler(this.buttonBrightness5_Click);
             // 
             // domainUpDownBrightness6
             // 
@@ -603,12 +615,14 @@
             // 
             // buttonBrightness6
             // 
+            this.buttonBrightness6.Enabled = false;
             this.buttonBrightness6.Location = new System.Drawing.Point(568, 303);
             this.buttonBrightness6.Name = "buttonBrightness6";
             this.buttonBrightness6.Size = new System.Drawing.Size(75, 23);
             this.buttonBrightness6.TabIndex = 54;
             this.buttonBrightness6.Text = "Update";
             this.buttonBrightness6.UseVisualStyleBackColor = true;
+            this.buttonBrightness6.Click += new System.EventHandler(this.buttonBrightness6_Click);
             // 
             // domainUpDownBrightness7
             // 
@@ -667,15 +681,18 @@
             // 
             // buttonBrightness7
             // 
+            this.buttonBrightness7.Enabled = false;
             this.buttonBrightness7.Location = new System.Drawing.Point(568, 332);
             this.buttonBrightness7.Name = "buttonBrightness7";
             this.buttonBrightness7.Size = new System.Drawing.Size(75, 23);
             this.buttonBrightness7.TabIndex = 61;
             this.buttonBrightness7.Text = "Update";
             this.buttonBrightness7.UseVisualStyleBackColor = true;
+            this.buttonBrightness7.Click += new System.EventHandler(this.buttonBrightness7_Click);
             // 
             // textBoxLog
             // 
+            this.textBoxLog.HideSelection = false;
             this.textBoxLog.Location = new System.Drawing.Point(32, 399);
             this.textBoxLog.Multiline = true;
             this.textBoxLog.Name = "textBoxLog";
@@ -700,6 +717,7 @@
             this.buttonConnect.TabIndex = 70;
             this.buttonConnect.Text = "接続";
             this.buttonConnect.UseVisualStyleBackColor = true;
+            this.buttonConnect.Click += new System.EventHandler(this.buttonConnect_Click);
             // 
             // comboBoxPortSelect
             // 
@@ -727,6 +745,7 @@
             this.buttonLogClear.TabIndex = 73;
             this.buttonLogClear.Text = "クリア";
             this.buttonLogClear.UseVisualStyleBackColor = true;
+            this.buttonLogClear.Click += new System.EventHandler(this.buttonLogClear_Click);
             // 
             // domainUpDownBrightnessAll
             // 
@@ -747,12 +766,14 @@
             // 
             // buttonBrightnessAll
             // 
+            this.buttonBrightnessAll.Enabled = false;
             this.buttonBrightnessAll.Location = new System.Drawing.Point(568, 55);
             this.buttonBrightnessAll.Name = "buttonBrightnessAll";
             this.buttonBrightnessAll.Size = new System.Drawing.Size(75, 23);
             this.buttonBrightnessAll.TabIndex = 76;
             this.buttonBrightnessAll.Text = "Update";
             this.buttonBrightnessAll.UseVisualStyleBackColor = true;
+            this.buttonBrightnessAll.Click += new System.EventHandler(this.buttonBrightnessAll_Click);
             // 
             // label14
             // 
@@ -850,7 +871,7 @@
 
         #endregion
 
-        private System.IO.Ports.SerialPort serialPort;
+        private System.IO.Ports.SerialPort m_serialPort;
         private System.Windows.Forms.Button buttonBrightness0;
         private System.Windows.Forms.DomainUpDown domainUpDownPattern0;
         private System.Windows.Forms.Label label2;
