@@ -37,57 +37,41 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.domainUpDownTiming0 = new System.Windows.Forms.DomainUpDown();
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.comboBoxBrick0 = new System.Windows.Forms.ComboBox();
             this.checkBoxRepeat0 = new System.Windows.Forms.CheckBox();
-            this.domainUpDownBrightness0 = new System.Windows.Forms.DomainUpDown();
-            this.domainUpDownBrightness1 = new System.Windows.Forms.DomainUpDown();
             this.checkBoxRepeat1 = new System.Windows.Forms.CheckBox();
-            this.domainUpDownTiming1 = new System.Windows.Forms.DomainUpDown();
             this.comboBoxBrick1 = new System.Windows.Forms.ComboBox();
             this.domainUpDownPattern1 = new System.Windows.Forms.DomainUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonBrightness1 = new System.Windows.Forms.Button();
-            this.domainUpDownBrightness2 = new System.Windows.Forms.DomainUpDown();
             this.checkBoxRepeat2 = new System.Windows.Forms.CheckBox();
-            this.domainUpDownTiming2 = new System.Windows.Forms.DomainUpDown();
             this.comboBoxBrick2 = new System.Windows.Forms.ComboBox();
             this.domainUpDownPattern2 = new System.Windows.Forms.DomainUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.buttonBrightness2 = new System.Windows.Forms.Button();
-            this.domainUpDownBrightness3 = new System.Windows.Forms.DomainUpDown();
             this.checkBoxRepeat3 = new System.Windows.Forms.CheckBox();
-            this.domainUpDownTiming3 = new System.Windows.Forms.DomainUpDown();
             this.comboBoxBrick3 = new System.Windows.Forms.ComboBox();
             this.domainUpDownPattern3 = new System.Windows.Forms.DomainUpDown();
             this.label6 = new System.Windows.Forms.Label();
             this.buttonBrightness3 = new System.Windows.Forms.Button();
-            this.domainUpDownBrightness4 = new System.Windows.Forms.DomainUpDown();
             this.checkBoxRepeat4 = new System.Windows.Forms.CheckBox();
-            this.domainUpDownTiming4 = new System.Windows.Forms.DomainUpDown();
             this.comboBoxBrick4 = new System.Windows.Forms.ComboBox();
             this.domainUpDownPattern4 = new System.Windows.Forms.DomainUpDown();
             this.label16 = new System.Windows.Forms.Label();
             this.buttonBrightness4 = new System.Windows.Forms.Button();
-            this.domainUpDownBrightness5 = new System.Windows.Forms.DomainUpDown();
             this.checkBoxRepeat5 = new System.Windows.Forms.CheckBox();
-            this.domainUpDownTiming5 = new System.Windows.Forms.DomainUpDown();
             this.comboBoxBrick5 = new System.Windows.Forms.ComboBox();
             this.domainUpDownPattern5 = new System.Windows.Forms.DomainUpDown();
             this.label17 = new System.Windows.Forms.Label();
             this.buttonBrightness5 = new System.Windows.Forms.Button();
-            this.domainUpDownBrightness6 = new System.Windows.Forms.DomainUpDown();
             this.checkBoxRepeat6 = new System.Windows.Forms.CheckBox();
-            this.domainUpDownTiming6 = new System.Windows.Forms.DomainUpDown();
             this.comboBoxBrick6 = new System.Windows.Forms.ComboBox();
             this.domainUpDownPattern6 = new System.Windows.Forms.DomainUpDown();
             this.label18 = new System.Windows.Forms.Label();
             this.buttonBrightness6 = new System.Windows.Forms.Button();
-            this.domainUpDownBrightness7 = new System.Windows.Forms.DomainUpDown();
             this.checkBoxRepeat7 = new System.Windows.Forms.CheckBox();
-            this.domainUpDownTiming7 = new System.Windows.Forms.DomainUpDown();
             this.comboBoxBrick7 = new System.Windows.Forms.ComboBox();
             this.domainUpDownPattern7 = new System.Windows.Forms.DomainUpDown();
             this.label19 = new System.Windows.Forms.Label();
@@ -102,6 +86,38 @@
             this.label11 = new System.Windows.Forms.Label();
             this.buttonBrightnessAll = new System.Windows.Forms.Button();
             this.label14 = new System.Windows.Forms.Label();
+            this.numericUpDownTiming0 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownTiming1 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownTiming2 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownTiming3 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownTiming7 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownTiming6 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownTiming5 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownTiming4 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownBrightness0 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownBrightness1 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownBrightness2 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownBrightness3 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownBrightness7 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownBrightness6 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownBrightness5 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownBrightness4 = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming0)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrightness0)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrightness1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrightness2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrightness3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrightness7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrightness6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrightness5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrightness4)).BeginInit();
             this.SuspendLayout();
             // 
             // m_serialPort
@@ -171,14 +187,6 @@
             this.label8.TabIndex = 11;
             this.label8.Text = "部品";
             // 
-            // domainUpDownTiming0
-            // 
-            this.domainUpDownTiming0.Location = new System.Drawing.Point(343, 130);
-            this.domainUpDownTiming0.Name = "domainUpDownTiming0";
-            this.domainUpDownTiming0.Size = new System.Drawing.Size(57, 22);
-            this.domainUpDownTiming0.TabIndex = 12;
-            this.domainUpDownTiming0.Text = "100";
-            // 
             // label12
             // 
             this.label12.AutoSize = true;
@@ -220,22 +228,6 @@
             this.checkBoxRepeat0.TabIndex = 17;
             this.checkBoxRepeat0.UseVisualStyleBackColor = true;
             // 
-            // domainUpDownBrightness0
-            // 
-            this.domainUpDownBrightness0.Location = new System.Drawing.Point(480, 130);
-            this.domainUpDownBrightness0.Name = "domainUpDownBrightness0";
-            this.domainUpDownBrightness0.Size = new System.Drawing.Size(57, 22);
-            this.domainUpDownBrightness0.TabIndex = 18;
-            this.domainUpDownBrightness0.Text = "1";
-            // 
-            // domainUpDownBrightness1
-            // 
-            this.domainUpDownBrightness1.Location = new System.Drawing.Point(480, 159);
-            this.domainUpDownBrightness1.Name = "domainUpDownBrightness1";
-            this.domainUpDownBrightness1.Size = new System.Drawing.Size(57, 22);
-            this.domainUpDownBrightness1.TabIndex = 25;
-            this.domainUpDownBrightness1.Text = "1";
-            // 
             // checkBoxRepeat1
             // 
             this.checkBoxRepeat1.AutoSize = true;
@@ -244,14 +236,6 @@
             this.checkBoxRepeat1.Size = new System.Drawing.Size(18, 17);
             this.checkBoxRepeat1.TabIndex = 24;
             this.checkBoxRepeat1.UseVisualStyleBackColor = true;
-            // 
-            // domainUpDownTiming1
-            // 
-            this.domainUpDownTiming1.Location = new System.Drawing.Point(343, 159);
-            this.domainUpDownTiming1.Name = "domainUpDownTiming1";
-            this.domainUpDownTiming1.Size = new System.Drawing.Size(57, 22);
-            this.domainUpDownTiming1.TabIndex = 22;
-            this.domainUpDownTiming1.Text = "100";
             // 
             // comboBoxBrick1
             // 
@@ -294,14 +278,6 @@
             this.buttonBrightness1.UseVisualStyleBackColor = true;
             this.buttonBrightness1.Click += new System.EventHandler(this.buttonBrightness1_Click);
             // 
-            // domainUpDownBrightness2
-            // 
-            this.domainUpDownBrightness2.Location = new System.Drawing.Point(480, 188);
-            this.domainUpDownBrightness2.Name = "domainUpDownBrightness2";
-            this.domainUpDownBrightness2.Size = new System.Drawing.Size(57, 22);
-            this.domainUpDownBrightness2.TabIndex = 32;
-            this.domainUpDownBrightness2.Text = "1";
-            // 
             // checkBoxRepeat2
             // 
             this.checkBoxRepeat2.AutoSize = true;
@@ -310,14 +286,6 @@
             this.checkBoxRepeat2.Size = new System.Drawing.Size(18, 17);
             this.checkBoxRepeat2.TabIndex = 31;
             this.checkBoxRepeat2.UseVisualStyleBackColor = true;
-            // 
-            // domainUpDownTiming2
-            // 
-            this.domainUpDownTiming2.Location = new System.Drawing.Point(343, 188);
-            this.domainUpDownTiming2.Name = "domainUpDownTiming2";
-            this.domainUpDownTiming2.Size = new System.Drawing.Size(57, 22);
-            this.domainUpDownTiming2.TabIndex = 29;
-            this.domainUpDownTiming2.Text = "100";
             // 
             // comboBoxBrick2
             // 
@@ -360,14 +328,6 @@
             this.buttonBrightness2.UseVisualStyleBackColor = true;
             this.buttonBrightness2.Click += new System.EventHandler(this.buttonBrightness2_Click);
             // 
-            // domainUpDownBrightness3
-            // 
-            this.domainUpDownBrightness3.Location = new System.Drawing.Point(480, 217);
-            this.domainUpDownBrightness3.Name = "domainUpDownBrightness3";
-            this.domainUpDownBrightness3.Size = new System.Drawing.Size(57, 22);
-            this.domainUpDownBrightness3.TabIndex = 39;
-            this.domainUpDownBrightness3.Text = "1";
-            // 
             // checkBoxRepeat3
             // 
             this.checkBoxRepeat3.AutoSize = true;
@@ -376,14 +336,6 @@
             this.checkBoxRepeat3.Size = new System.Drawing.Size(18, 17);
             this.checkBoxRepeat3.TabIndex = 38;
             this.checkBoxRepeat3.UseVisualStyleBackColor = true;
-            // 
-            // domainUpDownTiming3
-            // 
-            this.domainUpDownTiming3.Location = new System.Drawing.Point(343, 217);
-            this.domainUpDownTiming3.Name = "domainUpDownTiming3";
-            this.domainUpDownTiming3.Size = new System.Drawing.Size(57, 22);
-            this.domainUpDownTiming3.TabIndex = 36;
-            this.domainUpDownTiming3.Text = "100";
             // 
             // comboBoxBrick3
             // 
@@ -426,14 +378,6 @@
             this.buttonBrightness3.UseVisualStyleBackColor = true;
             this.buttonBrightness3.Click += new System.EventHandler(this.buttonBrightness3_Click);
             // 
-            // domainUpDownBrightness4
-            // 
-            this.domainUpDownBrightness4.Location = new System.Drawing.Point(480, 246);
-            this.domainUpDownBrightness4.Name = "domainUpDownBrightness4";
-            this.domainUpDownBrightness4.Size = new System.Drawing.Size(57, 22);
-            this.domainUpDownBrightness4.TabIndex = 46;
-            this.domainUpDownBrightness4.Text = "1";
-            // 
             // checkBoxRepeat4
             // 
             this.checkBoxRepeat4.AutoSize = true;
@@ -442,14 +386,6 @@
             this.checkBoxRepeat4.Size = new System.Drawing.Size(18, 17);
             this.checkBoxRepeat4.TabIndex = 45;
             this.checkBoxRepeat4.UseVisualStyleBackColor = true;
-            // 
-            // domainUpDownTiming4
-            // 
-            this.domainUpDownTiming4.Location = new System.Drawing.Point(343, 246);
-            this.domainUpDownTiming4.Name = "domainUpDownTiming4";
-            this.domainUpDownTiming4.Size = new System.Drawing.Size(57, 22);
-            this.domainUpDownTiming4.TabIndex = 43;
-            this.domainUpDownTiming4.Text = "100";
             // 
             // comboBoxBrick4
             // 
@@ -492,14 +428,6 @@
             this.buttonBrightness4.UseVisualStyleBackColor = true;
             this.buttonBrightness4.Click += new System.EventHandler(this.buttonBrightness4_Click);
             // 
-            // domainUpDownBrightness5
-            // 
-            this.domainUpDownBrightness5.Location = new System.Drawing.Point(480, 275);
-            this.domainUpDownBrightness5.Name = "domainUpDownBrightness5";
-            this.domainUpDownBrightness5.Size = new System.Drawing.Size(57, 22);
-            this.domainUpDownBrightness5.TabIndex = 53;
-            this.domainUpDownBrightness5.Text = "1";
-            // 
             // checkBoxRepeat5
             // 
             this.checkBoxRepeat5.AutoSize = true;
@@ -508,14 +436,6 @@
             this.checkBoxRepeat5.Size = new System.Drawing.Size(18, 17);
             this.checkBoxRepeat5.TabIndex = 52;
             this.checkBoxRepeat5.UseVisualStyleBackColor = true;
-            // 
-            // domainUpDownTiming5
-            // 
-            this.domainUpDownTiming5.Location = new System.Drawing.Point(343, 275);
-            this.domainUpDownTiming5.Name = "domainUpDownTiming5";
-            this.domainUpDownTiming5.Size = new System.Drawing.Size(57, 22);
-            this.domainUpDownTiming5.TabIndex = 50;
-            this.domainUpDownTiming5.Text = "100";
             // 
             // comboBoxBrick5
             // 
@@ -558,14 +478,6 @@
             this.buttonBrightness5.UseVisualStyleBackColor = true;
             this.buttonBrightness5.Click += new System.EventHandler(this.buttonBrightness5_Click);
             // 
-            // domainUpDownBrightness6
-            // 
-            this.domainUpDownBrightness6.Location = new System.Drawing.Point(480, 304);
-            this.domainUpDownBrightness6.Name = "domainUpDownBrightness6";
-            this.domainUpDownBrightness6.Size = new System.Drawing.Size(57, 22);
-            this.domainUpDownBrightness6.TabIndex = 60;
-            this.domainUpDownBrightness6.Text = "1";
-            // 
             // checkBoxRepeat6
             // 
             this.checkBoxRepeat6.AutoSize = true;
@@ -574,14 +486,6 @@
             this.checkBoxRepeat6.Size = new System.Drawing.Size(18, 17);
             this.checkBoxRepeat6.TabIndex = 59;
             this.checkBoxRepeat6.UseVisualStyleBackColor = true;
-            // 
-            // domainUpDownTiming6
-            // 
-            this.domainUpDownTiming6.Location = new System.Drawing.Point(343, 304);
-            this.domainUpDownTiming6.Name = "domainUpDownTiming6";
-            this.domainUpDownTiming6.Size = new System.Drawing.Size(57, 22);
-            this.domainUpDownTiming6.TabIndex = 57;
-            this.domainUpDownTiming6.Text = "100";
             // 
             // comboBoxBrick6
             // 
@@ -624,14 +528,6 @@
             this.buttonBrightness6.UseVisualStyleBackColor = true;
             this.buttonBrightness6.Click += new System.EventHandler(this.buttonBrightness6_Click);
             // 
-            // domainUpDownBrightness7
-            // 
-            this.domainUpDownBrightness7.Location = new System.Drawing.Point(480, 333);
-            this.domainUpDownBrightness7.Name = "domainUpDownBrightness7";
-            this.domainUpDownBrightness7.Size = new System.Drawing.Size(57, 22);
-            this.domainUpDownBrightness7.TabIndex = 67;
-            this.domainUpDownBrightness7.Text = "1";
-            // 
             // checkBoxRepeat7
             // 
             this.checkBoxRepeat7.AutoSize = true;
@@ -640,14 +536,6 @@
             this.checkBoxRepeat7.Size = new System.Drawing.Size(18, 17);
             this.checkBoxRepeat7.TabIndex = 66;
             this.checkBoxRepeat7.UseVisualStyleBackColor = true;
-            // 
-            // domainUpDownTiming7
-            // 
-            this.domainUpDownTiming7.Location = new System.Drawing.Point(343, 333);
-            this.domainUpDownTiming7.Name = "domainUpDownTiming7";
-            this.domainUpDownTiming7.Size = new System.Drawing.Size(57, 22);
-            this.domainUpDownTiming7.TabIndex = 64;
-            this.domainUpDownTiming7.Text = "100";
             // 
             // comboBoxBrick7
             // 
@@ -784,11 +672,339 @@
             this.label14.TabIndex = 77;
             this.label14.Text = "通信";
             // 
+            // numericUpDownTiming0
+            // 
+            this.numericUpDownTiming0.Location = new System.Drawing.Point(343, 130);
+            this.numericUpDownTiming0.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownTiming0.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownTiming0.Name = "numericUpDownTiming0";
+            this.numericUpDownTiming0.Size = new System.Drawing.Size(57, 22);
+            this.numericUpDownTiming0.TabIndex = 78;
+            this.numericUpDownTiming0.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownTiming1
+            // 
+            this.numericUpDownTiming1.Location = new System.Drawing.Point(343, 159);
+            this.numericUpDownTiming1.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownTiming1.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownTiming1.Name = "numericUpDownTiming1";
+            this.numericUpDownTiming1.Size = new System.Drawing.Size(57, 22);
+            this.numericUpDownTiming1.TabIndex = 79;
+            this.numericUpDownTiming1.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownTiming2
+            // 
+            this.numericUpDownTiming2.Location = new System.Drawing.Point(343, 188);
+            this.numericUpDownTiming2.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownTiming2.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownTiming2.Name = "numericUpDownTiming2";
+            this.numericUpDownTiming2.Size = new System.Drawing.Size(57, 22);
+            this.numericUpDownTiming2.TabIndex = 80;
+            this.numericUpDownTiming2.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownTiming3
+            // 
+            this.numericUpDownTiming3.Location = new System.Drawing.Point(343, 217);
+            this.numericUpDownTiming3.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownTiming3.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownTiming3.Name = "numericUpDownTiming3";
+            this.numericUpDownTiming3.Size = new System.Drawing.Size(57, 22);
+            this.numericUpDownTiming3.TabIndex = 81;
+            this.numericUpDownTiming3.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownTiming7
+            // 
+            this.numericUpDownTiming7.Location = new System.Drawing.Point(343, 333);
+            this.numericUpDownTiming7.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownTiming7.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownTiming7.Name = "numericUpDownTiming7";
+            this.numericUpDownTiming7.Size = new System.Drawing.Size(57, 22);
+            this.numericUpDownTiming7.TabIndex = 85;
+            this.numericUpDownTiming7.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownTiming6
+            // 
+            this.numericUpDownTiming6.Location = new System.Drawing.Point(343, 304);
+            this.numericUpDownTiming6.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownTiming6.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownTiming6.Name = "numericUpDownTiming6";
+            this.numericUpDownTiming6.Size = new System.Drawing.Size(57, 22);
+            this.numericUpDownTiming6.TabIndex = 84;
+            this.numericUpDownTiming6.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownTiming5
+            // 
+            this.numericUpDownTiming5.Location = new System.Drawing.Point(343, 275);
+            this.numericUpDownTiming5.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownTiming5.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownTiming5.Name = "numericUpDownTiming5";
+            this.numericUpDownTiming5.Size = new System.Drawing.Size(57, 22);
+            this.numericUpDownTiming5.TabIndex = 83;
+            this.numericUpDownTiming5.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownTiming4
+            // 
+            this.numericUpDownTiming4.Location = new System.Drawing.Point(343, 246);
+            this.numericUpDownTiming4.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownTiming4.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownTiming4.Name = "numericUpDownTiming4";
+            this.numericUpDownTiming4.Size = new System.Drawing.Size(57, 22);
+            this.numericUpDownTiming4.TabIndex = 82;
+            this.numericUpDownTiming4.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownBrightness0
+            // 
+            this.numericUpDownBrightness0.Location = new System.Drawing.Point(480, 128);
+            this.numericUpDownBrightness0.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.numericUpDownBrightness0.Name = "numericUpDownBrightness0";
+            this.numericUpDownBrightness0.Size = new System.Drawing.Size(57, 22);
+            this.numericUpDownBrightness0.TabIndex = 86;
+            this.numericUpDownBrightness0.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownBrightness1
+            // 
+            this.numericUpDownBrightness1.Location = new System.Drawing.Point(480, 159);
+            this.numericUpDownBrightness1.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.numericUpDownBrightness1.Name = "numericUpDownBrightness1";
+            this.numericUpDownBrightness1.Size = new System.Drawing.Size(57, 22);
+            this.numericUpDownBrightness1.TabIndex = 87;
+            this.numericUpDownBrightness1.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownBrightness2
+            // 
+            this.numericUpDownBrightness2.Location = new System.Drawing.Point(480, 188);
+            this.numericUpDownBrightness2.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.numericUpDownBrightness2.Name = "numericUpDownBrightness2";
+            this.numericUpDownBrightness2.Size = new System.Drawing.Size(57, 22);
+            this.numericUpDownBrightness2.TabIndex = 88;
+            this.numericUpDownBrightness2.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownBrightness3
+            // 
+            this.numericUpDownBrightness3.Location = new System.Drawing.Point(480, 217);
+            this.numericUpDownBrightness3.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.numericUpDownBrightness3.Name = "numericUpDownBrightness3";
+            this.numericUpDownBrightness3.Size = new System.Drawing.Size(57, 22);
+            this.numericUpDownBrightness3.TabIndex = 89;
+            this.numericUpDownBrightness3.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownBrightness7
+            // 
+            this.numericUpDownBrightness7.Location = new System.Drawing.Point(480, 333);
+            this.numericUpDownBrightness7.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.numericUpDownBrightness7.Name = "numericUpDownBrightness7";
+            this.numericUpDownBrightness7.Size = new System.Drawing.Size(57, 22);
+            this.numericUpDownBrightness7.TabIndex = 93;
+            this.numericUpDownBrightness7.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownBrightness6
+            // 
+            this.numericUpDownBrightness6.Location = new System.Drawing.Point(480, 304);
+            this.numericUpDownBrightness6.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.numericUpDownBrightness6.Name = "numericUpDownBrightness6";
+            this.numericUpDownBrightness6.Size = new System.Drawing.Size(57, 22);
+            this.numericUpDownBrightness6.TabIndex = 92;
+            this.numericUpDownBrightness6.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownBrightness5
+            // 
+            this.numericUpDownBrightness5.Location = new System.Drawing.Point(480, 275);
+            this.numericUpDownBrightness5.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.numericUpDownBrightness5.Name = "numericUpDownBrightness5";
+            this.numericUpDownBrightness5.Size = new System.Drawing.Size(57, 22);
+            this.numericUpDownBrightness5.TabIndex = 91;
+            this.numericUpDownBrightness5.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownBrightness4
+            // 
+            this.numericUpDownBrightness4.Location = new System.Drawing.Point(480, 246);
+            this.numericUpDownBrightness4.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.numericUpDownBrightness4.Name = "numericUpDownBrightness4";
+            this.numericUpDownBrightness4.Size = new System.Drawing.Size(57, 22);
+            this.numericUpDownBrightness4.TabIndex = 90;
+            this.numericUpDownBrightness4.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
             // Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(672, 633);
+            this.Controls.Add(this.numericUpDownBrightness7);
+            this.Controls.Add(this.numericUpDownBrightness6);
+            this.Controls.Add(this.numericUpDownBrightness5);
+            this.Controls.Add(this.numericUpDownBrightness4);
+            this.Controls.Add(this.numericUpDownBrightness3);
+            this.Controls.Add(this.numericUpDownBrightness2);
+            this.Controls.Add(this.numericUpDownBrightness1);
+            this.Controls.Add(this.numericUpDownBrightness0);
+            this.Controls.Add(this.numericUpDownTiming7);
+            this.Controls.Add(this.numericUpDownTiming6);
+            this.Controls.Add(this.numericUpDownTiming5);
+            this.Controls.Add(this.numericUpDownTiming4);
+            this.Controls.Add(this.numericUpDownTiming3);
+            this.Controls.Add(this.numericUpDownTiming2);
+            this.Controls.Add(this.numericUpDownTiming1);
+            this.Controls.Add(this.numericUpDownTiming0);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.buttonBrightnessAll);
             this.Controls.Add(this.label11);
@@ -799,58 +1015,42 @@
             this.Controls.Add(this.buttonConnect);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.textBoxLog);
-            this.Controls.Add(this.domainUpDownBrightness7);
             this.Controls.Add(this.checkBoxRepeat7);
-            this.Controls.Add(this.domainUpDownTiming7);
             this.Controls.Add(this.comboBoxBrick7);
             this.Controls.Add(this.domainUpDownPattern7);
             this.Controls.Add(this.label19);
             this.Controls.Add(this.buttonBrightness7);
-            this.Controls.Add(this.domainUpDownBrightness6);
             this.Controls.Add(this.checkBoxRepeat6);
-            this.Controls.Add(this.domainUpDownTiming6);
             this.Controls.Add(this.comboBoxBrick6);
             this.Controls.Add(this.domainUpDownPattern6);
             this.Controls.Add(this.label18);
             this.Controls.Add(this.buttonBrightness6);
-            this.Controls.Add(this.domainUpDownBrightness5);
             this.Controls.Add(this.checkBoxRepeat5);
-            this.Controls.Add(this.domainUpDownTiming5);
             this.Controls.Add(this.comboBoxBrick5);
             this.Controls.Add(this.domainUpDownPattern5);
             this.Controls.Add(this.label17);
             this.Controls.Add(this.buttonBrightness5);
-            this.Controls.Add(this.domainUpDownBrightness4);
             this.Controls.Add(this.checkBoxRepeat4);
-            this.Controls.Add(this.domainUpDownTiming4);
             this.Controls.Add(this.comboBoxBrick4);
             this.Controls.Add(this.domainUpDownPattern4);
             this.Controls.Add(this.label16);
             this.Controls.Add(this.buttonBrightness4);
-            this.Controls.Add(this.domainUpDownBrightness3);
             this.Controls.Add(this.checkBoxRepeat3);
-            this.Controls.Add(this.domainUpDownTiming3);
             this.Controls.Add(this.comboBoxBrick3);
             this.Controls.Add(this.domainUpDownPattern3);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.buttonBrightness3);
-            this.Controls.Add(this.domainUpDownBrightness2);
             this.Controls.Add(this.checkBoxRepeat2);
-            this.Controls.Add(this.domainUpDownTiming2);
             this.Controls.Add(this.comboBoxBrick2);
             this.Controls.Add(this.domainUpDownPattern2);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.buttonBrightness2);
-            this.Controls.Add(this.domainUpDownBrightness1);
             this.Controls.Add(this.checkBoxRepeat1);
-            this.Controls.Add(this.domainUpDownTiming1);
             this.Controls.Add(this.comboBoxBrick1);
             this.Controls.Add(this.domainUpDownPattern1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.buttonBrightness1);
-            this.Controls.Add(this.domainUpDownBrightness0);
             this.Controls.Add(this.checkBoxRepeat0);
-            this.Controls.Add(this.domainUpDownTiming0);
             this.Controls.Add(this.comboBoxBrick0);
             this.Controls.Add(this.domainUpDownPattern0);
             this.Controls.Add(this.label7);
@@ -864,6 +1064,22 @@
             this.Name = "Form";
             this.Text = "PruningTool";
             this.Load += new System.EventHandler(this.Form_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming0)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrightness0)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrightness1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrightness2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrightness3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrightness7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrightness6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrightness5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrightness4)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -878,58 +1094,42 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.DomainUpDown domainUpDownTiming0;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.ComboBox comboBoxBrick0;
         private System.Windows.Forms.CheckBox checkBoxRepeat0;
-        private System.Windows.Forms.DomainUpDown domainUpDownBrightness0;
-        private System.Windows.Forms.DomainUpDown domainUpDownBrightness1;
         private System.Windows.Forms.CheckBox checkBoxRepeat1;
-        private System.Windows.Forms.DomainUpDown domainUpDownTiming1;
         private System.Windows.Forms.ComboBox comboBoxBrick1;
         private System.Windows.Forms.DomainUpDown domainUpDownPattern1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button buttonBrightness1;
-        private System.Windows.Forms.DomainUpDown domainUpDownBrightness2;
         private System.Windows.Forms.CheckBox checkBoxRepeat2;
-        private System.Windows.Forms.DomainUpDown domainUpDownTiming2;
         private System.Windows.Forms.ComboBox comboBoxBrick2;
         private System.Windows.Forms.DomainUpDown domainUpDownPattern2;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button buttonBrightness2;
-        private System.Windows.Forms.DomainUpDown domainUpDownBrightness3;
         private System.Windows.Forms.CheckBox checkBoxRepeat3;
-        private System.Windows.Forms.DomainUpDown domainUpDownTiming3;
         private System.Windows.Forms.ComboBox comboBoxBrick3;
         private System.Windows.Forms.DomainUpDown domainUpDownPattern3;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button buttonBrightness3;
-        private System.Windows.Forms.DomainUpDown domainUpDownBrightness4;
         private System.Windows.Forms.CheckBox checkBoxRepeat4;
-        private System.Windows.Forms.DomainUpDown domainUpDownTiming4;
         private System.Windows.Forms.ComboBox comboBoxBrick4;
         private System.Windows.Forms.DomainUpDown domainUpDownPattern4;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button buttonBrightness4;
-        private System.Windows.Forms.DomainUpDown domainUpDownBrightness5;
         private System.Windows.Forms.CheckBox checkBoxRepeat5;
-        private System.Windows.Forms.DomainUpDown domainUpDownTiming5;
         private System.Windows.Forms.ComboBox comboBoxBrick5;
         private System.Windows.Forms.DomainUpDown domainUpDownPattern5;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Button buttonBrightness5;
-        private System.Windows.Forms.DomainUpDown domainUpDownBrightness6;
         private System.Windows.Forms.CheckBox checkBoxRepeat6;
-        private System.Windows.Forms.DomainUpDown domainUpDownTiming6;
         private System.Windows.Forms.ComboBox comboBoxBrick6;
         private System.Windows.Forms.DomainUpDown domainUpDownPattern6;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Button buttonBrightness6;
-        private System.Windows.Forms.DomainUpDown domainUpDownBrightness7;
         private System.Windows.Forms.CheckBox checkBoxRepeat7;
-        private System.Windows.Forms.DomainUpDown domainUpDownTiming7;
         private System.Windows.Forms.ComboBox comboBoxBrick7;
         private System.Windows.Forms.DomainUpDown domainUpDownPattern7;
         private System.Windows.Forms.Label label19;
@@ -944,6 +1144,22 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Button buttonBrightnessAll;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.NumericUpDown numericUpDownTiming0;
+        private System.Windows.Forms.NumericUpDown numericUpDownTiming1;
+        private System.Windows.Forms.NumericUpDown numericUpDownTiming2;
+        private System.Windows.Forms.NumericUpDown numericUpDownTiming3;
+        private System.Windows.Forms.NumericUpDown numericUpDownTiming7;
+        private System.Windows.Forms.NumericUpDown numericUpDownTiming6;
+        private System.Windows.Forms.NumericUpDown numericUpDownTiming5;
+        private System.Windows.Forms.NumericUpDown numericUpDownTiming4;
+        private System.Windows.Forms.NumericUpDown numericUpDownBrightness0;
+        private System.Windows.Forms.NumericUpDown numericUpDownBrightness1;
+        private System.Windows.Forms.NumericUpDown numericUpDownBrightness2;
+        private System.Windows.Forms.NumericUpDown numericUpDownBrightness3;
+        private System.Windows.Forms.NumericUpDown numericUpDownBrightness7;
+        private System.Windows.Forms.NumericUpDown numericUpDownBrightness6;
+        private System.Windows.Forms.NumericUpDown numericUpDownBrightness5;
+        private System.Windows.Forms.NumericUpDown numericUpDownBrightness4;
     }
 }
 

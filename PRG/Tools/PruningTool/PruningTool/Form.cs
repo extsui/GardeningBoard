@@ -80,7 +80,14 @@ namespace PruningTool
 
         private void buttonBrightness0_Click(object sender, EventArgs e)
         {
-            WriteSerialLog("pattern 0 0 0 0\n");
+            string brickId = "0";   // 固定
+            string patternId = "2"; // 自由
+            string timing = numericUpDownTiming0.Value.ToString();
+            string isRepeat = checkBoxRepeat0.Checked ? "1" : "0";
+            WriteSerialLog($"pattern {brickId} {patternId} {timing} {isRepeat}\n");
+
+            string brightness = numericUpDownBrightness0.Value.ToString();
+            WriteSerialLog($"bright {brickId} {brightness}\n");
         }
 
         private void buttonBrightness1_Click(object sender, EventArgs e)
