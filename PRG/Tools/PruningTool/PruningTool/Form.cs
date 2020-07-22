@@ -10,12 +10,6 @@ namespace PruningTool
             InitializeComponent();
         }
 
-        /*
-         * TODO: 
-         * - 輝度の送信タイミングの実装
-         *   - 前回から変更してある場合のみ送信 ?
-         */ 
-
         private void Form_Load(object sender, EventArgs e)
         {
             string[] ports = SerialPort.GetPortNames();
@@ -39,15 +33,24 @@ namespace PruningTool
                 buttonConnect.Text = "切断";
                 comboBoxPortSelect.Enabled = false;
 
-                buttonBrightness0.Enabled = true;
-                buttonBrightness1.Enabled = true;
-                buttonBrightness2.Enabled = true;
-                buttonBrightness3.Enabled = true;
-                buttonBrightness4.Enabled = true;
-                buttonBrightness5.Enabled = true;
-                buttonBrightness6.Enabled = true;
-                buttonBrightness7.Enabled = true;
-                buttonBrightnessAll.Enabled = true;
+                buttonUpdate0.Enabled = true;
+                buttonUpdate1.Enabled = true;
+                buttonUpdate2.Enabled = true;
+                buttonUpdate3.Enabled = true;
+                buttonUpdate4.Enabled = true;
+                buttonUpdate5.Enabled = true;
+                buttonUpdate6.Enabled = true;
+                buttonUpdate7.Enabled = true;
+
+                numericUpDownBrightnessAll.Enabled = true;
+                numericUpDownBrightness0.Enabled = true;
+                numericUpDownBrightness1.Enabled = true;
+                numericUpDownBrightness2.Enabled = true;
+                numericUpDownBrightness3.Enabled = true;
+                numericUpDownBrightness4.Enabled = true;
+                numericUpDownBrightness5.Enabled = true;
+                numericUpDownBrightness6.Enabled = true;
+                numericUpDownBrightness7.Enabled = true;
 
                 // TODO: 受信ハンドラの追加
                 //m_serialPort.DataReceived += new SerialDataReceivedEventHandler();
@@ -59,80 +62,174 @@ namespace PruningTool
                 buttonConnect.Text = "接続";
                 comboBoxPortSelect.Enabled = true;
 
-                buttonBrightness0.Enabled = false;
-                buttonBrightness1.Enabled = false;
-                buttonBrightness2.Enabled = false;
-                buttonBrightness3.Enabled = false;
-                buttonBrightness4.Enabled = false;
-                buttonBrightness5.Enabled = false;
-                buttonBrightness6.Enabled = false;
-                buttonBrightness7.Enabled = false;
-                buttonBrightnessAll.Enabled = false;
+                buttonUpdate0.Enabled = false;
+                buttonUpdate1.Enabled = false;
+                buttonUpdate2.Enabled = false;
+                buttonUpdate3.Enabled = false;
+                buttonUpdate4.Enabled = false;
+                buttonUpdate5.Enabled = false;
+                buttonUpdate6.Enabled = false;
+                buttonUpdate7.Enabled = false;
+
+                numericUpDownBrightnessAll.Enabled = false;
+                numericUpDownBrightness0.Enabled = false;
+                numericUpDownBrightness1.Enabled = false;
+                numericUpDownBrightness2.Enabled = false;
+                numericUpDownBrightness3.Enabled = false;
+                numericUpDownBrightness4.Enabled = false;
+                numericUpDownBrightness5.Enabled = false;
+                numericUpDownBrightness6.Enabled = false;
+                numericUpDownBrightness7.Enabled = false;
             }
         }
 
         private void WriteSerialLog(string value)
         {
             DateTime now = DateTime.Now;
-            textBoxLog.AppendText(string.Format("[ {0:yyyy/MM/dd HH:mm:ss.fff} TX ] {1}\r\n", now, value));
+            textBoxLog.AppendText(string.Format("[ {0:yyyy/MM/dd HH:mm:ss.fff} ] {1}\r\n", now, value));
             m_serialPort.Write(value);
         }
 
-        private void buttonBrightness0_Click(object sender, EventArgs e)
+        private string MakePatternCommand(byte brickId, decimal patternId, decimal timing, bool isRepeat)
         {
-            string brickId = "0";   // 固定
-            string patternId = "2"; // 自由
-            string timing = numericUpDownTiming0.Value.ToString();
-            string isRepeat = checkBoxRepeat0.Checked ? "1" : "0";
-            WriteSerialLog($"pattern {brickId} {patternId} {timing} {isRepeat}\n");
-
-            string brightness = numericUpDownBrightness0.Value.ToString();
-            WriteSerialLog($"bright {brickId} {brightness}\n");
+            string brickIdStr = brickId.ToString();
+            string patternIdStr = patternId.ToString();
+            string timingStr = timing.ToString();
+            string isRepeatStr = isRepeat ? "1" : "0";
+            return $"pattern {brickIdStr} {patternIdStr} {timingStr} {isRepeatStr}\n";
         }
 
-        private void buttonBrightness1_Click(object sender, EventArgs e)
+        private string MakeBrightnessCommand(decimal brightness)
         {
-            WriteSerialLog("1");
+            string brightnessStr = brightness.ToString();
+            return $"bright {brightnessStr}\n";
         }
 
-        private void buttonBrightness2_Click(object sender, EventArgs e)
+        private string MakeBrightnessCommand(byte brickId, decimal brightness)
         {
-            WriteSerialLog("2");
+            string brickIdStr = brickId.ToString();
+            string brightnessStr = brightness.ToString();
+            return $"bright {brickIdStr} {brightnessStr}\n";
         }
 
-        private void buttonBrightness3_Click(object sender, EventArgs e)
+        private void buttonUpdate0_Click(object sender, EventArgs e)
         {
-            WriteSerialLog("3");
+            var command = MakePatternCommand(0, numericUpDownPattern0.Value, numericUpDownTiming0.Value, checkBoxRepeat0.Checked);
+            WriteSerialLog(command);
         }
 
-        private void buttonBrightness4_Click(object sender, EventArgs e)
+        private void buttonUpdate1_Click(object sender, EventArgs e)
         {
-            WriteSerialLog("4");
+            var command = MakePatternCommand(1, numericUpDownPattern1.Value, numericUpDownTiming1.Value, checkBoxRepeat1.Checked);
+            WriteSerialLog(command);
         }
 
-        private void buttonBrightness5_Click(object sender, EventArgs e)
+        private void buttonUpdate2_Click(object sender, EventArgs e)
         {
-            WriteSerialLog("5");
+            var command = MakePatternCommand(2, numericUpDownPattern2.Value, numericUpDownTiming2.Value, checkBoxRepeat2.Checked);
+            WriteSerialLog(command);
         }
 
-        private void buttonBrightness6_Click(object sender, EventArgs e)
+        private void buttonUpdate3_Click(object sender, EventArgs e)
         {
-            WriteSerialLog("6");
+            var command = MakePatternCommand(3, numericUpDownPattern3.Value, numericUpDownTiming3.Value, checkBoxRepeat3.Checked);
+            WriteSerialLog(command);
         }
 
-        private void buttonBrightness7_Click(object sender, EventArgs e)
+        private void buttonUpdate4_Click(object sender, EventArgs e)
         {
-            WriteSerialLog("7");
+            var command = MakePatternCommand(4, numericUpDownPattern4.Value, numericUpDownTiming4.Value, checkBoxRepeat4.Checked);
+            WriteSerialLog(command);
         }
 
-        private void buttonBrightnessAll_Click(object sender, EventArgs e)
+        private void buttonUpdate5_Click(object sender, EventArgs e)
         {
-            WriteSerialLog("All");
+            var command = MakePatternCommand(5, numericUpDownPattern5.Value, numericUpDownTiming5.Value, checkBoxRepeat5.Checked);
+            WriteSerialLog(command);
+        }
+
+        private void buttonUpdate6_Click(object sender, EventArgs e)
+        {
+            var command = MakePatternCommand(6, numericUpDownPattern6.Value, numericUpDownTiming6.Value, checkBoxRepeat6.Checked);
+            WriteSerialLog(command);
+        }
+
+        private void buttonUpdate7_Click(object sender, EventArgs e)
+        {
+            var command = MakePatternCommand(7, numericUpDownPattern7.Value, numericUpDownTiming7.Value, checkBoxRepeat7.Checked);
+            WriteSerialLog(command);
         }
 
         private void buttonLogClear_Click(object sender, EventArgs e)
         {
             textBoxLog.Text = "";
+        }
+
+        private void numericUpDownBrightnessAll_ValueChanged(object sender, EventArgs e)
+        {
+            var command = MakeBrightnessCommand(numericUpDownBrightnessAll.Value);
+            WriteSerialLog(command);
+
+            // TODO: 個別輝度の ValueChanged イベントが呼び出されるのを回避したい
+
+            // 個別輝度の値も変更
+            //decimal brightnessAll = numericUpDownBrightnessAll.Value;
+            //numericUpDownBrightness0.Value = brightnessAll;
+            //numericUpDownBrightness1.Value = brightnessAll;
+            //numericUpDownBrightness2.Value = brightnessAll;
+            //numericUpDownBrightness3.Value = brightnessAll;
+            //numericUpDownBrightness4.Value = brightnessAll;
+            //numericUpDownBrightness5.Value = brightnessAll;
+            //numericUpDownBrightness6.Value = brightnessAll;
+            //numericUpDownBrightness7.Value = brightnessAll;
+        }
+
+        private void numericUpDownBrightness0_ValueChanged(object sender, EventArgs e)
+        {
+            var command = MakeBrightnessCommand(0, numericUpDownBrightness0.Value);
+            WriteSerialLog(command);
+        }
+
+        private void numericUpDownBrightness1_ValueChanged(object sender, EventArgs e)
+        {
+            var command = MakeBrightnessCommand(1, numericUpDownBrightness1.Value);
+            WriteSerialLog(command);
+        }
+
+        private void numericUpDownBrightness2_ValueChanged(object sender, EventArgs e)
+        {
+            var command = MakeBrightnessCommand(2, numericUpDownBrightness2.Value);
+            WriteSerialLog(command);
+        }
+
+        private void numericUpDownBrightness3_ValueChanged(object sender, EventArgs e)
+        {
+            var command = MakeBrightnessCommand(3, numericUpDownBrightness3.Value);
+            WriteSerialLog(command);
+        }
+
+        private void numericUpDownBrightness4_ValueChanged(object sender, EventArgs e)
+        {
+            var command = MakeBrightnessCommand(4, numericUpDownBrightness4.Value);
+            WriteSerialLog(command);
+        }
+
+        private void numericUpDownBrightness5_ValueChanged(object sender, EventArgs e)
+        {
+            var command = MakeBrightnessCommand(5, numericUpDownBrightness5.Value);
+            WriteSerialLog(command);
+        }
+
+        private void numericUpDownBrightness6_ValueChanged(object sender, EventArgs e)
+        {
+            var command = MakeBrightnessCommand(6, numericUpDownBrightness6.Value);
+            WriteSerialLog(command);
+        }
+
+        private void numericUpDownBrightness7_ValueChanged(object sender, EventArgs e)
+        {
+            var command = MakeBrightnessCommand(7, numericUpDownBrightness7.Value);
+            WriteSerialLog(command);
         }
     }
 }
