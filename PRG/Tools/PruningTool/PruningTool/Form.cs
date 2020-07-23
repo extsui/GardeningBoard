@@ -33,6 +33,9 @@ namespace PruningTool
                 buttonConnect.Text = "切断";
                 comboBoxPortSelect.Enabled = false;
 
+                buttonReset.Enabled = true;
+                buttonUpdateAll.Enabled = true;
+
                 buttonUpdate0.Enabled = true;
                 buttonUpdate1.Enabled = true;
                 buttonUpdate2.Enabled = true;
@@ -62,6 +65,9 @@ namespace PruningTool
                 buttonConnect.Text = "接続";
                 comboBoxPortSelect.Enabled = true;
 
+                buttonReset.Enabled = false;
+                buttonUpdateAll.Enabled = false;
+
                 buttonUpdate0.Enabled = false;
                 buttonUpdate1.Enabled = false;
                 buttonUpdate2.Enabled = false;
@@ -86,7 +92,7 @@ namespace PruningTool
         private void WriteSerialLog(string value)
         {
             DateTime now = DateTime.Now;
-            textBoxLog.AppendText(string.Format("[ {0:yyyy/MM/dd HH:mm:ss.fff} ] {1}\r\n", now, value));
+            textBoxLog.AppendText(string.Format("[{0:yyyy/MM/dd HH:mm:ss.fff}] {1}\r\n", now, value));
             m_serialPort.Write(value);
         }
 
@@ -112,52 +118,76 @@ namespace PruningTool
             return $"bright {brickIdStr} {brightnessStr}\n";
         }
 
+        /// <summary>
+        /// 全部品を消灯するコマンドを送信する。
+        /// 各種コントロールの値は変更しない。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonReset_Click(object sender, EventArgs e)
+        {
+            for (byte i = 0; i < 8; i++)
+            {
+                // PatternId = 1 は消灯
+                WriteSerialLog(MakePatternCommand(i, 1, 100, false));
+            }
+        }
+
+        /// <summary>
+        /// 現在のコントロール値を一括送信する。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonUpdateAll_Click(object sender, EventArgs e)
+        {
+            WriteSerialLog(MakePatternCommand(0, numericUpDownPattern0.Value, numericUpDownTiming0.Value, checkBoxRepeat0.Checked));
+            WriteSerialLog(MakePatternCommand(1, numericUpDownPattern1.Value, numericUpDownTiming1.Value, checkBoxRepeat1.Checked));
+            WriteSerialLog(MakePatternCommand(2, numericUpDownPattern2.Value, numericUpDownTiming2.Value, checkBoxRepeat2.Checked));
+            WriteSerialLog(MakePatternCommand(3, numericUpDownPattern3.Value, numericUpDownTiming3.Value, checkBoxRepeat3.Checked));
+            WriteSerialLog(MakePatternCommand(4, numericUpDownPattern4.Value, numericUpDownTiming4.Value, checkBoxRepeat4.Checked));
+            WriteSerialLog(MakePatternCommand(5, numericUpDownPattern5.Value, numericUpDownTiming5.Value, checkBoxRepeat5.Checked));
+            WriteSerialLog(MakePatternCommand(6, numericUpDownPattern6.Value, numericUpDownTiming6.Value, checkBoxRepeat6.Checked));
+            WriteSerialLog(MakePatternCommand(7, numericUpDownPattern7.Value, numericUpDownTiming7.Value, checkBoxRepeat7.Checked));
+        }
+
         private void buttonUpdate0_Click(object sender, EventArgs e)
         {
-            var command = MakePatternCommand(0, numericUpDownPattern0.Value, numericUpDownTiming0.Value, checkBoxRepeat0.Checked);
-            WriteSerialLog(command);
+            WriteSerialLog(MakePatternCommand(0, numericUpDownPattern0.Value, numericUpDownTiming0.Value, checkBoxRepeat0.Checked));
         }
 
         private void buttonUpdate1_Click(object sender, EventArgs e)
         {
-            var command = MakePatternCommand(1, numericUpDownPattern1.Value, numericUpDownTiming1.Value, checkBoxRepeat1.Checked);
-            WriteSerialLog(command);
+            WriteSerialLog(MakePatternCommand(1, numericUpDownPattern1.Value, numericUpDownTiming1.Value, checkBoxRepeat1.Checked));
         }
 
         private void buttonUpdate2_Click(object sender, EventArgs e)
         {
-            var command = MakePatternCommand(2, numericUpDownPattern2.Value, numericUpDownTiming2.Value, checkBoxRepeat2.Checked);
-            WriteSerialLog(command);
+            WriteSerialLog(MakePatternCommand(2, numericUpDownPattern2.Value, numericUpDownTiming2.Value, checkBoxRepeat2.Checked));
         }
 
         private void buttonUpdate3_Click(object sender, EventArgs e)
         {
-            var command = MakePatternCommand(3, numericUpDownPattern3.Value, numericUpDownTiming3.Value, checkBoxRepeat3.Checked);
-            WriteSerialLog(command);
+            WriteSerialLog(MakePatternCommand(3, numericUpDownPattern3.Value, numericUpDownTiming3.Value, checkBoxRepeat3.Checked));
         }
 
         private void buttonUpdate4_Click(object sender, EventArgs e)
         {
-            var command = MakePatternCommand(4, numericUpDownPattern4.Value, numericUpDownTiming4.Value, checkBoxRepeat4.Checked);
-            WriteSerialLog(command);
+            WriteSerialLog(MakePatternCommand(4, numericUpDownPattern4.Value, numericUpDownTiming4.Value, checkBoxRepeat4.Checked));
         }
 
         private void buttonUpdate5_Click(object sender, EventArgs e)
         {
-            var command = MakePatternCommand(5, numericUpDownPattern5.Value, numericUpDownTiming5.Value, checkBoxRepeat5.Checked);
-            WriteSerialLog(command);
+            WriteSerialLog(MakePatternCommand(5, numericUpDownPattern5.Value, numericUpDownTiming5.Value, checkBoxRepeat5.Checked));
         }
 
         private void buttonUpdate6_Click(object sender, EventArgs e)
         {
-            var command = MakePatternCommand(6, numericUpDownPattern6.Value, numericUpDownTiming6.Value, checkBoxRepeat6.Checked);
-            WriteSerialLog(command);
+            WriteSerialLog(MakePatternCommand(6, numericUpDownPattern6.Value, numericUpDownTiming6.Value, checkBoxRepeat6.Checked));
         }
 
         private void buttonUpdate7_Click(object sender, EventArgs e)
         {
-            var command = MakePatternCommand(7, numericUpDownPattern7.Value, numericUpDownTiming7.Value, checkBoxRepeat7.Checked);
-            WriteSerialLog(command);
+            WriteSerialLog(MakePatternCommand(7, numericUpDownPattern7.Value, numericUpDownTiming7.Value, checkBoxRepeat7.Checked));
         }
 
         private void buttonLogClear_Click(object sender, EventArgs e)
