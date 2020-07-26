@@ -105,6 +105,8 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.m_openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.m_saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.textBoxRealtime = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming2)).BeginInit();
@@ -955,7 +957,7 @@
             this.ヘルプToolStripMenuItem1});
             this.m_menuStrip.Location = new System.Drawing.Point(0, 0);
             this.m_menuStrip.Name = "m_menuStrip";
-            this.m_menuStrip.Size = new System.Drawing.Size(471, 28);
+            this.m_menuStrip.Size = new System.Drawing.Size(1096, 28);
             this.m_menuStrip.TabIndex = 107;
             this.m_menuStrip.Text = "menuStrip1";
             // 
@@ -972,21 +974,21 @@
             // ToolStripMenuItemFileSave
             // 
             this.ToolStripMenuItemFileSave.Name = "ToolStripMenuItemFileSave";
-            this.ToolStripMenuItemFileSave.Size = new System.Drawing.Size(224, 26);
+            this.ToolStripMenuItemFileSave.Size = new System.Drawing.Size(152, 26);
             this.ToolStripMenuItemFileSave.Text = "設定保存";
             this.ToolStripMenuItemFileSave.Click += new System.EventHandler(this.ToolStripMenuItemFileSave_Click);
             // 
             // ToolStripMenuItemFileLoad
             // 
             this.ToolStripMenuItemFileLoad.Name = "ToolStripMenuItemFileLoad";
-            this.ToolStripMenuItemFileLoad.Size = new System.Drawing.Size(224, 26);
+            this.ToolStripMenuItemFileLoad.Size = new System.Drawing.Size(152, 26);
             this.ToolStripMenuItemFileLoad.Text = "設定読込";
             this.ToolStripMenuItemFileLoad.Click += new System.EventHandler(this.ToolStripMenuItemFileLoad_Click);
             // 
             // ToolStripMenuItemFinish
             // 
             this.ToolStripMenuItemFinish.Name = "ToolStripMenuItemFinish";
-            this.ToolStripMenuItemFinish.Size = new System.Drawing.Size(224, 26);
+            this.ToolStripMenuItemFinish.Size = new System.Drawing.Size(152, 26);
             this.ToolStripMenuItemFinish.Text = "終了";
             this.ToolStripMenuItemFinish.Click += new System.EventHandler(this.ToolStripMenuItemFinish_Click);
             // 
@@ -1001,7 +1003,7 @@
             // なしToolStripMenuItem
             // 
             this.なしToolStripMenuItem.Name = "なしToolStripMenuItem";
-            this.なしToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.なしToolStripMenuItem.Size = new System.Drawing.Size(125, 26);
             this.なしToolStripMenuItem.Text = "(なし)";
             // 
             // ヘルプToolStripMenuItem1
@@ -1033,11 +1035,32 @@
             // 
             this.m_openFileDialog.FileName = "m_openFileDialog";
             // 
+            // textBoxRealtime
+            // 
+            this.textBoxRealtime.Location = new System.Drawing.Point(519, 81);
+            this.textBoxRealtime.Multiline = true;
+            this.textBoxRealtime.Name = "textBoxRealtime";
+            this.textBoxRealtime.Size = new System.Drawing.Size(441, 152);
+            this.textBoxRealtime.TabIndex = 109;
+            this.textBoxRealtime.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxRealtime_KeyDown);
+            this.textBoxRealtime.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBoxRealtime_KeyUp);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(516, 53);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(72, 15);
+            this.label10.TabIndex = 110;
+            this.label10.Text = "リアルタイム";
+            // 
             // Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(471, 698);
+            this.ClientSize = new System.Drawing.Size(1096, 698);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.textBoxRealtime);
             this.Controls.Add(this.buttonReset);
             this.Controls.Add(this.buttonUpdateAll);
             this.Controls.Add(this.numericUpDownBrightnessAll);
@@ -1216,6 +1239,8 @@
         private System.Windows.Forms.ToolStripMenuItem なしToolStripMenuItem1;
         private System.Windows.Forms.OpenFileDialog m_openFileDialog;
         private System.Windows.Forms.SaveFileDialog m_saveFileDialog;
+        private System.Windows.Forms.TextBox textBoxRealtime;
+        private System.Windows.Forms.Label label10;
     }
 }
 

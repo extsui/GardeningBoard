@@ -5,6 +5,8 @@ using System.IO;
 using System.IO.Ports;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace PruningTool
 {
@@ -118,11 +120,21 @@ namespace PruningTool
             }
         }
 
+        private delegate void SafeCallDelegate(string value);
+
         private void WriteSerialLog(string value)
         {
-            DateTime now = DateTime.Now;
-            textBoxLog.AppendText(string.Format("[{0:yyyy/MM/dd HH:mm:ss.fff}] {1}\r\n", now, value));
-            m_serialPort.Write(value);
+            if (textBoxLog.InvokeRequired)
+            {
+                var d = new SafeCallDelegate(WriteSerialLog);
+                textBoxLog.Invoke(d, new object[] { value });
+            }
+            else
+            {
+                DateTime now = DateTime.Now;
+                textBoxLog.AppendText(string.Format("[{0:yyyy/MM/dd HH:mm:ss.fff}] {1}\r\n", now, value));
+                m_serialPort.Write(value);
+            }
         }
 
         private string MakePatternCommand(byte brickId, decimal patternId, decimal timing, bool isRepeat)
@@ -456,6 +468,95 @@ namespace PruningTool
         private void ToolStripMenuItemFinish_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private async void textBoxRealtime_KeyDown(object sender, KeyEventArgs e)
+        {
+            byte brickId;
+
+            switch (e.KeyCode)
+            {
+                // ASDFJKL+;
+                case Keys.A:
+                    brickId = 0;
+                    break;
+                case Keys.S:
+                    brickId = 1;
+                    break;
+                case Keys.D:
+                    brickId = 2;
+                    break;
+                case Keys.F:
+                    brickId = 3;
+                    break;
+                case Keys.J:
+                    brickId = 4;
+                    break;
+                case Keys.K:
+                    brickId = 5;
+                    break;
+                case Keys.L:
+                    brickId = 6;
+                    break;
+                case Keys.Oemplus:
+                    brickId = 7;
+                    break;
+                default:
+                    // 有効キー以外は NOP
+                    return;
+            }
+
+            Action SmoothOnOffSequence = () =>
+            {
+                WriteSerialLog(MakePatternCommand(brickId, 0, 100, false));
+                WriteSerialLog(MakeBrightnessCommand(brickId, 1));
+                Thread.Sleep(50);
+                WriteSerialLog(MakeBrightnessCommand(brickId, 2));
+                Thread.Sleep(50);
+                WriteSerialLog(MakeBrightnessCommand(brickId, 3));
+                Thread.Sleep(50);
+                WriteSerialLog(MakeBrightnessCommand(brickId, 2));
+                Thread.Sleep(50);
+                WriteSerialLog(MakeBrightnessCommand(brickId, 1));
+                Thread.Sleep(50);
+                WriteSerialLog(MakePatternCommand(brickId, 1, 100, false));
+            };
+
+            await Task.Run(SmoothOnOffSequence);
+        }
+
+        private void textBoxRealtime_KeyUp(object sender, KeyEventArgs e)
+        {
+            //switch (e.KeyCode)
+            //{
+            //    // ASDFJKL+;
+            //    case Keys.A:
+            //        WriteSerialLog(MakePatternCommand(0, 1, 100, false));
+            //        break;
+            //    case Keys.S:
+            //        WriteSerialLog(MakePatternCommand(1, 1, 100, false));
+            //        break;
+            //    case Keys.D:
+            //        WriteSerialLog(MakePatternCommand(2, 1, 100, false));
+            //        break;
+            //    case Keys.F:
+            //        WriteSerialLog(MakePatternCommand(3, 1, 100, false));
+            //        break;
+            //    case Keys.J:
+            //        WriteSerialLog(MakePatternCommand(4, 1, 100, false));
+            //        break;
+            //    case Keys.K:
+            //        WriteSerialLog(MakePatternCommand(5, 1, 100, false));
+            //        break;
+            //    case Keys.L:
+            //        WriteSerialLog(MakePatternCommand(6, 1, 100, false));
+            //        break;
+            //    case Keys.Oemplus:
+            //        WriteSerialLog(MakePatternCommand(7, 1, 100, false));
+            //        break;
+            //    default:
+            //        break;
+            //}
         }
     }
 
