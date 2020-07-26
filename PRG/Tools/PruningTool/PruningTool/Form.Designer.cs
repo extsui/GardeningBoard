@@ -107,6 +107,7 @@
             this.m_saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.textBoxRealtime = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
+            this.buttonReplay = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming2)).BeginInit();
@@ -1054,11 +1055,22 @@
             this.label10.TabIndex = 110;
             this.label10.Text = "リアルタイム";
             // 
+            // buttonReplay
+            // 
+            this.buttonReplay.Location = new System.Drawing.Point(872, 243);
+            this.buttonReplay.Name = "buttonReplay";
+            this.buttonReplay.Size = new System.Drawing.Size(88, 25);
+            this.buttonReplay.TabIndex = 111;
+            this.buttonReplay.Text = "再生";
+            this.buttonReplay.UseVisualStyleBackColor = true;
+            this.buttonReplay.Click += new System.EventHandler(this.buttonReplay_Click);
+            // 
             // Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1096, 698);
+            this.Controls.Add(this.buttonReplay);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.textBoxRealtime);
             this.Controls.Add(this.buttonReset);
@@ -1241,6 +1253,7 @@
         private System.Windows.Forms.SaveFileDialog m_saveFileDialog;
         private System.Windows.Forms.TextBox textBoxRealtime;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Button buttonReplay;
     }
 }
 

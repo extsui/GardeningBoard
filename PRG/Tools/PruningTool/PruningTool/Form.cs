@@ -133,6 +133,7 @@ namespace PruningTool
 
         private void WriteSerialLog(string value)
         {
+            // 他スレッドからも呼び出せるようにする定型句
             if (textBoxLog.InvokeRequired)
             {
                 var d = new SafeCallDelegate(WriteSerialLog);
@@ -140,6 +141,7 @@ namespace PruningTool
             }
             else
             {
+                // 処理本体
                 var tick = Environment.TickCount - m_startTickCount;
                 var tickToSec = tick / 1000;
                 var tickToMsec = tick % 1000;
@@ -569,6 +571,62 @@ namespace PruningTool
             //        break;
             //}
         }
+
+        // TODO: 接続/切断時に応じたリプレイボタンの Enable 制御
+        // TODO: 接続/切断時に応じたリアルタイムテキストボックスの Enable 制御
+        private async void buttonReplay_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+                openFileDialog.FilterIndex = 1;
+                openFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+
+                string filePath = openFileDialog.FileName;
+                string historyAll;
+                using (var streamReader = new StreamReader(filePath))
+                {
+                    historyAll = streamReader.ReadToEnd();
+                }
+
+                // 送信履歴の例
+                // 例1: "[3.000] pattern 0 0 100 1\n"
+                // 例2: "[5.125] bright 3 2\n"
+                // --> 時刻とコマンド文字列を分解、再構築する。
+                //     コマンド文字列の中身は意識しない。
+
+                List<SendInfo> sendInfoList = new List<SendInfo>();
+                foreach (string line in historyAll.Split('\n'))
+                {
+                    SendInfo sendInfo = new SendInfo(line);
+                    sendInfoList.Add(sendInfo);
+                }
+
+                Action Replay = () =>
+                {
+                    int ReplayStartTickCount = Environment.TickCount;
+
+                    foreach (var sendInfo in sendInfoList)
+                    {
+                        while (sendInfo.Tick >= (Environment.TickCount - ReplayStartTickCount))
+                        {
+                            // スリープ時間を最小にすることで多少の CPU 時間の
+                            // 無駄の代わりに、より正確にスケジュール通りに送信させる
+                            Thread.Sleep(1);
+                        }
+                        WriteSerialLog(sendInfo.Command + "\n");
+                    }
+                };
+
+                await Task.Run(Replay);
+            }
+        }
     }
 
     public class Brick
@@ -595,5 +653,25 @@ namespace PruningTool
             IsRepeat = isRepeat;
             Brightness = brightness;
         }
-    };
+    }
+
+    /// <summary>
+    /// 送信情報
+    /// </summary>
+    public class SendInfo
+    {
+        public int Tick;        // 送信時刻
+        public string Command;  // 送信コマンド
+
+        public SendInfo(string line)
+        {
+            const char DummySeparator = '@';
+
+            string[] split = line.Replace("[", "").Replace("] ", DummySeparator.ToString()).Split(DummySeparator);
+            Trace.Assert(split.Length == 2);
+
+            Tick = int.Parse(split[0].Replace(".", ""));
+            Command = split[1];
+        }
+    }
 }
