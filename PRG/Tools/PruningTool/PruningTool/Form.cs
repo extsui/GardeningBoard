@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Runtime;
 
 namespace PruningTool
 {
@@ -24,6 +25,12 @@ namespace PruningTool
         /// シリアル送信されないようにするためのガード。
         /// </summary>
         private bool m_isEnabledBrightnessEvent = false;
+
+        /// <summary>
+        /// 通信開始時の時刻。
+        /// リプレイ保存用の基準。
+        /// </summary>
+        private int m_startTickCount;
 
         public Form()
         {
@@ -63,6 +70,8 @@ namespace PruningTool
                 m_serialPort.Open();
                 buttonConnect.Text = "切断";
                 comboBoxPortSelect.Enabled = false;
+
+                m_startTickCount = Environment.TickCount;
 
                 buttonReset.Enabled = true;
                 buttonUpdateAll.Enabled = true;
@@ -131,8 +140,10 @@ namespace PruningTool
             }
             else
             {
-                DateTime now = DateTime.Now;
-                textBoxLog.AppendText(string.Format("[{0:yyyy/MM/dd HH:mm:ss.fff}] {1}\r\n", now, value));
+                var tick = Environment.TickCount - m_startTickCount;
+                var tickToSec = tick / 1000;
+                var tickToMsec = tick % 1000;
+                textBoxLog.AppendText(string.Format("[{0}.{1:D03}] {2}\r\n", tickToSec, tickToMsec, value));
                 m_serialPort.Write(value);
             }
         }
