@@ -145,8 +145,10 @@ namespace PruningTool
                 var tick = Environment.TickCount - m_startTickCount;
                 var tickToSec = tick / 1000;
                 var tickToMsec = tick % 1000;
-                textBoxLog.AppendText(string.Format("[{0}.{1:D03}] {2}\r\n", tickToSec, tickToMsec, value));
                 m_serialPort.Write(value);
+
+                // テキストボックスは "\r\n" しか改行と見なさないので置換
+                textBoxLog.AppendText(string.Format("[{0}.{1:D03}] {2}", tickToSec, tickToMsec, value.Replace("\n", "\r\n")));
             }
         }
 
@@ -260,6 +262,28 @@ namespace PruningTool
         private void buttonLogClear_Click(object sender, EventArgs e)
         {
             textBoxLog.Text = "";
+        }
+
+        private void buttonLogSave_Click(object sender, EventArgs e)
+        {
+            m_saveFileDialog.Filter = "Text files (*.txt)|*.txt";
+            m_saveFileDialog.FilterIndex = 0;
+            m_saveFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
+            m_saveFileDialog.RestoreDirectory = true;
+            m_saveFileDialog.DefaultExt = "txt";
+
+            if (m_saveFileDialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            using (FileStream fileStream = new FileStream(m_saveFileDialog.FileName, FileMode.Create))
+            {
+                using (StreamWriter streamWrite = new StreamWriter(fileStream))
+                {
+                    streamWrite.WriteLine(textBoxLog.Text);
+                }
+            }
         }
 
         ////////////////////////////////////////////////////////////
@@ -596,14 +620,21 @@ namespace PruningTool
                 }
 
                 // 送信履歴の例
-                // 例1: "[3.000] pattern 0 0 100 1\n"
-                // 例2: "[5.125] bright 3 2\n"
+                // 例1: "[3.000] pattern 0 0 100 1\r\n"
+                // 例2: "[5.125] bright 3 2\r\n"
                 // --> 時刻とコマンド文字列を分解、再構築する。
                 //     コマンド文字列の中身は意識しない。
 
                 List<SendInfo> sendInfoList = new List<SendInfo>();
-                foreach (string line in historyAll.Split('\n'))
+                foreach (string line in historyAll.Replace("\r\n", "\n").Split('\n'))
                 {
+                    // 空行は無視
+                    // 先頭 # はコメント行
+                    if (line.Equals("") || (line[0] == '#'))
+                    {
+                        continue;
+                    }
+
                     SendInfo sendInfo = new SendInfo(line);
                     sendInfoList.Add(sendInfo);
                 }

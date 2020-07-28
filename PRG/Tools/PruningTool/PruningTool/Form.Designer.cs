@@ -108,6 +108,19 @@
             this.textBoxRealtime = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.buttonReplay = new System.Windows.Forms.Button();
+            this.label14 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.buttonLogSave = new System.Windows.Forms.Button();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.label15 = new System.Windows.Forms.Label();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.button4 = new System.Windows.Forms.Button();
+            this.label20 = new System.Windows.Forms.Label();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.button5 = new System.Windows.Forms.Button();
+            this.label21 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming2)).BeginInit();
@@ -449,7 +462,7 @@
             // 
             // buttonLogClear
             // 
-            this.buttonLogClear.Location = new System.Drawing.Point(376, 661);
+            this.buttonLogClear.Location = new System.Drawing.Point(288, 661);
             this.buttonLogClear.Name = "buttonLogClear";
             this.buttonLogClear.Size = new System.Drawing.Size(75, 25);
             this.buttonLogClear.TabIndex = 73;
@@ -1057,7 +1070,7 @@
             // 
             // buttonReplay
             // 
-            this.buttonReplay.Location = new System.Drawing.Point(872, 243);
+            this.buttonReplay.Location = new System.Drawing.Point(872, 444);
             this.buttonReplay.Name = "buttonReplay";
             this.buttonReplay.Size = new System.Drawing.Size(88, 25);
             this.buttonReplay.TabIndex = 111;
@@ -1065,11 +1078,134 @@
             this.buttonReplay.UseVisualStyleBackColor = true;
             this.buttonReplay.Click += new System.EventHandler(this.buttonReplay_Click);
             // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(516, 307);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(61, 15);
+            this.label14.TabIndex = 112;
+            this.label14.Text = "チャネル1";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(924, 301);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(36, 25);
+            this.button1.TabIndex = 113;
+            this.button1.Text = "…";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(583, 304);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(325, 22);
+            this.textBox1.TabIndex = 114;
+            // 
+            // buttonLogSave
+            // 
+            this.buttonLogSave.Location = new System.Drawing.Point(376, 661);
+            this.buttonLogSave.Name = "buttonLogSave";
+            this.buttonLogSave.Size = new System.Drawing.Size(75, 25);
+            this.buttonLogSave.TabIndex = 115;
+            this.buttonLogSave.Text = "保存";
+            this.buttonLogSave.UseVisualStyleBackColor = true;
+            this.buttonLogSave.Click += new System.EventHandler(this.buttonLogSave_Click);
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(583, 338);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(325, 22);
+            this.textBox2.TabIndex = 118;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(924, 335);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(36, 25);
+            this.button3.TabIndex = 117;
+            this.button3.Text = "…";
+            this.button3.UseVisualStyleBackColor = true;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(516, 341);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(61, 15);
+            this.label15.TabIndex = 116;
+            this.label15.Text = "チャネル2";
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(583, 372);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(325, 22);
+            this.textBox3.TabIndex = 121;
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(924, 369);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(36, 25);
+            this.button4.TabIndex = 120;
+            this.button4.Text = "…";
+            this.button4.UseVisualStyleBackColor = true;
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(516, 375);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(61, 15);
+            this.label20.TabIndex = 119;
+            this.label20.Text = "チャネル3";
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(583, 406);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(325, 22);
+            this.textBox4.TabIndex = 124;
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(924, 403);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(36, 25);
+            this.button5.TabIndex = 123;
+            this.button5.Text = "…";
+            this.button5.UseVisualStyleBackColor = true;
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(516, 409);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(61, 15);
+            this.label21.TabIndex = 122;
+            this.label21.Text = "チャネル4";
+            // 
             // Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1096, 698);
+            this.Controls.Add(this.textBox4);
+            this.Controls.Add(this.button5);
+            this.Controls.Add(this.label21);
+            this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.label20);
+            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.button3);
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.buttonLogSave);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.label14);
             this.Controls.Add(this.buttonReplay);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.textBoxRealtime);
@@ -1254,6 +1390,19 @@
         private System.Windows.Forms.TextBox textBoxRealtime;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Button buttonReplay;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button buttonLogSave;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Label label21;
     }
 }
 
