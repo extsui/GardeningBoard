@@ -145,11 +145,25 @@ int ExecuteCommand(const uint8_t *command)
     case 0x10:
       Serial.printf("[ 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x ]\n",
         addr, commandId, brickId, patternId, timing, isRepeat);
+      Wire.beginTransmission(addr);
+      Wire.write(commandId);
+      Wire.write(brickId);
+      Wire.write(patternId);
+      Wire.write(timing);
+      Wire.write(isRepeat);
+      Wire.endTransmission();
       break;
+
     case 0x20:
       Serial.printf("[ 0x%02x 0x%02x 0x%02x 0x%02x ]\n",
         addr, commandId, brickId, brightness);
+      Wire.beginTransmission(addr);
+      Wire.write(commandId);
+      Wire.write(brickId);
+      Wire.write(brightness);
+      Wire.endTransmission();
       break;
+
     default:
       return -1;
   }
