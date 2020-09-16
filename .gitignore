@@ -27,3 +27,6 @@ _autosave-*
 
 # Tool
 FreeRouting.exe
+
+# 手動追加
+*.exe
