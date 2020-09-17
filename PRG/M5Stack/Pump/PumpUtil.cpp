@@ -41,7 +41,12 @@ int PumpUtil::ToHex(uint8_t *outValue, char hi, char lo)
 
 /**
  * 生データ送信コマンドを解析する。
+ * @param [in] command 入力文字列
+ * @param [out] array 解析結果を格納する配列
+ * @param [in] arrayLength 配列の長さ
  * @return 成功: 解釈できたバイト数 / 失敗: -1
+ * 
+ * 例: "@send xxaabbccdd.." (16 進数表記固定、xx はアドレス、データは可変長)
  */
 int PumpUtil::ParseRawSendCommand(const char *command, uint8_t *array, int arrayLength)
 {
