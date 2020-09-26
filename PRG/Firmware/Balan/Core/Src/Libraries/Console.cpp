@@ -123,6 +123,31 @@ uint8_t Console::GetReceivedByte()
     return c;
 }
 
+/************************************************************
+ *  I2C スレーブ関連 (TODO: 後で別ファイルへまとめる)
+ ************************************************************/
+extern I2C_HandleTypeDef hi2c1;
+
+/**
+ * I2C スレーブアドレスを設定
+ * @param [in] address 7 ビットスレーブアドレス
+ */
+void SetI2CSlaveAddress(I2C_HandleTypeDef *hi2c, uint8_t address)
+{
+	hi2c->Instance->OAR1 &= ~I2C_OAR1_OA1EN;
+	hi2c->Instance->OAR1 = (I2C_OAR1_OA1EN | (address << 1));
+}
+
+/**
+ * I2C スレーブアドレスを取得
+ */
+uint8_t GetI2CSlaveAddress(I2C_HandleTypeDef *hi2c)
+{
+	return (hi2c->Instance->OAR1 & I2C_OAR1_OA1) >> 1;
+}
+
+/************************************************************/
+
 void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 {
 	// TODO: test コマンドを 1 個にまとめる
@@ -261,6 +286,27 @@ void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 				Log("[Error] Bad parameter. (%d, %d, %d, %d)\n", brickId, patternId, stepTiming, isRepeat);
 			}
 		}
+
+	} else if (strncmp((const char*)command, "i2c-get-addr", 12) == 0) {
+		uint8_t addr = GetI2CSlaveAddress(&hi2c1);
+		Log("I2C Slave Address : %d (0x%x)\n", addr, addr);
+
+	} else if (strncmp((const char*)command, "i2c-set-addr", 12) == 0) {
+		int params[1];
+		int count = GetParameter(&command[12], params, 1);
+		if (count != 1) {
+			Log("[Error] Bad parameter.\n");
+		} else {
+			uint8_t addr = (uint8_t)params[0];
+			Log("I2C Slave Address : %d (0x%x)\n", addr, addr);
+			SetI2CSlaveAddress(&hi2c1, addr);
+		}
+
+	} else if (strncmp((const char*)command, "i2c-recv", 8) == 0) {
+		Log("I2C Slave Receive...\n");
+		uint8_t buffer[1];
+		HAL_I2C_Slave_Receive(&hi2c1, buffer, sizeof(buffer), HAL_MAX_DELAY);
+		Log("buffer : [ 0x%x ]\n", buffer[0]);
 
 	} else if (strncmp((const char*)command, "", 1) == 0) {
 		// 空改行は何も表示しない
