@@ -14,6 +14,8 @@
 
 #include "Ht16k33.hpp"
 
+#include "I2cSlaveDriver.hpp"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -302,11 +304,13 @@ void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 			SetI2CSlaveAddress(&hi2c1, addr);
 		}
 
-	} else if (strncmp((const char*)command, "i2c-recv", 8) == 0) {
-		Log("I2C Slave Receive...\n");
-		uint8_t buffer[1];
-		HAL_I2C_Slave_Receive(&hi2c1, buffer, sizeof(buffer), HAL_MAX_DELAY);
-		Log("buffer : [ 0x%x ]\n", buffer[0]);
+	} else if (strncmp((const char*)command, "i2c-recv-init", 14) == 0) {
+		Log("I2C Slave Driver Init\n");
+		I2cSlaveDriver::Init();
+
+	} else if (strncmp((const char*)command, "i2c-recv-poll", 14) == 0) {
+		Log("I2C Slave Driver Receive\n");
+		I2cSlaveDriver::Receive();
 
 	} else if (strncmp((const char*)command, "", 1) == 0) {
 		// 空改行は何も表示しない
