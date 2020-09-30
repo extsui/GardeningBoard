@@ -25,6 +25,7 @@
  *  Defines
  ************************************************************/
 StepScheduler *stepScheduler = NULL;
+I2cSlaveDriver *i2cSlaveDriver = NULL;
 
 /************************************************************
  *  Public Functions
@@ -49,6 +50,9 @@ void Console::Run(void)
 
 	stepScheduler = new StepScheduler();
 
+	// TODO: LOWER_I2C のアドレスは JP を読んでから決める
+	i2cSlaveDriver = new I2cSlaveDriver(0x60);
+
 	Log("-- Gardening Board --\n> ");
 
 	// コマンドループ
@@ -71,6 +75,22 @@ void Console::Run(void)
 			    memset(commandBuffer, 0, sizeof(commandBuffer));
 			    commandBufferIndex = 0;
 			}
+		}
+
+		// TODO: PumpAdapter で受信フレームの解析が必要！！！
+		uint8_t buffer[5] = { 0 };
+		int count = 0;
+		i2cSlaveDriver->TryGetReceivedFrame(buffer, &count);
+		if (count > 0) {
+			// DEBUG:
+			Log("UPPER_I2C : [ ");
+			for (int i = 0; i < count; i++) {
+				Log("0x%02X ", buffer[i]);
+			}
+			Log("]\n");
+
+			// TODO: stepScheduler への繋ぎこみ
+			//stepScheduler->BeginPattern(currentTick, buffer[0] - 0x70, buffer[1], buffer[2], (buffer[3] != 0));
 		}
 
 		stepScheduler->Process(currentTick);
@@ -303,14 +323,6 @@ void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 			Log("I2C Slave Address : %d (0x%x)\n", addr, addr);
 			SetI2CSlaveAddress(&hi2c1, addr);
 		}
-
-	} else if (strncmp((const char*)command, "i2c-recv-init", 14) == 0) {
-		Log("I2C Slave Driver Init\n");
-		I2cSlaveDriver::Init();
-
-	} else if (strncmp((const char*)command, "i2c-recv-poll", 14) == 0) {
-		Log("I2C Slave Driver Receive\n");
-		I2cSlaveDriver::Receive();
 
 	} else if (strncmp((const char*)command, "", 1) == 0) {
 		// 空改行は何も表示しない
