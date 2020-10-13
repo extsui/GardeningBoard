@@ -24,8 +24,39 @@
 /************************************************************
  *  Defines
  ************************************************************/
+// I2C スレーブアドレスのベース値 (下位 3 ビットは可変)
+#define I2C_SLAVE_ADDRESS_BASE	(0x60)
+
 StepScheduler *stepScheduler = NULL;
 I2cSlaveDriver *i2cSlaveDriver = NULL;
+
+/************************************************************
+ *  Console 以外の機能 (小規模なので同ファイルに含める)
+ ************************************************************/
+/**
+ * JP の値から I2C スレーブアドレスを決定し取得する
+ * (複数一致確認すべきだが JP が変動するとは思えないので省略)
+ */
+uint8_t ReadI2cSlaveAddressFromJumper()
+{
+	// A0-2 は負論理 (開放が 1 で短絡が 0)
+	// デフォルト (開放) を論理 0 とみなす
+	uint8_t physicalA0 = HAL_GPIO_ReadPin(I2C_SLAVE_ADDR_A0_GPIO_Port, I2C_SLAVE_ADDR_A0_Pin);
+	uint8_t physicalA1 = HAL_GPIO_ReadPin(I2C_SLAVE_ADDR_A1_GPIO_Port, I2C_SLAVE_ADDR_A1_Pin);
+	uint8_t physicalA2 = HAL_GPIO_ReadPin(I2C_SLAVE_ADDR_A2_GPIO_Port, I2C_SLAVE_ADDR_A2_Pin);
+
+	uint8_t logicalA0 = (physicalA0 == GPIO_PIN_SET) ? 0 : 1;
+	uint8_t logicalA1 = (physicalA1 == GPIO_PIN_SET) ? 0 : 1;
+	uint8_t logicalA2 = (physicalA2 == GPIO_PIN_SET) ? 0 : 1;
+
+	uint8_t slaveAddress =
+		I2C_SLAVE_ADDRESS_BASE |
+		(logicalA2 << 2)       |
+		(logicalA1 << 1)       |
+		(logicalA0 << 0);
+
+	return slaveAddress;
+}
 
 /************************************************************
  *  Public Functions
@@ -46,14 +77,18 @@ void Console::Run(void)
 	static uint8_t commandBuffer[80];
 	int commandBufferIndex = 0;
 
+	Log("-- Gardening Board --\n");
+
 	StartReceive();
 
 	stepScheduler = new StepScheduler();
 
-	// TODO: LOWER_I2C のアドレスは JP を読んでから決める
-	i2cSlaveDriver = new I2cSlaveDriver(0x60);
+	uint8_t ownAddress = ReadI2cSlaveAddressFromJumper();
+	i2cSlaveDriver = new I2cSlaveDriver(ownAddress);
 
-	Log("-- Gardening Board --\n> ");
+	Log("[i2c] OwnAddress : 0x%x (%d)\n", ownAddress, ownAddress);
+
+	Log("> ");
 
 	// コマンドループ
 	while (1) {
@@ -74,6 +109,8 @@ void Console::Run(void)
 
 			    memset(commandBuffer, 0, sizeof(commandBuffer));
 			    commandBufferIndex = 0;
+
+				Log("> ");
 			}
 		}
 
@@ -90,7 +127,7 @@ void Console::Run(void)
 			Log("]\n");
 
 			// TODO: stepScheduler への繋ぎこみ
-			//stepScheduler->BeginPattern(currentTick, buffer[0] - 0x70, buffer[1], buffer[2], (buffer[3] != 0));
+			stepScheduler->BeginPattern(currentTick, buffer[0] - 0x70, buffer[1], buffer[2], (buffer[3] != 0));
 		}
 
 		stepScheduler->Process(currentTick);
@@ -143,29 +180,6 @@ uint8_t Console::GetReceivedByte()
         m_readPointer &= (RECEIVE_BUFFER_SIZE - 1);
     }
     return c;
-}
-
-/************************************************************
- *  I2C スレーブ関連 (TODO: 後で別ファイルへまとめる)
- ************************************************************/
-extern I2C_HandleTypeDef hi2c1;
-
-/**
- * I2C スレーブアドレスを設定
- * @param [in] address 7 ビットスレーブアドレス
- */
-void SetI2CSlaveAddress(I2C_HandleTypeDef *hi2c, uint8_t address)
-{
-	hi2c->Instance->OAR1 &= ~I2C_OAR1_OA1EN;
-	hi2c->Instance->OAR1 = (I2C_OAR1_OA1EN | (address << 1));
-}
-
-/**
- * I2C スレーブアドレスを取得
- */
-uint8_t GetI2CSlaveAddress(I2C_HandleTypeDef *hi2c)
-{
-	return (hi2c->Instance->OAR1 & I2C_OAR1_OA1) >> 1;
 }
 
 /************************************************************/
@@ -310,19 +324,15 @@ void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 		}
 
 	} else if (strncmp((const char*)command, "i2c-get-addr", 12) == 0) {
-		uint8_t addr = GetI2CSlaveAddress(&hi2c1);
+		uint8_t addr = i2cSlaveDriver->GetSlaveAddress();
 		Log("I2C Slave Address : %d (0x%x)\n", addr, addr);
 
-	} else if (strncmp((const char*)command, "i2c-set-addr", 12) == 0) {
-		int params[1];
-		int count = GetParameter(&command[12], params, 1);
-		if (count != 1) {
-			Log("[Error] Bad parameter.\n");
-		} else {
-			uint8_t addr = (uint8_t)params[0];
-			Log("I2C Slave Address : %d (0x%x)\n", addr, addr);
-			SetI2CSlaveAddress(&hi2c1, addr);
-		}
+	} else if (strncmp((const char*)command, "gpio-read-jp", 12) == 0) {
+		// JP2,3,4 (A0,1,2) の値を読み込む
+		uint8_t a0 = HAL_GPIO_ReadPin(I2C_SLAVE_ADDR_A0_GPIO_Port, I2C_SLAVE_ADDR_A0_Pin);
+		uint8_t a1 = HAL_GPIO_ReadPin(I2C_SLAVE_ADDR_A1_GPIO_Port, I2C_SLAVE_ADDR_A1_Pin);
+		uint8_t a2 = HAL_GPIO_ReadPin(I2C_SLAVE_ADDR_A2_GPIO_Port, I2C_SLAVE_ADDR_A2_Pin);
+		Log("JP2,3,4 (A0,1,2) = %d,%d,%d\n", a0, a1, a2);
 
 	} else if (strncmp((const char*)command, "", 1) == 0) {
 		// 空改行は何も表示しない
@@ -330,8 +340,6 @@ void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 	} else {
 		Log("[Error] Command not found: \"%s\"\n", command);
 	}
-
-	Log("> ");
 }
 
 /**

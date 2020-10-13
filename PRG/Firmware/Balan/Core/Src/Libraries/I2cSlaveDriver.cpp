@@ -59,7 +59,7 @@ I2cSlaveDriver::I2cSlaveDriver(uint8_t ownAddress) :
 	// --------------------------------------------------
 	// I2C1 ペリフェラルの初期化
 	// --------------------------------------------------
-	I2C_TypeDef *i2c = I2C1;
+	I2C_TypeDef *i2c = m_Dev;
 
 	// ペリフェラルの無効化 (各種設定は無効化中のみ設定可能)
 	i2c->CR1     &= ~I2C_CR1_PE;
@@ -91,6 +91,14 @@ I2cSlaveDriver::~I2cSlaveDriver()
 {
 	// 破棄禁止
 	ASSERT(0);
+}
+
+/**
+ * 実際に H/W に設定されているアドレスを取得する (デバッグ用)
+ */
+uint8_t I2cSlaveDriver::GetSlaveAddress()
+{
+	return (m_Dev->OAR1 & I2C_OAR1_OA1) >> 1;
 }
 
 /**

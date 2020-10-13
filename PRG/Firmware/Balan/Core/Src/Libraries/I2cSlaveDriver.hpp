@@ -28,6 +28,7 @@ private:
 public:
 	I2cSlaveDriver(uint8_t ownAddress);
 	~I2cSlaveDriver();
+	uint8_t GetSlaveAddress();
 	void TryGetReceivedFrame(uint8_t *outBuffer, int *count);
 	void EventHandler();
 	void ErrorHandler();
