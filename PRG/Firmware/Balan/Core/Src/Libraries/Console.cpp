@@ -58,6 +58,54 @@ uint8_t ReadI2cSlaveAddressFromJumper()
 	return slaveAddress;
 }
 
+enum class PumpCommandType : uint8_t {
+	Reset			= 0x00,
+	RegisterType	= 0x01,
+	SetPattern		= 0x02,
+	SetBrightness	= 0x03,
+};
+
+/**
+ * Pump からの受信フレームを解析する
+ */
+int AnalyzePumpFrame(const uint8_t *buffer, int count, uint32_t currentTick, StepScheduler *stepScheduler)
+{
+	if (count < 2) {
+		DEBUG_LOG("[pump] Frame count is invalid!\n");
+		return -1;
+	}
+
+	switch (static_cast<PumpCommandType>(buffer[1])) {
+	case PumpCommandType::Reset:
+		// TODO:
+		DEBUG_LOG("[pump] Reset is not implemented.\n");
+		ASSERT(count == 2);
+		break;
+
+	case PumpCommandType::RegisterType:
+		// TODO:
+		DEBUG_LOG("[pump] RegisterType is not implemented.\n");
+		ASSERT(count == 3);
+		break;
+
+	case PumpCommandType::SetPattern:
+		ASSERT(count == 5);
+		stepScheduler->BeginPattern(currentTick, buffer[0] - 0x70, buffer[2], buffer[3], (buffer[4] != 0));
+		break;
+
+	case PumpCommandType::SetBrightness:
+		ASSERT(count == 3);
+		stepScheduler->SetBrightness(buffer[0], buffer[2]);
+		break;
+
+	default:
+		DEBUG_LOG("[pump] Unknown command!\n");
+		return -2;
+	}
+
+	return 0;
+}
+
 /************************************************************
  *  Public Functions
  ************************************************************/
@@ -114,20 +162,21 @@ void Console::Run(void)
 			}
 		}
 
-		// TODO: PumpAdapter で受信フレームの解析が必要！！！
+		// Pump 指令
 		uint8_t buffer[5] = { 0 };
 		int count = 0;
 		i2cSlaveDriver->TryGetReceivedFrame(buffer, &count);
 		if (count > 0) {
-			// DEBUG:
-			Log("UPPER_I2C : [ ");
-			for (int i = 0; i < count; i++) {
-				Log("0x%02X ", buffer[i]);
-			}
-			Log("]\n");
+			int result = AnalyzePumpFrame(buffer, count, currentTick, stepScheduler);
 
-			// TODO: stepScheduler への繋ぎこみ
-			stepScheduler->BeginPattern(currentTick, buffer[0] - 0x70, buffer[1], buffer[2], (buffer[3] != 0));
+			// DEBUG:
+			if (result < 0) {
+				DEBUG_LOG("result: %d, count: %d, frame: [ \n", result, count);
+				for (int i = 0; i < count; i++) {
+					DEBUG_LOG("0x%02X ", buffer[i]);
+				}
+				DEBUG_LOG("]\n");
+			}
 		}
 
 		stepScheduler->Process(currentTick);
