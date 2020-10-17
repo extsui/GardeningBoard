@@ -6,20 +6,29 @@
 // 割り込みハンドラでコンテキストを共有するために必要 (事実上のシングルトン)
 static I2cSlaveDriver *g_Instance = NULL;
 
-// スレーブ受信割り込み許可
-// CR1_PE=1 の場合は書き換え不可なことに注意
-static inline void SlaveInterruptEnable(I2C_TypeDef *i2c)
+/**
+ * スレーブ受信割り込みロック
+ */
+class I2cSlaveLock
 {
-	// 受信完了割り込み、アドレス一致割り込み、STOP 検出割り込み、エラー割り込み許可
-	i2c->CR1 |= (I2C_CR1_RXIE | I2C_CR1_ADDRIE | I2C_CR1_STOPIE | I2C_CR1_ERRIE);
-}
+private:
+	I2C_TypeDef *m_Dev;
 
-// スレーブ受信割り込み禁止
-// CR1_PE=1 の場合は書き換え不可なことに注意
-static inline void SlaveInterruptDisable(I2C_TypeDef *i2c)
-{
-	i2c->CR1 &= ~(I2C_CR1_RXIE | I2C_CR1_ADDRIE | I2C_CR1_STOPIE | I2C_CR1_ERRIE);
-}
+public:
+	// スレーブ受信割り込み許可
+	// CR1_PE=1 の場合は書き換え不可なことに注意
+	I2cSlaveLock(I2C_TypeDef *i2c) : m_Dev(i2c)
+	{
+		// 受信完了割り込み、アドレス一致割り込み、STOP 検出割り込み、エラー割り込み許可
+		m_Dev->CR1 |= (I2C_CR1_RXIE | I2C_CR1_ADDRIE | I2C_CR1_STOPIE | I2C_CR1_ERRIE);
+	}
+	// スレーブ受信割り込み禁止
+	~I2cSlaveLock()
+	{
+		// CR1_PE=1 の場合は書き換え不可なことに注意
+		m_Dev->CR1 &= ~(I2C_CR1_RXIE | I2C_CR1_ADDRIE | I2C_CR1_STOPIE | I2C_CR1_ERRIE);
+	}
+};
 
 I2cSlaveDriver::I2cSlaveDriver(uint8_t ownAddress) :
 	m_Dev(I2C1),
@@ -112,29 +121,24 @@ void I2cSlaveDriver::TryGetReceivedFrame(uint8_t *outBuffer, int *count)
 	ASSERT(outBuffer != NULL);
 	ASSERT(count != NULL);
 
-	// 割り込み禁止で操作
-	SlaveInterruptDisable(m_Dev);
+	// 以降はクリティカルセクション
+	I2cSlaveLock lock(m_Dev);
 
-	do {
-		// 未受信
-		if (!m_HasFrame) {
-			*count = 0;
-			break;
-		}
+	// 未受信
+	if (!m_HasFrame) {
+		*count = 0;
+		return;
+	}
 
-		// 受信完了してて 受信バイト数=0 は起こりえない
-		ASSERT(m_Count >= 1);
+	// 受信完了してて 受信バイト数=0 は起こりえない
+	ASSERT(m_Count >= 1);
 
-		// 取得
-		memcpy(outBuffer, m_Frame, m_Count);
-		*count = m_Count;
+	// 取得
+	memcpy(outBuffer, m_Frame, m_Count);
+	*count = m_Count;
 
-		// 一度取得したら受信フレームはリセット
-		ResetFrame();
-
-	} while (0);
-
-	SlaveInterruptEnable(m_Dev);
+	// 一度取得したら受信フレームはリセット
+	ResetFrame();
 }
 
 void I2cSlaveDriver::ResetFrame()
