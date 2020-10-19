@@ -71,7 +71,7 @@ enum class PumpCommandType : uint8_t {
 int AnalyzePumpFrame(const uint8_t *buffer, int count, uint32_t currentTick, StepScheduler *stepScheduler)
 {
 	if (count < 2) {
-		DEBUG_LOG("[pump] Frame count is invalid!\n");
+		//DEBUG_LOG("[pump] Frame count is invalid!\n");
 		return -1;
 	}
 
@@ -79,22 +79,25 @@ int AnalyzePumpFrame(const uint8_t *buffer, int count, uint32_t currentTick, Ste
 	case PumpCommandType::Reset:
 		// TODO:
 		DEBUG_LOG("[pump] Reset is not implemented.\n");
-		ASSERT(count == 2);
+		//ASSERT(count == 2);
 		break;
 
 	case PumpCommandType::RegisterType:
 		// TODO:
 		DEBUG_LOG("[pump] RegisterType is not implemented.\n");
-		ASSERT(count == 3);
+		//ASSERT(count == 3);
 		break;
 
 	case PumpCommandType::SetPattern:
-		ASSERT(count == 5);
+		//ASSERT(count == 5);
+		if (count != 5) {
+			return -3;
+		}
 		stepScheduler->BeginPattern(currentTick, buffer[0] - 0x70, buffer[2], buffer[3], (buffer[4] != 0));
 		break;
 
 	case PumpCommandType::SetBrightness:
-		ASSERT(count == 3);
+		//ASSERT(count == 3);
 		stepScheduler->SetBrightness(buffer[0], buffer[2]);
 		break;
 
@@ -163,23 +166,36 @@ void Console::Run(void)
 		}
 
 		// Pump 指令
-		uint8_t buffer[5] = { 0 };
-		int count = 0;
-		i2cSlaveDriver->TryGetReceivedFrame(buffer, &count);
-		if (count > 0) {
-			int result = AnalyzePumpFrame(buffer, count, currentTick, stepScheduler);
+		static int frameReceiveCount = 0;
+		I2cSlaveDriver::Frame frame;
 
-			// DEBUG:
+		// TODO: 現状だと 1 ループで 1 フレームしか解析できないので要改善。
+
+		DEBUG_LED_ON();
+		i2cSlaveDriver->TryGetReceivedFrame(frame);
+		DEBUG_LED_OFF();
+
+		if (frame.Count > 0) {
+			int result = AnalyzePumpFrame(frame.Buffer, frame.Count, currentTick, stepScheduler);
+
+			frameReceiveCount++;
+			if (i2cSlaveDriver->Debug_GetQueueCount() > 1) {
+				DEBUG_LOG("[%d] %d\n", frameReceiveCount, i2cSlaveDriver->Debug_GetQueueCount());
+			}
+
 			if (result < 0) {
-				DEBUG_LOG("result: %d, count: %d, frame: [ \n", result, count);
-				for (int i = 0; i < count; i++) {
-					DEBUG_LOG("0x%02X ", buffer[i]);
+				DEBUG_LOG("result: %d, count: %d, frame: [ ", result, frame.Count);
+				for (int i = 0; i < frame.Count; i++) {
+					DEBUG_LOG("0x%02X ", frame.Buffer[i]);
 				}
 				DEBUG_LOG("]\n");
 			}
 		}
 
 		stepScheduler->Process(currentTick);
+
+		// DEBUG: 敢えて大きい待ちを入れている
+		HAL_Delay(100);
 	}
 }
 

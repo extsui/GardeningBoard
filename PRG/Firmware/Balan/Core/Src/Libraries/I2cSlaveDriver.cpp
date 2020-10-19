@@ -15,18 +15,20 @@ private:
 	I2C_TypeDef *m_Dev;
 
 public:
-	// スレーブ受信割り込み許可
-	// CR1_PE=1 の場合は書き換え不可なことに注意
+	// スレーブ受信割り込み禁止
 	I2cSlaveLock(I2C_TypeDef *i2c) : m_Dev(i2c)
+	{
+		// CR1_PE=1 の場合は書き換え不可なことに注意
+		m_Dev->CR1 &= ~ I2C_CR1_PE;
+		m_Dev->CR1 &= ~(I2C_CR1_RXIE | I2C_CR1_ADDRIE | I2C_CR1_STOPIE | I2C_CR1_ERRIE);
+	}
+
+	// スレーブ受信割り込み許可
+	~I2cSlaveLock()
 	{
 		// 受信完了割り込み、アドレス一致割り込み、STOP 検出割り込み、エラー割り込み許可
 		m_Dev->CR1 |= (I2C_CR1_RXIE | I2C_CR1_ADDRIE | I2C_CR1_STOPIE | I2C_CR1_ERRIE);
-	}
-	// スレーブ受信割り込み禁止
-	~I2cSlaveLock()
-	{
-		// CR1_PE=1 の場合は書き換え不可なことに注意
-		m_Dev->CR1 &= ~(I2C_CR1_RXIE | I2C_CR1_ADDRIE | I2C_CR1_STOPIE | I2C_CR1_ERRIE);
+		m_Dev->CR1 |=  I2C_CR1_PE;
 	}
 };
 
@@ -37,8 +39,7 @@ I2cSlaveDriver::I2cSlaveDriver(uint8_t ownAddress) :
 	ASSERT((1 <= ownAddress) && (ownAddress <= 127));
 	ASSERT(g_Instance == NULL);
 	g_Instance = this;
-
-	ResetFrame();
+	m_IntrFrame.Reset();
 
 	// --------------------------------------------------
 	// I2C1 BSP の初期化 (HAL_I2C_MspInit() から流用)
@@ -80,10 +81,13 @@ I2cSlaveDriver::I2cSlaveDriver(uint8_t ownAddress) :
 	i2c->TIMEOUTR = 0;
 	i2c->ICR      = 0;
 
-	SlaveInterruptEnable(i2c);
+	// 受信完了割り込み、アドレス一致割り込み、STOP 検出割り込み、エラー割り込み許可
+	i2c->CR1 |= (I2C_CR1_RXIE | I2C_CR1_ADDRIE | I2C_CR1_STOPIE | I2C_CR1_ERRIE);
 
+	// TODO: 要検討
 	// クロックストレッチ有
-	i2c->CR1  &= ~I2C_CR1_NOSTRETCH;
+	//i2c->CR1  &= ~I2C_CR1_NOSTRETCH;
+	i2c->CR1  |=  I2C_CR1_NOSTRETCH;
 
 	// 受信時に ACK 応答
 	i2c->CR2  &= ~I2C_CR2_NACK;
@@ -110,42 +114,41 @@ uint8_t I2cSlaveDriver::GetSlaveAddress()
 	return (m_Dev->OAR1 & I2C_OAR1_OA1) >> 1;
 }
 
+// TODO: 後でメンバ変数にすること
+// これが無いとエラーが起きた後に欲しくないパケットも撮ってしまう
+enum class I2cState : uint8_t {
+	WaitAddress = 0,
+	Receiving = 1,
+	Error = 2,
+};
+
+static I2cState state = I2cState::WaitAddress;
+
 /**
  * 受信フレームがあれば取得する
  *
- * @param [out] outBuffer 受信フレームがある場合はフレーム本体が格納される。
+ * @param [out] frame 受信フレームがある場合はフレーム本体が格納される。
  * @param [out] count 受信フレームがある場合は受信バイト数が格納され、ない場合は 0 固定。
  */
-void I2cSlaveDriver::TryGetReceivedFrame(uint8_t *outBuffer, int *count)
+void I2cSlaveDriver::TryGetReceivedFrame(Frame& frame)
 {
-	ASSERT(outBuffer != NULL);
-	ASSERT(count != NULL);
+	// WORKAROUND: フレーム受信中に割禁すると落とすので避ける
+	// 参照のみなら競合は発生しないので問題ないはず
+	while (state != I2cState::WaitAddress)
+	{
+	}
 
 	// 以降はクリティカルセクション
 	I2cSlaveLock lock(m_Dev);
 
 	// 未受信
-	if (!m_HasFrame) {
-		*count = 0;
+	if (m_Queue.empty()) {
 		return;
 	}
 
-	// 受信完了してて 受信バイト数=0 は起こりえない
-	ASSERT(m_Count >= 1);
-
 	// 取得
-	memcpy(outBuffer, m_Frame, m_Count);
-	*count = m_Count;
-
-	// 一度取得したら受信フレームはリセット
-	ResetFrame();
-}
-
-void I2cSlaveDriver::ResetFrame()
-{
-	m_HasFrame = false;
-	memset(m_Frame, 0, FrameLengthMax);
-	m_Count = 0;
+	frame = m_Queue.front();
+	m_Queue.pop();
 }
 
 /************************************************************
@@ -158,32 +161,31 @@ void I2cSlaveDriver::EventHandler()
 	// アドレス一致
 	if (i2c->ISR & I2C_ISR_ADDR) {
 		i2c->ICR |= I2C_ICR_ADDRCF;
+		m_IntrFrame.Reset();
+
+		state = I2cState::Receiving;
 	}
 
 	// 受信完了
 	if (i2c->ISR & I2C_ISR_RXNE) {
-		// 受信完了フレームの取得前に次の受信が始まったら警告を表示した上で受信継続
-		if (m_HasFrame) {
-			printf("[Warning] I2cSlave : Call TryGetReceivedFrame() before next receipt.\n");
-			ResetFrame();
-		}
-
 		// バッファオーバーランは警告を表示した上で受信継続
 		// バッファオーバーラン時も RXNE を落とすためにレジスタリードは必要
 		uint8_t data = i2c->RXDR;
-		if (m_Count < FrameLengthMax) {
-			m_Frame[m_Count] = data;
-			m_Count++;
+		if (m_IntrFrame.Count < FrameLengthMax) {
+			m_IntrFrame.Buffer[m_IntrFrame.Count] = data;
+			m_IntrFrame.Count++;
 		} else {
-			printf("[Warning] I2cSlave : Buffer Overrun!\n");
+			DEBUG_LOG("[I2c1] Frame.Buffer Overrun!\n");
 		}
 	}
 
 	// STOP 検出
 	if (i2c->ISR & I2C_ISR_STOPF) {
 		i2c->ICR |= I2C_ICR_STOPCF;
-		if (m_Count >= 1) {
-			m_HasFrame = true;
+
+		if (state == I2cState::Receiving) {
+			m_Queue.push(m_IntrFrame);
+			state = I2cState::WaitAddress;
 		}
 	}
 }
@@ -192,19 +194,33 @@ void I2cSlaveDriver::ErrorHandler()
 {
 	I2C_TypeDef *i2c = m_Dev;
 
+	// バスエラー
+	if (i2c->ISR & I2C_ISR_BERR) {
+		i2c->ICR |= I2C_ICR_BERRCF;
+		m_IntrFrame.Reset();
+		DEBUG_LOG("[I2c1] Bus Error!\n");
+	}
+
 	// オーバーラン/アンダーラン
 	if (i2c->ISR & I2C_ISR_OVR) {
 		i2c->ICR |= I2C_ICR_OVRCF;
-		printf("[Warning] I2C1_ER_IRQ was called.");
+		m_IntrFrame.Reset();
+		DEBUG_LOG("[I2c1] Overrun!\n");
 	}
+
+	state = I2cState::Error;
 }
 
 extern "C" void I2C1_EV_IRQHandler(void)
 {
+	DEBUG_LED_ON();
 	g_Instance->EventHandler();
+	DEBUG_LED_OFF();
 }
 
 extern "C" void I2C1_ER_IRQHandler(void)
 {
+	DEBUG_LED_ON();
 	g_Instance->ErrorHandler();
+	DEBUG_LED_OFF();
 }
