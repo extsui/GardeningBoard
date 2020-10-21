@@ -65,13 +65,16 @@ enum class PumpCommandType : uint8_t {
 	SetBrightness	= 0x03,
 };
 
+// ポンプからの指令フレームの解析成功回数
+static int g_PumpFrameSuccessCount = 0;
+
 /**
  * Pump からの受信フレームを解析する
+ * @return 0: 成功 / -1: フレーム不成立 / -2: コマンドタイプ不明 / -3: コマンドサイズ不正
  */
 int AnalyzePumpFrame(const uint8_t *buffer, int count, uint32_t currentTick, StepScheduler *stepScheduler)
 {
 	if (count < 2) {
-		//DEBUG_LOG("[pump] Frame count is invalid!\n");
 		return -1;
 	}
 
@@ -79,17 +82,20 @@ int AnalyzePumpFrame(const uint8_t *buffer, int count, uint32_t currentTick, Ste
 	case PumpCommandType::Reset:
 		// TODO:
 		DEBUG_LOG("[pump] Reset is not implemented.\n");
-		//ASSERT(count == 2);
+		if (count != 2) {
+			return -3;
+		}
 		break;
 
 	case PumpCommandType::RegisterType:
 		// TODO:
 		DEBUG_LOG("[pump] RegisterType is not implemented.\n");
-		//ASSERT(count == 3);
+		if (count != 3) {
+			return -3;
+		}
 		break;
 
 	case PumpCommandType::SetPattern:
-		//ASSERT(count == 5);
 		if (count != 5) {
 			return -3;
 		}
@@ -97,7 +103,9 @@ int AnalyzePumpFrame(const uint8_t *buffer, int count, uint32_t currentTick, Ste
 		break;
 
 	case PumpCommandType::SetBrightness:
-		//ASSERT(count == 3);
+		if (count != 3) {
+			return -3;
+		}
 		stepScheduler->SetBrightness(buffer[0], buffer[2]);
 		break;
 
@@ -106,6 +114,7 @@ int AnalyzePumpFrame(const uint8_t *buffer, int count, uint32_t currentTick, Ste
 		return -2;
 	}
 
+	g_PumpFrameSuccessCount++;
 	return 0;
 }
 
@@ -165,28 +174,18 @@ void Console::Run(void)
 			}
 		}
 
-		// Pump 指令
-		static int frameReceiveCount = 0;
-
+		// -- Pump 指令解析 --
 		// BrickNum 回数分に達するかキューが空になるまで一括で処理
 		// (1 回の指令で多くとも BrickNum 個しか来ないという想定)
 		for (int i = 0; i < StepScheduler::BrickNum; i++) {
 			I2cSlaveDriver::Frame frame;
-
-			DEBUG_LED_ON();
 			i2cSlaveDriver->TryGetReceivedFrame(frame);
-			DEBUG_LED_OFF();
-
 			if (frame.Count == 0) {
 				break;
 			}
-
-			frameReceiveCount++;
-			DEBUG_LOG("[%d] %d\n", frameReceiveCount, i2cSlaveDriver->GetQueueCount());
-
 			int result = AnalyzePumpFrame(frame.Buffer, frame.Count, currentTick, stepScheduler);
 			if (result < 0) {
-				DEBUG_LOG("result: %d, count: %d, frame: [ ", result, frame.Count);
+				DEBUG_LOG("[pump] result: %d, count: %d, frame: [ ", result, frame.Count);
 				for (int i = 0; i < frame.Count; i++) {
 					DEBUG_LOG("0x%02X ", frame.Buffer[i]);
 				}
@@ -395,11 +394,8 @@ void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 		int receiveCount = i2cSlaveDriver->GetReceiveCount();
 		Log("I2C Receive Count : %d\n", receiveCount);
 
-	} else if (strncmp((const char*)command, "i2c-send-cnt", 13) == 0) {
-		Log("Not Implemented.\n");
-
-	} else if (strncmp((const char*)command, "i2c-send-err", 13) == 0) {
-		Log("Not Implemented.\n");
+	} else if (strncmp((const char*)command, "pump", 5) == 0) {
+		Log("Pump Frame Success Count : %d\n", g_PumpFrameSuccessCount);
 
 	} else if (strncmp((const char*)command, "gpio-read-jp", 13) == 0) {
 		// JP2,3,4 (A0,1,2) の値を読み込む
