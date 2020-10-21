@@ -50,6 +50,8 @@ private:
 	std::queue<Frame> m_Queue;
 	// 割り込み受信の保存に使用する一次フレーム
 	Frame m_IntrFrame;
+	// 受信回数 (デバッグ用)
+	int m_ReceiveCount;
 
 public:
 	I2cSlaveDriver(uint8_t ownAddress);
@@ -59,9 +61,15 @@ public:
 	void EventHandler();
 	void ErrorHandler();
 
-	int Debug_GetQueueCount()
+	// デバッグ用
+	int GetQueueCount()
 	{
 		return m_Queue.size();
+	}
+
+	int GetReceiveCount()
+	{
+		return m_ReceiveCount;
 	}
 };
 

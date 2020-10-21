@@ -167,22 +167,24 @@ void Console::Run(void)
 
 		// Pump 指令
 		static int frameReceiveCount = 0;
-		I2cSlaveDriver::Frame frame;
 
-		// TODO: 現状だと 1 ループで 1 フレームしか解析できないので要改善。
+		// BrickNum 回数分に達するかキューが空になるまで一括で処理
+		// (1 回の指令で多くとも BrickNum 個しか来ないという想定)
+		for (int i = 0; i < StepScheduler::BrickNum; i++) {
+			I2cSlaveDriver::Frame frame;
 
-		DEBUG_LED_ON();
-		i2cSlaveDriver->TryGetReceivedFrame(frame);
-		DEBUG_LED_OFF();
+			DEBUG_LED_ON();
+			i2cSlaveDriver->TryGetReceivedFrame(frame);
+			DEBUG_LED_OFF();
 
-		if (frame.Count > 0) {
-			int result = AnalyzePumpFrame(frame.Buffer, frame.Count, currentTick, stepScheduler);
-
-			frameReceiveCount++;
-			if (i2cSlaveDriver->Debug_GetQueueCount() > 1) {
-				DEBUG_LOG("[%d] %d\n", frameReceiveCount, i2cSlaveDriver->Debug_GetQueueCount());
+			if (frame.Count == 0) {
+				break;
 			}
 
+			frameReceiveCount++;
+			DEBUG_LOG("[%d] %d\n", frameReceiveCount, i2cSlaveDriver->GetQueueCount());
+
+			int result = AnalyzePumpFrame(frame.Buffer, frame.Count, currentTick, stepScheduler);
 			if (result < 0) {
 				DEBUG_LOG("result: %d, count: %d, frame: [ ", result, frame.Count);
 				for (int i = 0; i < frame.Count; i++) {
@@ -193,9 +195,6 @@ void Console::Run(void)
 		}
 
 		stepScheduler->Process(currentTick);
-
-		// DEBUG: 敢えて大きい待ちを入れている
-		HAL_Delay(100);
 	}
 }
 
@@ -388,11 +387,21 @@ void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 			}
 		}
 
-	} else if (strncmp((const char*)command, "i2c-get-addr", 12) == 0) {
+	} else if (strncmp((const char*)command, "i2c-get-addr", 13) == 0) {
 		uint8_t addr = i2cSlaveDriver->GetSlaveAddress();
 		Log("I2C Slave Address : %d (0x%x)\n", addr, addr);
 
-	} else if (strncmp((const char*)command, "gpio-read-jp", 12) == 0) {
+	} else if (strncmp((const char*)command, "i2c-recv-cnt", 13) == 0) {
+		int receiveCount = i2cSlaveDriver->GetReceiveCount();
+		Log("I2C Receive Count : %d\n", receiveCount);
+
+	} else if (strncmp((const char*)command, "i2c-send-cnt", 13) == 0) {
+		Log("Not Implemented.\n");
+
+	} else if (strncmp((const char*)command, "i2c-send-err", 13) == 0) {
+		Log("Not Implemented.\n");
+
+	} else if (strncmp((const char*)command, "gpio-read-jp", 13) == 0) {
 		// JP2,3,4 (A0,1,2) の値を読み込む
 		uint8_t a0 = HAL_GPIO_ReadPin(I2C_SLAVE_ADDR_A0_GPIO_Port, I2C_SLAVE_ADDR_A0_Pin);
 		uint8_t a1 = HAL_GPIO_ReadPin(I2C_SLAVE_ADDR_A1_GPIO_Port, I2C_SLAVE_ADDR_A1_Pin);

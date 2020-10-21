@@ -18,17 +18,14 @@ public:
 	// スレーブ受信割り込み禁止
 	I2cSlaveLock(I2C_TypeDef *i2c) : m_Dev(i2c)
 	{
-		// CR1_PE=1 の場合は書き換え不可なことに注意
-		m_Dev->CR1 &= ~ I2C_CR1_PE;
+		// 受信完了割り込み、アドレス一致割り込み、STOP 検出割り込み、エラー割り込み
 		m_Dev->CR1 &= ~(I2C_CR1_RXIE | I2C_CR1_ADDRIE | I2C_CR1_STOPIE | I2C_CR1_ERRIE);
 	}
 
 	// スレーブ受信割り込み許可
 	~I2cSlaveLock()
 	{
-		// 受信完了割り込み、アドレス一致割り込み、STOP 検出割り込み、エラー割り込み許可
-		m_Dev->CR1 |= (I2C_CR1_RXIE | I2C_CR1_ADDRIE | I2C_CR1_STOPIE | I2C_CR1_ERRIE);
-		m_Dev->CR1 |=  I2C_CR1_PE;
+		m_Dev->CR1 |=  (I2C_CR1_RXIE | I2C_CR1_ADDRIE | I2C_CR1_STOPIE | I2C_CR1_ERRIE);
 	}
 };
 
@@ -40,6 +37,7 @@ I2cSlaveDriver::I2cSlaveDriver(uint8_t ownAddress) :
 	ASSERT(g_Instance == NULL);
 	g_Instance = this;
 	m_IntrFrame.Reset();
+	m_ReceiveCount = 0;
 
 	// --------------------------------------------------
 	// I2C1 BSP の初期化 (HAL_I2C_MspInit() から流用)
@@ -82,11 +80,11 @@ I2cSlaveDriver::I2cSlaveDriver(uint8_t ownAddress) :
 	i2c->ICR      = 0;
 
 	// 受信完了割り込み、アドレス一致割り込み、STOP 検出割り込み、エラー割り込み許可
-	i2c->CR1 |= (I2C_CR1_RXIE | I2C_CR1_ADDRIE | I2C_CR1_STOPIE | I2C_CR1_ERRIE);
+	i2c->CR1 |=  (I2C_CR1_RXIE | I2C_CR1_ADDRIE | I2C_CR1_STOPIE | I2C_CR1_ERRIE);
 
-	// TODO: 要検討
-	// クロックストレッチ有
-	//i2c->CR1  &= ~I2C_CR1_NOSTRETCH;
+	// クロックストレッチ無し
+	// 参考: CPU 16MHz I2C 100kHz 受信、多重割り込み無しでストレッチ発生せずロス無し。
+	// 何らかの不具合が発生して SCL をストレッチされる方がリスキーなのでストレッチ無とする。
 	i2c->CR1  |=  I2C_CR1_NOSTRETCH;
 
 	// 受信時に ACK 応答
@@ -114,30 +112,12 @@ uint8_t I2cSlaveDriver::GetSlaveAddress()
 	return (m_Dev->OAR1 & I2C_OAR1_OA1) >> 1;
 }
 
-// TODO: 後でメンバ変数にすること
-// これが無いとエラーが起きた後に欲しくないパケットも撮ってしまう
-enum class I2cState : uint8_t {
-	WaitAddress = 0,
-	Receiving = 1,
-	Error = 2,
-};
-
-static I2cState state = I2cState::WaitAddress;
-
 /**
  * 受信フレームがあれば取得する
- *
  * @param [out] frame 受信フレームがある場合はフレーム本体が格納される。
- * @param [out] count 受信フレームがある場合は受信バイト数が格納され、ない場合は 0 固定。
  */
 void I2cSlaveDriver::TryGetReceivedFrame(Frame& frame)
 {
-	// WORKAROUND: フレーム受信中に割禁すると落とすので避ける
-	// 参照のみなら競合は発生しないので問題ないはず
-	while (state != I2cState::WaitAddress)
-	{
-	}
-
 	// 以降はクリティカルセクション
 	I2cSlaveLock lock(m_Dev);
 
@@ -162,8 +142,6 @@ void I2cSlaveDriver::EventHandler()
 	if (i2c->ISR & I2C_ISR_ADDR) {
 		i2c->ICR |= I2C_ICR_ADDRCF;
 		m_IntrFrame.Reset();
-
-		state = I2cState::Receiving;
 	}
 
 	// 受信完了
@@ -182,11 +160,8 @@ void I2cSlaveDriver::EventHandler()
 	// STOP 検出
 	if (i2c->ISR & I2C_ISR_STOPF) {
 		i2c->ICR |= I2C_ICR_STOPCF;
-
-		if (state == I2cState::Receiving) {
-			m_Queue.push(m_IntrFrame);
-			state = I2cState::WaitAddress;
-		}
+		m_Queue.push(m_IntrFrame);
+		m_ReceiveCount++;
 	}
 }
 
@@ -207,8 +182,6 @@ void I2cSlaveDriver::ErrorHandler()
 		m_IntrFrame.Reset();
 		DEBUG_LOG("[I2c1] Overrun!\n");
 	}
-
-	state = I2cState::Error;
 }
 
 extern "C" void I2C1_EV_IRQHandler(void)
