@@ -14,6 +14,8 @@
 
 #include "Ht16k33.hpp"
 
+#include "I2cSlaveDriver.hpp"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,7 +24,99 @@
 /************************************************************
  *  Defines
  ************************************************************/
+// I2C スレーブアドレスのベース値 (下位 3 ビットは可変)
+#define I2C_SLAVE_ADDRESS_BASE	(0x60)
+
 StepScheduler *stepScheduler = NULL;
+I2cSlaveDriver *i2cSlaveDriver = NULL;
+
+/************************************************************
+ *  Console 以外の機能 (小規模なので同ファイルに含める)
+ ************************************************************/
+/**
+ * JP の値から I2C スレーブアドレスを決定し取得する
+ * (複数一致確認すべきだが JP が変動するとは思えないので省略)
+ */
+uint8_t ReadI2cSlaveAddressFromJumper()
+{
+	// A0-2 は負論理 (開放が 1 で短絡が 0)
+	// デフォルト (開放) を論理 0 とみなす
+	uint8_t physicalA0 = HAL_GPIO_ReadPin(I2C_SLAVE_ADDR_A0_GPIO_Port, I2C_SLAVE_ADDR_A0_Pin);
+	uint8_t physicalA1 = HAL_GPIO_ReadPin(I2C_SLAVE_ADDR_A1_GPIO_Port, I2C_SLAVE_ADDR_A1_Pin);
+	uint8_t physicalA2 = HAL_GPIO_ReadPin(I2C_SLAVE_ADDR_A2_GPIO_Port, I2C_SLAVE_ADDR_A2_Pin);
+
+	uint8_t logicalA0 = (physicalA0 == GPIO_PIN_SET) ? 0 : 1;
+	uint8_t logicalA1 = (physicalA1 == GPIO_PIN_SET) ? 0 : 1;
+	uint8_t logicalA2 = (physicalA2 == GPIO_PIN_SET) ? 0 : 1;
+
+	uint8_t slaveAddress =
+		I2C_SLAVE_ADDRESS_BASE |
+		(logicalA2 << 2)       |
+		(logicalA1 << 1)       |
+		(logicalA0 << 0);
+
+	return slaveAddress;
+}
+
+enum class PumpCommandType : uint8_t {
+	Reset			= 0x00,
+	RegisterType	= 0x01,
+	SetPattern		= 0x02,
+	SetBrightness	= 0x03,
+};
+
+// ポンプからの指令フレームの解析成功回数
+static int g_PumpFrameSuccessCount = 0;
+
+/**
+ * Pump からの受信フレームを解析する
+ * @return 0: 成功 / -1: フレーム不成立 / -2: コマンドタイプ不明 / -3: コマンドサイズ不正
+ */
+int AnalyzePumpFrame(const uint8_t *buffer, int count, uint32_t currentTick, StepScheduler *stepScheduler)
+{
+	if (count < 2) {
+		return -1;
+	}
+
+	switch (static_cast<PumpCommandType>(buffer[1])) {
+	case PumpCommandType::Reset:
+		// TODO:
+		DEBUG_LOG("[pump] Reset is not implemented.\n");
+		if (count != 2) {
+			return -3;
+		}
+		break;
+
+	case PumpCommandType::RegisterType:
+		// TODO:
+		DEBUG_LOG("[pump] RegisterType is not implemented.\n");
+		if (count != 3) {
+			return -3;
+		}
+		break;
+
+	case PumpCommandType::SetPattern:
+		if (count != 5) {
+			return -3;
+		}
+		stepScheduler->BeginPattern(currentTick, buffer[0] - 0x70, buffer[2], buffer[3], (buffer[4] != 0));
+		break;
+
+	case PumpCommandType::SetBrightness:
+		if (count != 3) {
+			return -3;
+		}
+		stepScheduler->SetBrightness(buffer[0], buffer[2]);
+		break;
+
+	default:
+		DEBUG_LOG("[pump] Unknown command!\n");
+		return -2;
+	}
+
+	g_PumpFrameSuccessCount++;
+	return 0;
+}
 
 /************************************************************
  *  Public Functions
@@ -43,11 +137,18 @@ void Console::Run(void)
 	static uint8_t commandBuffer[80];
 	int commandBufferIndex = 0;
 
+	Log("-- Gardening Board --\n");
+
 	StartReceive();
 
 	stepScheduler = new StepScheduler();
 
-	Log("-- Gardening Board --\n> ");
+	uint8_t ownAddress = ReadI2cSlaveAddressFromJumper();
+	i2cSlaveDriver = new I2cSlaveDriver(ownAddress);
+
+	Log("[i2c] OwnAddress : 0x%x (%d)\n", ownAddress, ownAddress);
+
+	Log("> ");
 
 	// コマンドループ
 	while (1) {
@@ -68,6 +169,27 @@ void Console::Run(void)
 
 			    memset(commandBuffer, 0, sizeof(commandBuffer));
 			    commandBufferIndex = 0;
+
+				Log("> ");
+			}
+		}
+
+		// -- Pump 指令解析 --
+		// BrickNum 回数分に達するかキューが空になるまで一括で処理
+		// (1 回の指令で多くとも BrickNum 個しか来ないという想定)
+		for (int i = 0; i < StepScheduler::BrickNum; i++) {
+			I2cSlaveDriver::Frame frame;
+			i2cSlaveDriver->TryGetReceivedFrame(frame);
+			if (frame.Count == 0) {
+				break;
+			}
+			int result = AnalyzePumpFrame(frame.Buffer, frame.Count, currentTick, stepScheduler);
+			if (result < 0) {
+				DEBUG_LOG("[pump] result: %d, count: %d, frame: [ ", result, frame.Count);
+				for (int i = 0; i < frame.Count; i++) {
+					DEBUG_LOG("0x%02X ", frame.Buffer[i]);
+				}
+				DEBUG_LOG("]\n");
 			}
 		}
 
@@ -122,6 +244,8 @@ uint8_t Console::GetReceivedByte()
     }
     return c;
 }
+
+/************************************************************/
 
 void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 {
@@ -262,14 +386,30 @@ void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 			}
 		}
 
+	} else if (strncmp((const char*)command, "i2c-get-addr", 13) == 0) {
+		uint8_t addr = i2cSlaveDriver->GetSlaveAddress();
+		Log("I2C Slave Address : %d (0x%x)\n", addr, addr);
+
+	} else if (strncmp((const char*)command, "i2c-recv-cnt", 13) == 0) {
+		int receiveCount = i2cSlaveDriver->GetReceiveCount();
+		Log("I2C Receive Count : %d\n", receiveCount);
+
+	} else if (strncmp((const char*)command, "pump", 5) == 0) {
+		Log("Pump Frame Success Count : %d\n", g_PumpFrameSuccessCount);
+
+	} else if (strncmp((const char*)command, "gpio-read-jp", 13) == 0) {
+		// JP2,3,4 (A0,1,2) の値を読み込む
+		uint8_t a0 = HAL_GPIO_ReadPin(I2C_SLAVE_ADDR_A0_GPIO_Port, I2C_SLAVE_ADDR_A0_Pin);
+		uint8_t a1 = HAL_GPIO_ReadPin(I2C_SLAVE_ADDR_A1_GPIO_Port, I2C_SLAVE_ADDR_A1_Pin);
+		uint8_t a2 = HAL_GPIO_ReadPin(I2C_SLAVE_ADDR_A2_GPIO_Port, I2C_SLAVE_ADDR_A2_Pin);
+		Log("JP2,3,4 (A0,1,2) = %d,%d,%d\n", a0, a1, a2);
+
 	} else if (strncmp((const char*)command, "", 1) == 0) {
 		// 空改行は何も表示しない
 
 	} else {
 		Log("[Error] Command not found: \"%s\"\n", command);
 	}
-
-	Log("> ");
 }
 
 /**

@@ -1,6 +1,7 @@
 #ifndef BALAN_HPP
 #define BALAN_HPP
 
+#include "main.h"
 #include <stdio.h>
 
 // ITM 経由のデバッグログ出力
@@ -16,5 +17,15 @@ static inline void ABORT() { while (1); }
 #define ASSERT(expr)                              \
     ((expr) ? ((void)0) :                         \
     (void)(__ASSERT(#expr, __FILE__, __LINE__)))
+
+static inline void DEBUG_LED_ON()
+{
+	HAL_GPIO_WritePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin, GPIO_PIN_SET);
+}
+
+static inline void DEBUG_LED_OFF()
+{
+	HAL_GPIO_WritePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin, GPIO_PIN_RESET);
+}
 
 #endif /* BALAN_HPP */
