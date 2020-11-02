@@ -81,7 +81,7 @@ extern "C" int _write(int file, char *ptr, int len)
  * 次に確保したときのアドレスを返すので、
  * 厳密にはヒープの先頭ではないことに注意。
  */
-extern "C" uint32_t QueryCurrentHeapTop()
+uint32_t QueryCurrentHeapTop()
 {
 	int *p = new int(0);
 	delete p;

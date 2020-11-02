@@ -70,7 +70,7 @@ static int g_PumpFrameSuccessCount = 0;
 
 /**
  * Pump からの受信フレームを解析する
- * @return 0: 成功 / -1: フレーム不成立 / -2: コマンドタイプ不明 / -3: コマンドサイズ不正
+ * @return 0: 成功 / -1: フレーム不成立 / -2: コマンドタイプ不明 / -3: コマンドサイズ不正 / -4: コマンド内部エラー
  */
 int AnalyzePumpFrame(const uint8_t *buffer, int count, uint32_t currentTick, StepScheduler *stepScheduler)
 {
@@ -80,18 +80,18 @@ int AnalyzePumpFrame(const uint8_t *buffer, int count, uint32_t currentTick, Ste
 
 	switch (static_cast<PumpCommandType>(buffer[1])) {
 	case PumpCommandType::Reset:
-		// TODO:
-		DEBUG_LOG("[pump] Reset is not implemented.\n");
 		if (count != 2) {
 			return -3;
 		}
+		HAL_NVIC_SystemReset();
 		break;
 
 	case PumpCommandType::RegisterType:
-		// TODO:
-		DEBUG_LOG("[pump] RegisterType is not implemented.\n");
 		if (count != 3) {
 			return -3;
+		}
+		if (stepScheduler->RegisterBrick(buffer[0], static_cast<BrickType>(buffer[2])) != 0) {
+			return -4;
 		}
 		break;
 
@@ -99,14 +99,18 @@ int AnalyzePumpFrame(const uint8_t *buffer, int count, uint32_t currentTick, Ste
 		if (count != 5) {
 			return -3;
 		}
-		stepScheduler->BeginPattern(currentTick, buffer[0] - 0x70, buffer[2], buffer[3], (buffer[4] != 0));
+		if (stepScheduler->BeginPattern(currentTick, buffer[0], buffer[2], buffer[3], (buffer[4] != 0)) != 0) {
+			return -4;
+		}
 		break;
 
 	case PumpCommandType::SetBrightness:
 		if (count != 3) {
 			return -3;
 		}
-		stepScheduler->SetBrightness(buffer[0], buffer[2]);
+		if (stepScheduler->SetBrightness(buffer[0], buffer[2]) != 0) {
+			return -4;
+		}
 		break;
 
 	default:
@@ -249,98 +253,55 @@ uint8_t Console::GetReceivedByte()
 
 void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 {
-	// TODO: test コマンドを 1 個にまとめる
-	// - "test 1" --> 点灯テスト
-	// - "test 2" --> アドレステスト
-	if (strncmp((const char*)command, "test", 4) == 0) {
-		Log("Test: Begin.\n");
+	if (strncmp((const char*)command, "test", 5) == 0) {
+		Log("Brick Test\n");
 		SoftwareI2c dev;
+		for (int i = 0; i < StepScheduler::BrickNum; i++) {
+			Log(".");
+			auto brick(std::make_unique<Tile>(&dev, Ht16k33::BaseAddress + i));
+			brick->SetBrightness(1);
+			brick->Test(10);
+		}
+		Log("\nDone.\n");
 
-		Log("0x70\n");
-		Brick *brick0 = new House(&dev, 0x70);
-		brick0->SetBrightness(1);
-		brick0->Test(10);
-		delete brick0;
+	} else if (strncmp((const char*)command, "addr", 5) == 0) {
+		Log("I2C Address Check\n");
 
-		Log("0x71\n");
-		Brick *brick1 = new Grass(&dev, 0x71);
-		brick1->SetBrightness(1);
-		brick1->Test(10);
-		delete brick1;
-
-		Log("0x72\n");
-		Brick *brick2 = new Grass(&dev, 0x72);
-		brick2->SetBrightness(1);
-		brick2->Test(10);
-		delete brick2;
-
-		Log("0x73\n");
-		Brick *brick3 = new Tree(&dev, 0x73);
-		brick3->SetBrightness(1);
-		brick3->Test(10);
-		delete brick3;
-
-		Log("0x74\n");
-		Brick *brick4 = new Tile(&dev, 0x74);
-		brick4->SetBrightness(1);
-		brick4->Test(10);
-		delete brick4;
-
-		Log("0x75\n");
-		Brick *brick5 = new Tile(&dev, 0x75);
-		brick5->SetBrightness(1);
-		brick5->Test(10);
-		delete brick5;
-
-		Log("0x76\n");
-		Brick *brick6 = new Tile(&dev, 0x76);
-		brick6->SetBrightness(1);
-		brick6->Test(10);
-		delete brick6;
-
-		Log("0x77\n");
-		Brick *brick7 = new Tile(&dev, 0x77);
-		brick7->SetBrightness(1);
-		brick7->Test(10);
-		delete brick7;
-
-	} else if (strncmp((const char*)command, "addr", 4) == 0) {
-		Log("I2C Address Check (0x70-0x77)\n");
-
-		const int CheckCount = 1000;
-		int ackCount[8] = { 0 };
+		const int CheckCount = 10000;
+		int ackCount[StepScheduler::BrickNum] = { 0 };
 		SoftwareI2c softwareI2c;
 
 		for (int i = 0; i < CheckCount; i++) {
-			for (uint8_t addr = 0x70; addr <= 0x77; addr++) {
-				bool ack = softwareI2c.IsDeviceReady(addr);
+			for (int j = 0; j < StepScheduler::BrickNum; j++) {
+				bool ack = softwareI2c.IsDeviceReady(Ht16k33::BaseAddress + j);
 				if (ack) {
-					ackCount[addr - 0x70]++;
+					ackCount[j]++;
 				}
 			}
+			if (i % (CheckCount / 10) == 0) {
+				Log(".");
+			}
 		}
-
+		Log("\nDone.\nResult:\n");
 		for (int i = 0; i < 8; i++) {
-			Log("[0x%02x] %d\n", (0x70 + i), ackCount[i]);
+			Log("  [0x%02x] %d\n", (Ht16k33::BaseAddress + i), ackCount[i]);
 		}
 
-	} else if (strncmp((const char*)command, "0", 1) == 0) {
-		stepScheduler->BeginPattern(currentTick, 2, GRASS_PATTERN_ALL_ON, 100, false);
-		stepScheduler->BeginPattern(currentTick, 3, TREE_PATTERN_ALL_ON, 50, true);
+	} else if (strncmp((const char*)command, "reset", 6) == 0) {
+		DEBUG_LOG("Reset\n");
+		Log("Reset\n");
+		HAL_NVIC_SystemReset();
 
-	} else if (strncmp((const char*)command, "1", 1) == 0) {
-		stepScheduler->BeginPattern(currentTick, 0, HOUSE_PATTERN_STREAM, 100, false);
-		stepScheduler->BeginPattern(currentTick, 1, GRASS_PATTERN_BOTH_EDGE_TO_MIDDLE, 50, true);
-
-	} else if (strncmp((const char*)command, "2", 1) == 0) {
-		stepScheduler->BeginPattern(currentTick, 4, TILE_PATTERN_STREAM, 40, true);
-		stepScheduler->BeginPattern(currentTick, 5, TILE_PATTERN_STREAM, 50, true);
-		stepScheduler->BeginPattern(currentTick, 6, TILE_PATTERN_STREAM, 60, true);
-		stepScheduler->BeginPattern(currentTick, 7, TILE_PATTERN_STREAM, 70, true);
-
-	} else if (strncmp((const char*)command, "stop", 4) == 0) {
-		for (int i = 0; i < StepScheduler::BrickNum; i++) {
-			stepScheduler->BeginPattern(currentTick, i, GRASS_PATTERN_ALL_OFF, 0, false);
+	} else if (strncmp((const char*)command, "register", 8) == 0) {
+		// register <brick-id> <brick-type>
+		int params[2];
+		int count = GetParameter(&command[8], params, 2);
+		if (count == 2) {
+			uint8_t brickId = static_cast<uint8_t>(params[0]);
+			BrickType type  = static_cast<BrickType>(params[1]);
+			stepScheduler->RegisterBrick(brickId, type);
+		} else {
+			Log("[Error] Bad parameter counts.\n");
 		}
 
 	} else if (strncmp((const char*)command, "bright", 6) == 0) {
@@ -397,7 +358,7 @@ void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 	} else if (strncmp((const char*)command, "pump", 5) == 0) {
 		Log("Pump Frame Success Count : %d\n", g_PumpFrameSuccessCount);
 
-	} else if (strncmp((const char*)command, "gpio-read-jp", 13) == 0) {
+	} else if (strncmp((const char*)command, "jp", 3) == 0) {
 		// JP2,3,4 (A0,1,2) の値を読み込む
 		uint8_t a0 = HAL_GPIO_ReadPin(I2C_SLAVE_ADDR_A0_GPIO_Port, I2C_SLAVE_ADDR_A0_Pin);
 		uint8_t a1 = HAL_GPIO_ReadPin(I2C_SLAVE_ADDR_A1_GPIO_Port, I2C_SLAVE_ADDR_A1_Pin);

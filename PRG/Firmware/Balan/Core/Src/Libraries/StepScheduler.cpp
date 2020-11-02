@@ -1,23 +1,14 @@
+
 #include "StepScheduler.hpp"
+#include "Balan.hpp"
+
 #include "Grass.hpp"
 #include "Tree.hpp"
 #include "House.hpp"
 #include "Tile.hpp"
-#include <string.h>
 
-const struct {
-	uint8_t addr;
-	const char *name;
-} setting[] = {
-	{ 0x70, "House" },
-	{ 0x71, "Grass" },
-	{ 0x72, "Grass" },
-	{ 0x73, "Tree"  },
-	{ 0x74, "Tile"  },
-	{ 0x75, "Tile"  },
-	{ 0x76, "Tile"  },
-	{ 0x77, "Tile"  },
-};
+#include <string.h>
+#include "Ht16k33.hpp"
 
 StepScheduler::StepScheduler()
 {
@@ -26,25 +17,16 @@ StepScheduler::StepScheduler()
 	for (int i = 0; i < BrickNum; i++) {
 		BrickSchedule *schedule = &m_scheduleList[i];
 
-		if (strcmp(setting[i].name, "Grass") == 0) {
-			schedule->brick = new Grass(m_dev, setting[i].addr);
-		} else if (strcmp(setting[i].name, "Tree") == 0){
-			schedule->brick = new Tree(m_dev, setting[i].addr);
-		} else if (strcmp(setting[i].name, "House") == 0) {
-			schedule->brick = new House(m_dev, setting[i].addr);
-		} else if (strcmp(setting[i].name, "Tile") == 0) {
-			schedule->brick = new Tile(m_dev, setting[i].addr);
-		} else {
-			// TODO: assert(0);
-			while (1);
-		}
+		// TODO: Flash に保存されている構成を読み込んで設定する
+		// TORIAEZU: 現状は最も LED 数の多い House で仮設定
+		schedule->brick = std::make_unique<House>(m_dev, i + Ht16k33::BaseAddress);
 
 		// パターン送信ですぐ光らせるために HT16K33 を初期化しておく
 		schedule->brick->SetPattern(1);	// OFF
 		schedule->brick->Update();
 		schedule->brick->SetBrightness(1);
 
-		schedule->stepTiming = 0;	// TODO: 配列化
+		schedule->stepTiming = 0;
 		schedule->stepTimingLength = 0;
 		schedule->currentStepIndex = 0;
 		schedule->isRepeat = false;
@@ -57,6 +39,42 @@ StepScheduler::~StepScheduler()
 	// WORKAROUND:
 	// delete が必要だがデストラクタが呼び出されることはないので実装無し
 	while (1);
+}
+
+int StepScheduler::RegisterBrick(uint8_t brickId, BrickType type)
+{
+	if (brickId >= BrickNum) {
+		return -1;
+	}
+	if (type >= BrickType::Count) {
+		return -1;
+	}
+
+	// 明示的な解放は不要だがなるべく同じ領域を割り当てたいので先に解放
+	BrickSchedule *schedule = &m_scheduleList[brickId];
+	schedule->brick.reset();
+
+	std::unique_ptr<Brick> brick;
+	switch (type) {
+	case BrickType::Grass:
+		brick = std::make_unique<Grass>(m_dev, brickId + Ht16k33::BaseAddress);
+		break;
+	case BrickType::Tree:
+		brick = std::make_unique<Tree>(m_dev, brickId + Ht16k33::BaseAddress);
+		break;
+	case BrickType::House:
+		brick = std::make_unique<House>(m_dev, brickId + Ht16k33::BaseAddress);
+		break;
+	case BrickType::Tile:
+		brick = std::make_unique<Tile>(m_dev, brickId + Ht16k33::BaseAddress);
+		break;
+	default:
+		ASSERT(0);
+		break;
+	}
+
+	schedule->brick = std::move(brick);
+	return 0;
 }
 
 int StepScheduler::BeginPattern(uint32_t currentTick, uint8_t brickId, int patternId, uint8_t stepTiming, bool isRepeat)
@@ -101,23 +119,11 @@ int StepScheduler::SetBrightness(uint8_t brickId, uint8_t brightness)
 		return -1;
 	}
 
-	Brick *brick = m_scheduleList[brickId].brick;
+	auto brick = m_scheduleList[brickId].brick.get();
 	brick->SetBrightness(brightness);
 
 	return 0;
 }
-
-/**
- * @brief パターンを開始する
- * @param [in] partsId   パーツ ID (0-7)
- * @param [in] patternId パターン ID
- * @param [in] stepTiming ステップタイミング配列
- * @param [in] stepTimingLength ステップタイミング配列の長さ
- * @retval 0:成功 / -1:失敗
- */
-//int StepScheduler::BeginPattern(uint32_t currentTick, uint8_t brickId, uint8_t patternId, const uint8_t stepTiming[], int stepTimingLength, bool isRepeat)
-//{
-//}
 
 void StepScheduler::Process(uint32_t currentTick)
 {
