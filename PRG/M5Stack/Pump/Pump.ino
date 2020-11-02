@@ -97,14 +97,16 @@ int ExecuteCommand(const uint8_t *command)
     }
 
     int result = WireTransaction(array, length);
-
+    
+    // TORIAEZU: ログ出力すると処理が間に合わないので制限
     // 送信ログ
-    Serial.printf("[RawSendCommand] result = %d %s\n",
-      result, (result == 0 ? "(success)" : "(failed)"));
-    for (int i = 0; i < length; i++) {
-      Serial.printf(" %02x", array[i]);
-    }
-    Serial.printf("\n");
+    // Serial.printf("[RawSendCommand] result = %d %s\n",
+    //   result, (result == 0 ? "(success)" : "(failed)"));
+    // for (int i = 0; i < length; i++) {
+    //   Serial.printf(" %02x", array[i]);
+    // }
+    // Serial.printf("\n");
+    Serial.printf("o");
 
     return 0;
   }
