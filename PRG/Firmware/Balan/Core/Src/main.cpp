@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
+#include <string.h>
 #include "Libraries/Balan.hpp"
 #include "Libraries/Console.hpp"
 /* USER CODE END Includes */
@@ -72,6 +73,118 @@ extern "C" int _write(int file, char *ptr, int len)
 	}
 	return len;
 }
+
+/**
+ * 現在のヒープの先頭を取得する
+ *
+ * @attension
+ * 次に確保したときのアドレスを返すので、
+ * 厳密にはヒープの先頭ではないことに注意。
+ */
+uint32_t QueryCurrentHeapTop()
+{
+	int *p = new int(0);
+	delete p;
+	return reinterpret_cast<uint32_t>(p);
+}
+
+/**
+ * ヒープの末尾 (アドレス下位側) から指定サイズ分だけデバッグ用の値で埋める
+ */
+extern "C" void FillHeapForDebug(uint32_t bottom, uint32_t size, uint8_t fill)
+{
+	/*
+	 *  +-----+ <-- 0x0000000
+	 *  |     |
+	 * ~~~~~~~~~
+	 * ~~~~~~~~~
+	 *  |     |
+	 *  +-----+ <-- """about""" 0x20000388 (heap bottom)
+	 *  |#####| <-- used
+	 *  |  H  |
+	 *  |  E  |
+	 *  + - - + <-- margin
+	 *  |//A//|
+	 *  |//P//| <-- (fill)
+	 *  |/////|
+	 *  +-----+ <-- heap top (= bottom + size)
+	 *  |     |
+	 */
+	uint32_t top = bottom + size;
+	uint32_t margin = size / 2;
+	memset(reinterpret_cast<void*>(top - margin), fill, margin);
+
+	DEBUG_LOG("heap  : 0x%08lx-0x%08lx (%4lu) [fill=0x%02X, margin=%lu]\n",
+		bottom, top, size, fill, margin);
+}
+
+/**
+ * スタックの末尾 (アドレス上位側) から指定サイズ分だけデバッグ用の値で埋める
+ */
+extern "C" void FillStackForDebug(uint32_t bottom, uint32_t size, uint8_t fill)
+{
+	/*
+	 *  +-----+ <-- 0x0000000
+	 *  |     |
+	 * ~~~~~~~~~
+	 * ~~~~~~~~~
+	 *  |     |
+	 *  +-----+ <-- stack top (= bottom - size)
+	 *  |/////|
+	 *  |//S//| <-- (fill)
+	 *  |//T//|
+	 *  + -A- + <-- margin
+	 *  |  C  |
+	 *  |  K  |
+	 *  |#####| <-- used ($sp)
+	 *  +-----+ <-- 0x20003000 (stack bottom)
+	 *  |     |
+	 */
+	uint32_t top = bottom - size;
+	uint32_t margin = size / 2;
+	memset(reinterpret_cast<void*>(top - margin), fill, margin);
+
+	DEBUG_LOG("stack : 0x%08lx-0x%08lx (%4lu) [fill=0x%02X, margin=%lu]\n",
+		top, bottom, size, fill, margin);
+}
+
+extern "C" void ConfigMemory()
+{
+
+	// *.map の設定シンボル
+	extern char Min_Heap_Size asm("_Min_Heap_Size");
+	extern char Min_Stack_Size asm("_Min_Stack_Size");
+	// *.map のメモリ関連シンボル
+	extern char stext asm("g_pfnVectors");	// text 開始アドレス (割り込みベクタテーブル)
+	extern char sidata asm("_sidata");
+	extern char etext asm("_etext");		// text 終了アドレス
+	extern char sdata asm("_sdata");		// data 開始アドレス
+	extern char edata asm("_edata");		// data 終了アドレス
+	extern char sbss asm("_sbss");			// bss 開始アドレス
+	extern char ebss asm("_ebss");			// bss 終了アドレス
+	extern char end asm("end");			// data, bss の末尾 (heap 先頭)
+	extern char estack asm("_estack");		// user_heap_stack の末尾 (stack 末尾)
+
+	DEBUG_LOG("== Memory Configuration ==\n");
+	DEBUG_LOG("-- Settings\n");
+	DEBUG_LOG("Min_Heap_Size  : %p\n", &Min_Heap_Size);
+	DEBUG_LOG("Min_Stack_Size : %p\n", &Min_Stack_Size);
+	DEBUG_LOG("-- Symbols\n");
+	DEBUG_LOG("stext  : %p\n", &stext);
+	DEBUG_LOG("sidata : %p\n", &sidata);
+	DEBUG_LOG("etext  : %p\n", &etext);
+	DEBUG_LOG("sdata  : %p\n", &sdata);
+	DEBUG_LOG("edata  : %p\n", &edata);
+	DEBUG_LOG("sbss   : %p\n", &sbss);
+	DEBUG_LOG("ebss   : %p\n", &ebss);
+	DEBUG_LOG("end    : %p\n", &end);
+	DEBUG_LOG("estack : %p\n", &estack);
+	DEBUG_LOG("-- Areas\n");
+	FillHeapForDebug(reinterpret_cast<uint32_t>(&end), reinterpret_cast<uint32_t>(&Min_Heap_Size), 0xEE);
+	FillStackForDebug(reinterpret_cast<uint32_t>(&estack), reinterpret_cast<uint32_t>(&Min_Stack_Size), 0xCC);
+	DEBUG_LOG("\n");
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -109,6 +222,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  ConfigMemory();
   DEBUG_LOG("Hello World!\n");
   Console *console = new Console(&huart2);
   console->Run();

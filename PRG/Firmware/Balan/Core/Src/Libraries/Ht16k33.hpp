@@ -6,6 +6,9 @@
 
 class Ht16k33 {
 public:
+	// ベースアドレス (Base + [ 0x00 : 0x07 ])
+	static constexpr uint8_t BaseAddress = 0x70;
+
 	// HT16K33 で規定されている輝度
 	static constexpr uint8_t BrightnessMin = 0;
 	static constexpr uint8_t BrightnessMax = 15;

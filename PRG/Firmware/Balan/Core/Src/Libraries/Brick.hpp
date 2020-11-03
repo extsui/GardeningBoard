@@ -5,6 +5,20 @@
 #include "SoftwareI2c.hpp"
 
 /**
+ * 部品の種類
+ */
+enum class BrickType : uint8_t
+{
+	Grass = 0,
+	Tree,
+	House,
+	Tile,
+
+	// 種類数
+	Count,
+};
+
+/**
  * 部品インタフェース
  * 
  * ガーデニングボードを構成する各種パーツ基板の基底クラス。

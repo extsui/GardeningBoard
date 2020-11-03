@@ -28,4 +28,6 @@ static inline void DEBUG_LED_OFF()
 	HAL_GPIO_WritePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin, GPIO_PIN_RESET);
 }
 
+uint32_t QueryCurrentHeapTop();
+
 #endif /* BALAN_HPP */
