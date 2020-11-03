@@ -538,6 +538,182 @@ namespace PruningTool
                 case Keys.Oemplus:
                     brickId = 7;
                     break;
+                case Keys.Z:
+                    // 全点灯
+                    await Task.Run(() =>
+                    {
+                        const int delay = 0;
+                        WriteSerialLog("@send 60000200ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 60010200ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 60020200ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 60030200ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 60040200ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 60050200ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 60060200ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 60070200ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 61000200ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 61010200ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 61020200ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 61030200ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 61040200ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 61050200ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 61060200ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 61070200ff01\n");
+                        Thread.Sleep(delay);
+                    });
+                    return;
+
+                case Keys.X:
+                    // 全消灯
+                    await Task.Run(() =>
+                    {
+                        const int delay = 0;
+                        WriteSerialLog("@send 60000201ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 60010201ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 60020201ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 60030201ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 60040201ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 60050201ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 60060201ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 60070201ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 61000201ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 61010201ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 61020201ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 61030201ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 61040201ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 61050201ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 61060201ff01\n");
+                        Thread.Sleep(delay);
+                        WriteSerialLog("@send 61070201ff01\n");
+                        Thread.Sleep(delay);
+                    });
+                    return;
+
+                case Keys.C:
+                    // 全点滅
+                    await Task.Run(() =>
+                    {
+                        for (int i = 0; i < 100; i++)
+                        {
+                            WriteSerialLog("@send 60000200ff01\n");
+                            WriteSerialLog("@send 60010200ff01\n");
+                            WriteSerialLog("@send 60020200ff01\n");
+                            WriteSerialLog("@send 60030200ff01\n");
+                            WriteSerialLog("@send 60040200ff01\n");
+                            WriteSerialLog("@send 60050200ff01\n");
+                            WriteSerialLog("@send 60060200ff01\n");
+                            WriteSerialLog("@send 60070200ff01\n");
+                            WriteSerialLog("@send 61000200ff01\n");
+                            WriteSerialLog("@send 61010200ff01\n");
+                            WriteSerialLog("@send 61020200ff01\n");
+                            WriteSerialLog("@send 61030200ff01\n");
+                            WriteSerialLog("@send 61040200ff01\n");
+                            WriteSerialLog("@send 61050200ff01\n");
+                            WriteSerialLog("@send 61060200ff01\n");
+                            WriteSerialLog("@send 61070200ff01\n");
+                            Thread.Sleep(500);
+
+                            WriteSerialLog("@send 60000201ff01\n");
+                            WriteSerialLog("@send 60010201ff01\n");
+                            WriteSerialLog("@send 60020201ff01\n");
+                            WriteSerialLog("@send 60030201ff01\n");
+                            WriteSerialLog("@send 60040201ff01\n");
+                            WriteSerialLog("@send 60050201ff01\n");
+                            WriteSerialLog("@send 60060201ff01\n");
+                            WriteSerialLog("@send 60070201ff01\n");
+                            WriteSerialLog("@send 61000201ff01\n");
+                            WriteSerialLog("@send 61010201ff01\n");
+                            WriteSerialLog("@send 61020201ff01\n");
+                            WriteSerialLog("@send 61030201ff01\n");
+                            WriteSerialLog("@send 61040201ff01\n");
+                            WriteSerialLog("@send 61050201ff01\n");
+                            WriteSerialLog("@send 61060201ff01\n");
+                            WriteSerialLog("@send 61070201ff01\n");
+                            Thread.Sleep(500);
+                        }
+                    });
+                    return;
+
+                case Keys.NumPad0:
+                    await Task.Run(() =>
+                    {
+                        WriteSerialLog("@send 600002031001\n");
+                        WriteSerialLog("@send 600102031001\n");
+                        WriteSerialLog("@send 600202031001\n");
+                        WriteSerialLog("@send 600302031001\n");
+                        WriteSerialLog("@send 600402031001\n");
+                        WriteSerialLog("@send 600502031001\n");
+                        WriteSerialLog("@send 600602031001\n");
+                        WriteSerialLog("@send 600702031001\n");
+
+                        WriteSerialLog("@send 610002031001\n");
+                        WriteSerialLog("@send 610102031001\n");
+                        WriteSerialLog("@send 610202031001\n");
+                        WriteSerialLog("@send 610302031001\n");
+                        WriteSerialLog("@send 610402031001\n");
+                        WriteSerialLog("@send 610502031001\n");
+                        WriteSerialLog("@send 610602031001\n");
+                        WriteSerialLog("@send 610702031001\n");
+                    });
+                    return;
+
+                case Keys.Up:
+                    await Task.Run(() =>
+                    {
+                        WriteSerialLog("@send 60000305\n");
+                        WriteSerialLog("@send 60010305\n");
+                        WriteSerialLog("@send 60020305\n");
+                        WriteSerialLog("@send 60030305\n");
+                        WriteSerialLog("@send 60040305\n");
+                        WriteSerialLog("@send 60050305\n");
+                        WriteSerialLog("@send 60060305\n");
+                        WriteSerialLog("@send 60070305\n");
+                    });
+                    return;
+
+                case Keys.Down:
+                    await Task.Run(() =>
+                    {
+                        WriteSerialLog("@send 60000301\n");
+                        WriteSerialLog("@send 60010301\n");
+                        WriteSerialLog("@send 60020301\n");
+                        WriteSerialLog("@send 60030301\n");
+                        WriteSerialLog("@send 60040301\n");
+                        WriteSerialLog("@send 60050301\n");
+                        WriteSerialLog("@send 60060301\n");
+                        WriteSerialLog("@send 60070301\n");
+                    });
+                    return;
+
                 default:
                     // 有効キー以外は NOP
                     return;
