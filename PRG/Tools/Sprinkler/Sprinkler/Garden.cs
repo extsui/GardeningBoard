@@ -51,26 +51,26 @@ namespace Sprinkler
             {
                 var units = new List<OperationUnit>
                 {
-                    new OperationUnit(new Brick(0x70, BrickType.House, BrickColor.Red    ), Position.Hexagon_Center   ),
-                    new OperationUnit(new Brick(0x71, BrickType.Grass, BrickColor.Green  ), Position.Hexagon_Down     ),
-                    new OperationUnit(new Brick(0x72, BrickType.Grass, BrickColor.Rainbow), Position.Hexagon_LeftDown ),
-                    new OperationUnit(new Brick(0x73, BrickType.Grass, BrickColor.Orange ), Position.Hexagon_RightDown),
-                    new OperationUnit(new Brick(0x74, BrickType.Tile,  BrickColor.Green  ), Position.Hexagon_RightDown),
-                    new OperationUnit(new Brick(0x75, BrickType.Tile,  BrickColor.White  ), Position.Hexagon_Down     ),
-                    new OperationUnit(new Brick(0x76, BrickType.Tile,  BrickColor.Red    ), Position.Hexagon_Center   ),
-                    new OperationUnit(new Brick(0x77, BrickType.Tile,  BrickColor.Orange ), Position.Hexagon_LeftDown ),
+                    new OperationUnit(new Brick(0, BrickType.House, BrickColor.Red    ), Position.Hexagon_Center   ),
+                    new OperationUnit(new Brick(6, BrickType.Tile,  BrickColor.Red    ), Position.Hexagon_Center   ),
+                    new OperationUnit(new Brick(3, BrickType.Grass, BrickColor.Orange ), Position.Hexagon_RightDown),
+                    new OperationUnit(new Brick(4, BrickType.Tile,  BrickColor.Green  ), Position.Hexagon_RightDown),
+                    new OperationUnit(new Brick(1, BrickType.Grass, BrickColor.Green  ), Position.Hexagon_Down     ),
+                    new OperationUnit(new Brick(5, BrickType.Tile,  BrickColor.White  ), Position.Hexagon_Down     ),
+                    new OperationUnit(new Brick(2, BrickType.Grass, BrickColor.Rainbow), Position.Hexagon_LeftDown ),
+                    new OperationUnit(new Brick(7, BrickType.Tile,  BrickColor.Orange ), Position.Hexagon_LeftDown ),
                 };
                 balans.Add(new Balan(0x60, units));
             }
             {
                 var units = new List<OperationUnit>
                 {
-                    new OperationUnit(new Brick(0x70, BrickType.Tree,  BrickColor.Green ), Position.Hexagon_RightUp),
-                    new OperationUnit(new Brick(0x71, BrickType.Tree,  BrickColor.Blue  ), Position.Hexagon_Up     ),
-                    new OperationUnit(new Brick(0x72, BrickType.Tree,  BrickColor.Yellow), Position.Hexagon_LeftUp ),
-                    new OperationUnit(new Brick(0x73, BrickType.Tile,  BrickColor.White ), Position.Hexagon_Up     ),
-                    new OperationUnit(new Brick(0x74, BrickType.Tile,  BrickColor.Blue  ), Position.Hexagon_RightUp),
-                    new OperationUnit(new Brick(0x75, BrickType.Tile,  BrickColor.Yellow), Position.Hexagon_LeftUp ),
+                    new OperationUnit(new Brick(3, BrickType.Tree,  BrickColor.Yellow), Position.Hexagon_LeftUp ),
+                    new OperationUnit(new Brick(4, BrickType.Tile,  BrickColor.White ), Position.Hexagon_LeftUp ),
+                    new OperationUnit(new Brick(2, BrickType.Tile,  BrickColor.White ), Position.Hexagon_Up     ),
+                    new OperationUnit(new Brick(6, BrickType.Tree,  BrickColor.Blue  ), Position.Hexagon_Up     ),
+                    new OperationUnit(new Brick(5, BrickType.Tile,  BrickColor.Blue  ), Position.Hexagon_RightUp),
+                    new OperationUnit(new Brick(1, BrickType.Tree,  BrickColor.Green ), Position.Hexagon_RightUp),
                 };
                 balans.Add(new Balan(0x61, units));
             }
@@ -106,7 +106,12 @@ namespace Sprinkler
             {
                 foreach (var unit in balan.Units)
                 {
-                    if (unit.Position == position)
+                    // TODO: Hexagon 以外の対応が必要
+                    if (position == Position.Hexagon_All)
+                    {
+                        commands.Add(PumpUtil.MakeSetPatternCommand(balan.Address, unit.Brick.Address, patternId, stepTiming, isRepeat));
+                    }
+                    else if (position == unit.Position)
                     {
                         switch (target)
                         {
@@ -192,21 +197,22 @@ namespace Sprinkler
         //  5         3
         //       4
         // -------------
-        Hexagon_Up        = (PositionConstant.FormationHexagon | 1),
-        Hexagon_RightUp   = (PositionConstant.FormationHexagon | 2),
-        Hexagon_RightDown = (PositionConstant.FormationHexagon | 3),
-        Hexagon_Down      = (PositionConstant.FormationHexagon | 4),
-        Hexagon_LeftDown  = (PositionConstant.FormationHexagon | 5),
-        Hexagon_LeftUp    = (PositionConstant.FormationHexagon | 6),
-        Hexagon_Center    = (PositionConstant.FormationHexagon | 7),
+        Hexagon_Up        = (PositionConstant.FormationHexagon | 0x01),
+        Hexagon_RightUp   = (PositionConstant.FormationHexagon | 0x02),
+        Hexagon_RightDown = (PositionConstant.FormationHexagon | 0x03),
+        Hexagon_Down      = (PositionConstant.FormationHexagon | 0x04),
+        Hexagon_LeftDown  = (PositionConstant.FormationHexagon | 0x05),
+        Hexagon_LeftUp    = (PositionConstant.FormationHexagon | 0x06),
+        Hexagon_Center    = (PositionConstant.FormationHexagon | 0x07),
+        Hexagon_All       = (PositionConstant.FormationHexagon | 0xFF),
 
         // -------------
         //       2
         //  1         3
         // -------------
-        Triangle_Left     = (PositionConstant.FormationTriangle | 1),
-        Triangle_Center   = (PositionConstant.FormationTriangle | 2),
-        Triangle_Right    = (PositionConstant.FormationTriangle | 3),
+        Triangle_Left     = (PositionConstant.FormationTriangle | 0x01),
+        Triangle_Center   = (PositionConstant.FormationTriangle | 0x02),
+        Triangle_Right    = (PositionConstant.FormationTriangle | 0x03),
     }
 
     /// <summary>
