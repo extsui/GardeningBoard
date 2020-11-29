@@ -1,29 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Diagnostics;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sprinkler
 {
+    /// <summary>
+    /// Pump 制御関連
+    /// </summary>
+    public class PumpUtil
+    {
+        // 例: "@send 60030103\n" : グループ 60 の BrickId=3 を Tile(=3) で登録
+        // 例: "@send 61000102\n" : グループ 61 の BrickId=0 を House(=2) で登録
+        public static string MakeRegisterBrickCommand(byte groupAddress, byte brickAddress, byte brickType)
+        {
+            return "@send " +
+                groupAddress.ToString("X2") +
+                brickAddress.ToString("X2") +
+                "01" +
+                brickType.ToString("X2") +
+                "\n";
+        }
+
+        // 例: "@send 600502000000\n" : グループ 60 の BrickId=5 を Pattern=0, StepTiming=0[ms], Repeat 無し でパターン設定
+        // 例: "@send 610302046401\n" : グループ 61 の BrickId=3 を Pattern=4, StepTiming=100[ms], Repeat 有り でパターン設定
+        public static string MakeSetPatternCommand(byte groupAddress, byte brickAddress, byte patternId, byte stepTiming, bool isRepeat)
+        {
+            return "@send " +
+                groupAddress.ToString("X2") +
+                brickAddress.ToString("X2") +
+                "02" +
+                patternId.ToString("X2") +
+                stepTiming.ToString("X2") +
+                ((isRepeat == true) ? "01" : "00") +
+                "\n";
+        }
+    }
+
     /// <summary>
     /// 庭
     /// </summary>
     public class Garden
     {
         public List<Balan> Balans { get; private set; }
-
-        /// <summary>
-        /// 指示対象
-        /// </summary>
-        public enum OperationTarget
-        {
-            TileOnly = 0,
-            InsertedOnly,
-            Both,
-        }
 
         public Garden()
         {
@@ -65,8 +84,23 @@ namespace Sprinkler
             throw new NotImplementedException();
         }
 
-        public string[] MakeOperation(Position position, OperationTarget target, byte patternId, byte stepTiming, bool isRepeat)
+        public List<string> MakeRegisterCommand()
         {
+            List<string> commands = new List<string>();
+            foreach (var balan in Balans)
+            {
+                foreach (var unit in balan.Units)
+                {
+                    commands.Add(PumpUtil.MakeRegisterBrickCommand((byte)balan.Address, unit.Brick.Address, (byte)unit.Brick.Type));
+                }
+            }
+            return commands;
+        }
+
+        public List<string> MakeOperationCommand(Position position, OperationTarget target, byte patternId, byte stepTiming, bool isRepeat)
+        {
+            List<string> commands = new List<string>();
+
             // 位置が一致するものを Balans から検索し対象を絞って指示する
             foreach (var balan in Balans)
             {
@@ -79,19 +113,19 @@ namespace Sprinkler
                             case OperationTarget.TileOnly:
                                 if (unit.Brick.IsTile())
                                 {
-                                    // TODO: pick
+                                    commands.Add(PumpUtil.MakeSetPatternCommand(balan.Address, unit.Brick.Address, patternId, stepTiming, isRepeat));
                                 }
                                 break;
 
                             case OperationTarget.InsertedOnly:
                                 if (unit.Brick.IsInserted())
                                 {
-                                    // TODO: pick
+                                    commands.Add(PumpUtil.MakeSetPatternCommand(balan.Address, unit.Brick.Address, patternId, stepTiming, isRepeat));
                                 }
                                 break;
 
                             case OperationTarget.Both:
-                                // TODO: pick
+                                commands.Add(PumpUtil.MakeSetPatternCommand(balan.Address, unit.Brick.Address, patternId, stepTiming, isRepeat));
                                 break;
 
                             default:
@@ -100,36 +134,41 @@ namespace Sprinkler
                     }
                 }
             }
-
-            // MEMO: 送信文字列を返す?
-            return xxx;
-        }
-    }
-
-    public class Balan
-    {
-        public int Id { get; private set; }
-        public List<OperationUnit> Units { get; private set; }
-
-        public Balan(int id, List<OperationUnit> units)
-        {
-            Id = id;
-            Units = units;
+            if (commands.Count == 0)
+            {
+                throw new InvalidOperationException("Target not found.");
+            }
+            return commands;
         }
     }
 
     /// <summary>
-    /// 指示単位 (部品 + 位置)
-    /// - 「土台 (Tile/...) + 挿入部品 (Grass/...)」がセットで同じ位置を設定されることを想定
+    /// 指示対象
     /// </summary>
-    public class OperationUnit
+    public enum OperationTarget
     {
-        public Brick Brick { get; private set; }
-        public Position Position { get; private set; }
-        public OperationUnit(Brick brick, Position position)
+        TileOnly = 0,
+        InsertedOnly,
+        Both,
+    }
+
+    /// <summary>
+    /// Brick を束ねたグループ
+    /// Balan (GroundGrowing) に対応する。
+    /// </summary>
+    public class Balan
+    {
+        public const int UnitCountMax = 8;
+
+        public byte Address { get; private set; }
+        public List<OperationUnit> Units { get; private set; }
+
+        public Balan(byte address, List<OperationUnit> units)
         {
-            Brick = brick;
-            Position = position;
+            Trace.Assert(units.Count <= UnitCountMax);
+
+            Address = address;
+            Units = units;
         }
     }
 
@@ -171,6 +210,21 @@ namespace Sprinkler
     }
 
     /// <summary>
+    /// 指示単位 (部品 + 位置)
+    /// - 「土台 (Tile/...) + 挿入部品 (Grass/...)」がセットで同じ位置を設定されることを想定
+    /// </summary>
+    public class OperationUnit
+    {
+        public Brick Brick { get; private set; }
+        public Position Position { get; private set; }
+        public OperationUnit(Brick brick, Position position)
+        {
+            Brick = brick;
+            Position = position;
+        }
+    }
+
+    /// <summary>
     /// 部品種別
     /// </summary>
     public enum BrickType : byte
@@ -196,6 +250,9 @@ namespace Sprinkler
         Rainbow,
     }
 
+    /// <summary>
+    /// 部品
+    /// </summary>
     public class Brick
     {
         public byte Address { get; private set; }
