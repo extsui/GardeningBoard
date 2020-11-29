@@ -18,6 +18,7 @@ namespace Sprinkler
             InitializeComponent();
 
             var ports = SerialPort.GetPortNames();
+            Garden garden = new Garden();
         }
     }
 }
