@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Sprinkler
 {
@@ -47,88 +48,8 @@ namespace Sprinkler
         private void buttonTest_Click(object sender, EventArgs e)
         {
             ExecuteTest();
-        }
-
-        private async void ExecuteTest()
-        {
-            // TODO: コマンド間の待ち時間を可変にしたい
-            // TODO: パターンの指定なども色々外注入にしたい
-            // TODO: 複数の Position を同時に制御したい (これは Garden 側で要対応案件)
-
-            Action register = () =>
-            {
-                var registerCommands = m_garden.MakeRegisterCommand();
-                SerialSendAsync(String.Join("", registerCommands));
-            };
-
-            Action turnOffAll = () =>
-            {
-                // TODO: OperationTarget は無視されるのでオーバーロードで引数無し版を作るべき
-                var operationCommands = m_garden.MakeOperationCommand(Position.Hexagon_All, OperationTarget.Both, 1, 0, false);
-                SerialSendAsync(String.Join("", operationCommands));
-            };
-
-            Action turnOnAll = () =>
-            {
-                // TODO: OperationTarget は無視されるのでオーバーロードで引数無し版を作るべき
-                var operationCommands = m_garden.MakeOperationCommand(Position.Hexagon_All, OperationTarget.Both, 0, 0, false);
-                SerialSendAsync(String.Join("", operationCommands));
-            };
-
-            Action sequentialTurnOn = () =>
-            {
-                var positionList = new List<Position>
-                {
-                    Position.Hexagon_Up,
-                    Position.Hexagon_RightUp,
-                    Position.Hexagon_RightDown,
-                    Position.Hexagon_Down,
-                    Position.Hexagon_LeftDown,
-                    Position.Hexagon_LeftUp,
-                    Position.Hexagon_Center,
-                };
-
-                foreach (var position in positionList)
-                {
-                    var operationCommands = m_garden.MakeOperationCommand(position, OperationTarget.Both, 0, 0, false);
-                    SerialSendAsync(String.Join("", operationCommands));
-                    Thread.Sleep(200);
-                }
-            };
-
-            Action sequentialTurnOff = () =>
-            {
-                var positionList = new List<Position>
-                {
-                    Position.Hexagon_Up,
-                    Position.Hexagon_RightUp,
-                    Position.Hexagon_RightDown,
-                    Position.Hexagon_Down,
-                    Position.Hexagon_LeftDown,
-                    Position.Hexagon_LeftUp,
-                    Position.Hexagon_Center,
-                };
-
-                foreach (var position in positionList)
-                {
-                    var operationCommands = m_garden.MakeOperationCommand(position, OperationTarget.Both, 1, 0, false);
-                    SerialSendAsync(String.Join("", operationCommands));
-                    Thread.Sleep(200);
-                }
-            };
-
-            await Task.Run(() =>
-            {
-                register();
-                turnOffAll();
-                turnOnAll();
-                Thread.Sleep(1000);
-                turnOffAll();
-                Thread.Sleep(1000);
-                sequentialTurnOn();
-                Thread.Sleep(1000);
-                sequentialTurnOff();
-            });
+            //SampleSequence();
+            //SampleBrightness();
         }
 
         private delegate void SafeCallDelegate(string value);
@@ -167,5 +88,180 @@ namespace Sprinkler
                 }
             }
         }
+
+        ////////////////////////////////////////////////////////////////////////////////
+        //  コマンド部品
+        ////////////////////////////////////////////////////////////////////////////////
+
+        // TODO: 単独の TurnOn とかは Position, Target を引数にしたコマンドが欲しくなる
+        // TODO: 輝度指定もあり?
+        // TODO: PositionList の Not が欲しくなる
+        // TODO: Formation 毎にコマンド群 (クラス?) を定義する必要がありそう? (今回であれば Hexagon 用)
+
+        private void CommandRegister()
+        {
+            var registerCommands = m_garden.MakeRegisterCommand();
+            SerialSendAsync(String.Join("", registerCommands));
+        }
+
+        private void CommandTurnOffAll()
+        {
+            // TODO: OperationTarget は無視されるのでオーバーロードで引数無し版を作るべき
+            var operationCommands = m_garden.MakeOperationCommand(Position.Hexagon_All, OperationTarget.Both, 1, 0, false);
+            SerialSendAsync(String.Join("", operationCommands));
+        }
+
+        private void CommandTurnOnAll()
+        {
+            // TODO: OperationTarget は無視されるのでオーバーロードで引数無し版を作るべき
+            var operationCommands = m_garden.MakeOperationCommand(Position.Hexagon_All, OperationTarget.Both, 0, 0, false);
+            SerialSendAsync(String.Join("", operationCommands));
+        }
+
+        private void SequentialCommandTurnOnInHexagonForm()
+        {
+            var positionList = new List<Position>
+            {
+                Position.Hexagon_Up,
+                Position.Hexagon_RightUp,
+                Position.Hexagon_RightDown,
+                Position.Hexagon_Down,
+                Position.Hexagon_LeftDown,
+                Position.Hexagon_LeftUp,
+                Position.Hexagon_Center,
+            };
+
+            foreach (var position in positionList)
+            {
+                var operationCommands = m_garden.MakeOperationCommand(position, OperationTarget.Both, 0, 0, false);
+                SerialSendAsync(String.Join("", operationCommands));
+                Thread.Sleep(200);
+            }
+        }
+
+        private void SequentialCommandTurnOffInHexagonForm()
+        {
+            var positionList = new List<Position>
+            {
+                Position.Hexagon_Up,
+                Position.Hexagon_RightUp,
+                Position.Hexagon_RightDown,
+                Position.Hexagon_Down,
+                Position.Hexagon_LeftDown,
+                Position.Hexagon_LeftUp,
+                Position.Hexagon_Center,
+            };
+
+            foreach (var position in positionList)
+            {
+                var operationCommands = m_garden.MakeOperationCommand(position, OperationTarget.Both, 1, 0, false);
+                SerialSendAsync(String.Join("", operationCommands));
+                Thread.Sleep(200);
+            }
+        }
+
+        private void CommandTurnOnInTriangleForm()
+        {
+            var TrianglePosition = new List<Position> { Position.Hexagon_Up, Position.Hexagon_RightDown, Position.Hexagon_LeftDown };
+            var operationCommands = m_garden.MakeOperationCommand(TrianglePosition, OperationTarget.TileOnly, 0, 0, false);
+            SerialSendAsync(String.Join("", operationCommands));
+        }
+
+        private void CommandTurnOnInReverseTriangleForm()
+        {
+            var ReverseTrianglePosition = new List<Position> { Position.Hexagon_Down, Position.Hexagon_LeftUp, Position.Hexagon_RightUp };
+            var operationCommands = m_garden.MakeOperationCommand(ReverseTrianglePosition, OperationTarget.TileOnly, 0, 0, false);
+            SerialSendAsync(String.Join("", operationCommands));
+        }
+
+        private void SequentialCommandOneShotSmoothly(Position position, OperationTarget target, int delayMsec)
+        {
+            SerialSendAsync(String.Join("", m_garden.MakeOperationCommand(position, target, 0, 0, false)));
+            
+            SerialSendAsync(String.Join("", m_garden.MakeBrightnessCommand(position, target, 1)));
+            Thread.Sleep(delayMsec);
+            SerialSendAsync(String.Join("", m_garden.MakeBrightnessCommand(position, target, 2)));
+            Thread.Sleep(delayMsec);
+            SerialSendAsync(String.Join("", m_garden.MakeBrightnessCommand(position, target, 3)));
+            Thread.Sleep(delayMsec);
+            SerialSendAsync(String.Join("", m_garden.MakeBrightnessCommand(position, target, 2)));
+            Thread.Sleep(delayMsec);
+            SerialSendAsync(String.Join("", m_garden.MakeBrightnessCommand(position, target, 1)));
+            Thread.Sleep(delayMsec);
+
+            SerialSendAsync(String.Join("", m_garden.MakeOperationCommand(position, target, 1, 0, false)));
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////
+        //  統合コマンド
+        ////////////////////////////////////////////////////////////////////////////////
+
+        private async void ExecuteTest()
+        {
+            // TODO: コマンド間の待ち時間を可変にしたい
+            // TODO: パターンの指定なども色々外注入にしたい
+            // TODO: 複数の Position を同時に制御したい (これは Garden 側で要対応案件)
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                CommandTurnOffAll();
+                CommandTurnOnAll();
+                Thread.Sleep(1000);
+                CommandTurnOffAll();
+                Thread.Sleep(1000);
+                SequentialCommandTurnOnInHexagonForm();
+                Thread.Sleep(1000);
+                SequentialCommandTurnOffInHexagonForm();
+            });
+        }
+
+        private async void SampleSequence()
+        {
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                for (int i = 0; i < 10; i++)
+                {
+                    CommandTurnOnInTriangleForm();
+                    Thread.Sleep(500);
+                    CommandTurnOffAll();
+                    CommandTurnOnInReverseTriangleForm();
+                    Thread.Sleep(500);
+                    CommandTurnOffAll();
+                }
+            });
+        }
+
+        private async void SampleBrightness()
+        {
+            var positions = new List<Position>
+            {
+                Position.Hexagon_Center,
+                Position.Hexagon_Up,
+                Position.Hexagon_RightUp,
+                Position.Hexagon_RightDown,
+                Position.Hexagon_Down,
+                Position.Hexagon_LeftDown,
+                Position.Hexagon_LeftUp,
+            };
+
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                foreach (var position in positions)
+                {
+                    SequentialCommandOneShotSmoothly(position, OperationTarget.TileOnly, 50);
+                    Thread.Sleep(50);
+                    SequentialCommandOneShotSmoothly(position, OperationTarget.InsertedOnly, 50);
+                    Thread.Sleep(50);
+                }
+                foreach (var position in positions.AsEnumerable().Reverse())
+                {
+                    SequentialCommandOneShotSmoothly(position, OperationTarget.Both, 50);
+                    Thread.Sleep(200);
+                }
+            });
+        }
+
     }
 }

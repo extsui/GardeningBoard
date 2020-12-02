@@ -35,6 +35,17 @@ namespace Sprinkler
                 ((isRepeat == true) ? "01" : "00") +
                 "\n";
         }
+
+        // 例: "@send 600201\n" : グループ 60 の brickAddress=02, Brightness=01 で輝度設定
+        public static string MakeSetBrightnessCommand(byte groupAddress, byte brickAddress, byte brightness)
+        {
+            return "@send " +
+                groupAddress.ToString("X2") +
+                brickAddress.ToString("X2") +
+                "03" +
+                brightness.ToString("X2") +
+                "\n";
+        }
     }
 
     /// <summary>
@@ -134,7 +145,79 @@ namespace Sprinkler
                                 break;
 
                             default:
-                                throw new InvalidOperationException();
+                                throw new InvalidOperationException("Invalid OperationTarget.");
+                        }
+                    }
+                }
+            }
+            if (commands.Count == 0)
+            {
+                throw new InvalidOperationException("Target not found.");
+            }
+            return commands;
+        }
+
+        // 複数位置に対する指示
+        public List<string> MakeOperationCommand(List<Position> positions, OperationTarget target, byte patternId, byte stepTiming, bool isRepeat)
+        {
+            List<string> commands = new List<string>();
+            foreach (var potision in positions)
+            {
+                commands.AddRange(MakeOperationCommand(potision, target, patternId, stepTiming, isRepeat));
+            }
+            return commands;
+        }
+
+        // 複数対象に対する指示
+        public List<string> MakeOperationCommand(Position position, List<OperationTarget> targets, byte patternId, byte stepTiming, bool isRepeat)
+        {
+            List<string> commands = new List<string>();
+            foreach (var target in targets)
+            {
+                commands.AddRange(MakeOperationCommand(position, target, patternId, stepTiming, isRepeat));
+            }
+            return commands;
+        }
+
+        // TODO: MakeOperationCommand とのコピペを消す
+        public List<string> MakeBrightnessCommand(Position position, OperationTarget target, byte brightness)
+        {
+            List<string> commands = new List<string>();
+
+            // 位置が一致するものを Balans から検索し対象を絞って指示する
+            foreach (var balan in Balans)
+            {
+                foreach (var unit in balan.Units)
+                {
+                    // TODO: Hexagon 以外の対応が必要
+                    if (position == Position.Hexagon_All)
+                    {
+                        commands.Add(PumpUtil.MakeSetBrightnessCommand(balan.Address, unit.Brick.Address, brightness));
+                    }
+                    else if (position == unit.Position)
+                    {
+                        switch (target)
+                        {
+                            case OperationTarget.TileOnly:
+                                if (unit.Brick.IsTile())
+                                {
+                                    commands.Add(PumpUtil.MakeSetBrightnessCommand(balan.Address, unit.Brick.Address, brightness));
+                                }
+                                break;
+
+                            case OperationTarget.InsertedOnly:
+                                if (unit.Brick.IsInserted())
+                                {
+                                    commands.Add(PumpUtil.MakeSetBrightnessCommand(balan.Address, unit.Brick.Address, brightness));
+                                }
+                                break;
+
+                            case OperationTarget.Both:
+                                commands.Add(PumpUtil.MakeSetBrightnessCommand(balan.Address, unit.Brick.Address, brightness));
+                                break;
+
+                            default:
+                                throw new InvalidOperationException("Invalid OperationTarget.");
                         }
                     }
                 }
