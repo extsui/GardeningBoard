@@ -27,7 +27,7 @@ namespace Sprinkler
 
         private void Sprinkler_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (m_serialPort.IsOpen)
+            if (m_serialPort?.IsOpen ?? false)
             {
                 m_serialPort.Close();
             }
@@ -51,6 +51,10 @@ namespace Sprinkler
 
         private async void ExecuteTest()
         {
+            // TODO: コマンド間の待ち時間を可変にしたい
+            // TODO: パターンの指定なども色々外注入にしたい
+            // TODO: 複数の Position を同時に制御したい (これは Garden 側で要対応案件)
+
             Action register = () =>
             {
                 var registerCommands = m_garden.MakeRegisterCommand();
@@ -88,23 +92,43 @@ namespace Sprinkler
                 {
                     var operationCommands = m_garden.MakeOperationCommand(position, OperationTarget.Both, 0, 0, false);
                     SerialSendAsync(String.Join("", operationCommands));
-                    Thread.Sleep(1000);
+                    Thread.Sleep(200);
                 }
             };
 
-            Action[] actions = new Action[] { register, turnOffAll, turnOnAll, turnOffAll, sequentialTurnOn, turnOffAll };
-
-            // TODO: これだと同期実行になってフォームが固まってしまう
-            // 複数の Action を順番に await 実行できる方法を見つける必要がある
-            // Continuous ? を使えば行けそうな気がしている
-            foreach (var action in actions)
+            Action sequentialTurnOff = () =>
             {
-                var t = new Task(action);
-                t.Start();
-                await t;
-                //t.RunSynchronously();
+                var positionList = new List<Position>
+                {
+                    Position.Hexagon_Up,
+                    Position.Hexagon_RightUp,
+                    Position.Hexagon_RightDown,
+                    Position.Hexagon_Down,
+                    Position.Hexagon_LeftDown,
+                    Position.Hexagon_LeftUp,
+                    Position.Hexagon_Center,
+                };
+
+                foreach (var position in positionList)
+                {
+                    var operationCommands = m_garden.MakeOperationCommand(position, OperationTarget.Both, 1, 0, false);
+                    SerialSendAsync(String.Join("", operationCommands));
+                    Thread.Sleep(200);
+                }
+            };
+
+            await Task.Run(() =>
+            {
+                register();
+                turnOffAll();
+                turnOnAll();
                 Thread.Sleep(1000);
-            }
+                turnOffAll();
+                Thread.Sleep(1000);
+                sequentialTurnOn();
+                Thread.Sleep(1000);
+                sequentialTurnOff();
+            });
         }
 
         private delegate void SafeCallDelegate(string value);
