@@ -31,6 +31,7 @@
             this.textBoxSerialLog = new System.Windows.Forms.TextBox();
             this.buttonConnect = new System.Windows.Forms.Button();
             this.buttonTest = new System.Windows.Forms.Button();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.SuspendLayout();
             // 
             // textBoxSerialLog
@@ -62,17 +63,27 @@
             this.buttonTest.UseVisualStyleBackColor = true;
             this.buttonTest.Click += new System.EventHandler(this.buttonTest_Click);
             // 
+            // statusStrip
+            // 
+            this.statusStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.statusStrip.Location = new System.Drawing.Point(0, 428);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(800, 22);
+            this.statusStrip.TabIndex = 3;
+            // 
             // Sprinkler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.buttonTest);
             this.Controls.Add(this.buttonConnect);
             this.Controls.Add(this.textBoxSerialLog);
             this.Name = "Sprinkler";
             this.Text = "Sprinkler";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Sprinkler_FormClosed);
+            this.Load += new System.EventHandler(this.Sprinkler_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -83,6 +94,7 @@
         private System.Windows.Forms.TextBox textBoxSerialLog;
         private System.Windows.Forms.Button buttonConnect;
         private System.Windows.Forms.Button buttonTest;
+        private System.Windows.Forms.StatusStrip statusStrip;
     }
 }
 

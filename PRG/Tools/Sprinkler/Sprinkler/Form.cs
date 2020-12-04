@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO.Ports;
 using System.Windows.Forms;
+using System.Windows.Forms.Design;
 using System.Collections.Generic;
 
 using System.Threading;
@@ -12,6 +13,18 @@ namespace Sprinkler
 {
     public partial class Sprinkler : Form
     {
+        /// <summary>
+        /// シリアル送信回数のステータスバー表示用
+        /// </summary>
+        private ToolStripStatusLabel m_toolStripStatusSerialSendCount;
+        private int m_serialSendCount;
+
+        private void UpdateStatusBar()
+        {
+            m_toolStripStatusSerialSendCount.Text = $"送信回数: {m_serialSendCount}";
+            m_serialSendCount++;
+        }
+
         private Garden m_garden;
         private SerialPort m_serialPort;
 
@@ -24,6 +37,15 @@ namespace Sprinkler
         {
             InitializeComponent();
             m_garden = new Garden();
+        }
+
+        private void Sprinkler_Load(object sender, EventArgs e)
+        {
+            // ステータスバー初期化
+            m_serialSendCount = 0;
+            m_toolStripStatusSerialSendCount = new ToolStripStatusLabel();
+            this.statusStrip.Items.Add(m_toolStripStatusSerialSendCount);
+            UpdateStatusBar();
         }
 
         private void Sprinkler_FormClosed(object sender, FormClosedEventArgs e)
@@ -50,6 +72,7 @@ namespace Sprinkler
             ExecuteTest();
             //SampleSequence();
             //SampleBrightness();
+            //SampleStress();
         }
 
         private delegate void SafeCallDelegate(string value);
@@ -85,6 +108,8 @@ namespace Sprinkler
 
                     // テキストボックスは "\r\n" しか改行と見なさないので置換
                     textBoxSerialLog.AppendText(string.Format("[{0}.{1:D03}] {2}", tickToSec, tickToMsec, line + "\r\n"));
+
+                    UpdateStatusBar();
                 }
             }
         }
@@ -263,5 +288,23 @@ namespace Sprinkler
             });
         }
 
+        private async void SampleStress()
+        {
+            // [性能メモ]
+            // - 送信回数: 28014 (回)
+            // - 経過時間: 55.5  (秒)
+            // - 115200bps で帯域占有が約 70 %
+            // - I2C バスは帯域余ってるっぽいので
+            //   シリアル通信速度を上げるのが吉
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                for (int i = 0; i < 1000; i++)
+                {
+                    CommandTurnOffAll();
+                    CommandTurnOnAll();
+                }
+            });
+        }
     }
 }
