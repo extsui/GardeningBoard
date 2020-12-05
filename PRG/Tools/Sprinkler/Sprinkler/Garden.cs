@@ -62,26 +62,26 @@ namespace Sprinkler
             {
                 var units = new List<OperationUnit>
                 {
-                    new OperationUnit(new Brick(0, BrickType.House, BrickColor.Red    ), Position.Hexagon_Center   ),
-                    new OperationUnit(new Brick(6, BrickType.Tile,  BrickColor.Red    ), Position.Hexagon_Center   ),
-                    new OperationUnit(new Brick(3, BrickType.Grass, BrickColor.Orange ), Position.Hexagon_RightDown),
-                    new OperationUnit(new Brick(4, BrickType.Tile,  BrickColor.Green  ), Position.Hexagon_RightDown),
-                    new OperationUnit(new Brick(1, BrickType.Grass, BrickColor.Green  ), Position.Hexagon_Down     ),
-                    new OperationUnit(new Brick(5, BrickType.Tile,  BrickColor.White  ), Position.Hexagon_Down     ),
-                    new OperationUnit(new Brick(2, BrickType.Grass, BrickColor.Rainbow), Position.Hexagon_LeftDown ),
-                    new OperationUnit(new Brick(7, BrickType.Tile,  BrickColor.Orange ), Position.Hexagon_LeftDown ),
+                    new OperationUnit(new Brick(0, BrickType.House, BrickColor.Red    ), Position.Hexagon.Center   ),
+                    new OperationUnit(new Brick(6, BrickType.Tile,  BrickColor.Red    ), Position.Hexagon.Center   ),
+                    new OperationUnit(new Brick(3, BrickType.Grass, BrickColor.Orange ), Position.Hexagon.RightDown),
+                    new OperationUnit(new Brick(4, BrickType.Tile,  BrickColor.Green  ), Position.Hexagon.RightDown),
+                    new OperationUnit(new Brick(1, BrickType.Grass, BrickColor.Green  ), Position.Hexagon.Down     ),
+                    new OperationUnit(new Brick(5, BrickType.Tile,  BrickColor.White  ), Position.Hexagon.Down     ),
+                    new OperationUnit(new Brick(2, BrickType.Grass, BrickColor.Rainbow), Position.Hexagon.LeftDown ),
+                    new OperationUnit(new Brick(7, BrickType.Tile,  BrickColor.Orange ), Position.Hexagon.LeftDown ),
                 };
                 balans.Add(new Balan(0x60, units));
             }
             {
                 var units = new List<OperationUnit>
                 {
-                    new OperationUnit(new Brick(3, BrickType.Tree,  BrickColor.Yellow), Position.Hexagon_LeftUp ),
-                    new OperationUnit(new Brick(4, BrickType.Tile,  BrickColor.White ), Position.Hexagon_LeftUp ),
-                    new OperationUnit(new Brick(2, BrickType.Tile,  BrickColor.White ), Position.Hexagon_Up     ),
-                    new OperationUnit(new Brick(6, BrickType.Tree,  BrickColor.Blue  ), Position.Hexagon_Up     ),
-                    new OperationUnit(new Brick(5, BrickType.Tile,  BrickColor.Blue  ), Position.Hexagon_RightUp),
-                    new OperationUnit(new Brick(1, BrickType.Tree,  BrickColor.Green ), Position.Hexagon_RightUp),
+                    new OperationUnit(new Brick(3, BrickType.Tree,  BrickColor.Yellow), Position.Hexagon.LeftUp ),
+                    new OperationUnit(new Brick(4, BrickType.Tile,  BrickColor.White ), Position.Hexagon.LeftUp ),
+                    new OperationUnit(new Brick(2, BrickType.Tile,  BrickColor.White ), Position.Hexagon.Up     ),
+                    new OperationUnit(new Brick(6, BrickType.Tree,  BrickColor.Blue  ), Position.Hexagon.Up     ),
+                    new OperationUnit(new Brick(5, BrickType.Tile,  BrickColor.Blue  ), Position.Hexagon.RightUp),
+                    new OperationUnit(new Brick(1, BrickType.Tree,  BrickColor.Green ), Position.Hexagon.RightUp),
                 };
                 balans.Add(new Balan(0x61, units));
             }
@@ -108,7 +108,7 @@ namespace Sprinkler
             return commands;
         }
 
-        public List<string> MakePatternCommand(Position position, OperationTarget target, byte patternId, byte stepTiming, bool isRepeat)
+        public List<string> MakePatternCommand(uint position, OperationTarget target, byte patternId, byte stepTiming, bool isRepeat)
         {
             List<string> commands = new List<string>();
 
@@ -117,36 +117,33 @@ namespace Sprinkler
             {
                 foreach (var unit in balan.Units)
                 {
-                    // TODO: Hexagon 以外の対応が必要
-                    if (position == Position.Hexagon_All)
+                    if (position != unit.Position)
                     {
-                        commands.Add(PumpUtil.MakeSetPatternCommand(balan.Address, unit.Brick.Address, patternId, stepTiming, isRepeat));
+                        continue;
                     }
-                    else if (position == unit.Position)
+
+                    switch (target)
                     {
-                        switch (target)
-                        {
-                            case OperationTarget.TileOnly:
-                                if (unit.Brick.IsTile())
-                                {
-                                    commands.Add(PumpUtil.MakeSetPatternCommand(balan.Address, unit.Brick.Address, patternId, stepTiming, isRepeat));
-                                }
-                                break;
-
-                            case OperationTarget.InsertedOnly:
-                                if (unit.Brick.IsInserted())
-                                {
-                                    commands.Add(PumpUtil.MakeSetPatternCommand(balan.Address, unit.Brick.Address, patternId, stepTiming, isRepeat));
-                                }
-                                break;
-
-                            case OperationTarget.Both:
+                        case OperationTarget.TileOnly:
+                            if (unit.Brick.IsTile())
+                            {
                                 commands.Add(PumpUtil.MakeSetPatternCommand(balan.Address, unit.Brick.Address, patternId, stepTiming, isRepeat));
-                                break;
+                            }
+                            break;
 
-                            default:
-                                throw new InvalidOperationException("Invalid OperationTarget.");
-                        }
+                        case OperationTarget.InsertedOnly:
+                            if (unit.Brick.IsInserted())
+                            {
+                                commands.Add(PumpUtil.MakeSetPatternCommand(balan.Address, unit.Brick.Address, patternId, stepTiming, isRepeat));
+                            }
+                            break;
+
+                        case OperationTarget.Both:
+                            commands.Add(PumpUtil.MakeSetPatternCommand(balan.Address, unit.Brick.Address, patternId, stepTiming, isRepeat));
+                            break;
+
+                        default:
+                            throw new InvalidOperationException("Invalid OperationTarget.");
                     }
                 }
             }
@@ -158,7 +155,7 @@ namespace Sprinkler
         }
 
         // 複数位置に対する指示
-        public List<string> MakePatternCommand(List<Position> positions, OperationTarget target, byte patternId, byte stepTiming, bool isRepeat)
+        public List<string> MakePatternCommand(List<uint> positions, OperationTarget target, byte patternId, byte stepTiming, bool isRepeat)
         {
             List<string> commands = new List<string>();
             foreach (var potision in positions)
@@ -169,7 +166,7 @@ namespace Sprinkler
         }
 
         // 複数対象に対する指示
-        public List<string> MakePatternCommand(Position position, List<OperationTarget> targets, byte patternId, byte stepTiming, bool isRepeat)
+        public List<string> MakePatternCommand(uint position, List<OperationTarget> targets, byte patternId, byte stepTiming, bool isRepeat)
         {
             List<string> commands = new List<string>();
             foreach (var target in targets)
@@ -180,7 +177,7 @@ namespace Sprinkler
         }
 
         // TODO: MakePatternCommand とのコピペを消す
-        public List<string> MakeBrightnessCommand(Position position, OperationTarget target, byte brightness)
+        public List<string> MakeBrightnessCommand(uint position, OperationTarget target, byte brightness)
         {
             List<string> commands = new List<string>();
 
@@ -189,36 +186,33 @@ namespace Sprinkler
             {
                 foreach (var unit in balan.Units)
                 {
-                    // TODO: Hexagon 以外の対応が必要
-                    if (position == Position.Hexagon_All)
+                    if (position != unit.Position)
                     {
-                        commands.Add(PumpUtil.MakeSetBrightnessCommand(balan.Address, unit.Brick.Address, brightness));
+                        continue;
                     }
-                    else if (position == unit.Position)
+
+                    switch (target)
                     {
-                        switch (target)
-                        {
-                            case OperationTarget.TileOnly:
-                                if (unit.Brick.IsTile())
-                                {
-                                    commands.Add(PumpUtil.MakeSetBrightnessCommand(balan.Address, unit.Brick.Address, brightness));
-                                }
-                                break;
-
-                            case OperationTarget.InsertedOnly:
-                                if (unit.Brick.IsInserted())
-                                {
-                                    commands.Add(PumpUtil.MakeSetBrightnessCommand(balan.Address, unit.Brick.Address, brightness));
-                                }
-                                break;
-
-                            case OperationTarget.Both:
+                        case OperationTarget.TileOnly:
+                            if (unit.Brick.IsTile())
+                            {
                                 commands.Add(PumpUtil.MakeSetBrightnessCommand(balan.Address, unit.Brick.Address, brightness));
-                                break;
+                            }
+                            break;
 
-                            default:
-                                throw new InvalidOperationException("Invalid OperationTarget.");
-                        }
+                        case OperationTarget.InsertedOnly:
+                            if (unit.Brick.IsInserted())
+                            {
+                                commands.Add(PumpUtil.MakeSetBrightnessCommand(balan.Address, unit.Brick.Address, brightness));
+                            }
+                            break;
+
+                        case OperationTarget.Both:
+                            commands.Add(PumpUtil.MakeSetBrightnessCommand(balan.Address, unit.Brick.Address, brightness));
+                            break;
+
+                        default:
+                            throw new InvalidOperationException("Invalid OperationTarget.");
                     }
                 }
             }
@@ -260,19 +254,17 @@ namespace Sprinkler
         }
     }
 
-    internal static class PositionConstant
-    {
-        public const uint FormationMask     = 0xFFFFFF00;
-        public const uint FormationHexagon  = 0x00000100;
-        public const uint FormationTriangle = 0x00000200;
-    }
-
     /// <summary>
     /// Brick の位置情報
     /// 各 Brick を別名 (位置) で指示できるようにするための識別情報
     /// </summary>
-    public enum Position : uint
+    
+    public class Position
     {
+        public const uint FormationMask     = 0xFFFFFF00;
+        public const uint FormationHexagon  = 0x00000100;
+        public const uint FormationTriangle = 0x00000200;
+
         // -------------
         //       1
         //  6         2
@@ -280,22 +272,37 @@ namespace Sprinkler
         //  5         3
         //       4
         // -------------
-        Hexagon_Up        = (PositionConstant.FormationHexagon | 0x01),
-        Hexagon_RightUp   = (PositionConstant.FormationHexagon | 0x02),
-        Hexagon_RightDown = (PositionConstant.FormationHexagon | 0x03),
-        Hexagon_Down      = (PositionConstant.FormationHexagon | 0x04),
-        Hexagon_LeftDown  = (PositionConstant.FormationHexagon | 0x05),
-        Hexagon_LeftUp    = (PositionConstant.FormationHexagon | 0x06),
-        Hexagon_Center    = (PositionConstant.FormationHexagon | 0x07),
-        Hexagon_All       = (PositionConstant.FormationHexagon | 0xFF),
+        public class Hexagon
+        {
+            public const uint Up        = (FormationHexagon | 0x01);
+            public const uint RightUp   = (FormationHexagon | 0x02);
+            public const uint RightDown = (FormationHexagon | 0x03);
+            public const uint Down      = (FormationHexagon | 0x04);
+            public const uint LeftDown  = (FormationHexagon | 0x05);
+            public const uint LeftUp    = (FormationHexagon | 0x06);
+            public const uint Center    = (FormationHexagon | 0x07);
+
+            public static readonly List<uint> All = new List<uint>
+            {
+                Up, RightUp, RightDown, Down, LeftDown, LeftUp, Center
+            };
+        }
 
         // -------------
         //       2
         //  1         3
         // -------------
-        Triangle_Left     = (PositionConstant.FormationTriangle | 0x01),
-        Triangle_Center   = (PositionConstant.FormationTriangle | 0x02),
-        Triangle_Right    = (PositionConstant.FormationTriangle | 0x03),
+        public class Triangle
+        {
+            public const uint Left   = (FormationTriangle | 0x01);
+            public const uint Center = (FormationTriangle | 0x02);
+            public const uint Right  = (FormationTriangle | 0x03);
+
+            public static readonly List<uint> All = new List<uint>
+            {
+                Left, Center, Right
+            };
+        }
     }
 
     /// <summary>
@@ -305,8 +312,8 @@ namespace Sprinkler
     public class OperationUnit
     {
         public Brick Brick { get; private set; }
-        public Position Position { get; private set; }
-        public OperationUnit(Brick brick, Position position)
+        public uint Position { get; private set; }
+        public OperationUnit(Brick brick, uint position)
         {
             Brick = brick;
             Position = position;

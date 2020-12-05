@@ -151,28 +151,17 @@ namespace Sprinkler
 
         private void CommandTurnOffAll()
         {
-            ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon_All, OperationTarget.Both, 1, 0, false));
+            ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, 1, 0, false));
         }
 
         private void CommandTurnOnAll()
         {
-            ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon_All, OperationTarget.Both, 0, 0, false));
+            ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, 0, 0, false));
         }
 
         private void SequentialCommandTurnOnInHexagonForm()
         {
-            var positionList = new List<Position>
-            {
-                Position.Hexagon_Up,
-                Position.Hexagon_RightUp,
-                Position.Hexagon_RightDown,
-                Position.Hexagon_Down,
-                Position.Hexagon_LeftDown,
-                Position.Hexagon_LeftUp,
-                Position.Hexagon_Center,
-            };
-
-            foreach (var position in positionList)
+            foreach (var position in Position.Hexagon.All)
             {
                 ExecuteCommand(m_garden.MakePatternCommand(position, OperationTarget.Both, 0, 0, false));
                 Thread.Sleep(200);
@@ -181,18 +170,7 @@ namespace Sprinkler
 
         private void SequentialCommandTurnOffInHexagonForm()
         {
-            var positionList = new List<Position>
-            {
-                Position.Hexagon_Up,
-                Position.Hexagon_RightUp,
-                Position.Hexagon_RightDown,
-                Position.Hexagon_Down,
-                Position.Hexagon_LeftDown,
-                Position.Hexagon_LeftUp,
-                Position.Hexagon_Center,
-            };
-
-            foreach (var position in positionList)
+            foreach (var position in Position.Hexagon.All)
             {
                 ExecuteCommand(m_garden.MakePatternCommand(position, OperationTarget.Both, 1, 0, false));
                 Thread.Sleep(200);
@@ -201,17 +179,17 @@ namespace Sprinkler
 
         private void CommandTurnOnInTriangleForm()
         {
-            var TrianglePosition = new List<Position> { Position.Hexagon_Up, Position.Hexagon_RightDown, Position.Hexagon_LeftDown };
+            var TrianglePosition = new List<uint> { Position.Hexagon.Up, Position.Hexagon.RightDown, Position.Hexagon.LeftDown };
             ExecuteCommand(m_garden.MakePatternCommand(TrianglePosition, OperationTarget.TileOnly, 0, 0, false));
         }
 
         private void CommandTurnOnInReverseTriangleForm()
         {
-            var ReverseTrianglePosition = new List<Position> { Position.Hexagon_Down, Position.Hexagon_LeftUp, Position.Hexagon_RightUp };
+            var ReverseTrianglePosition = new List<uint> { Position.Hexagon.Down, Position.Hexagon.LeftUp, Position.Hexagon.RightUp };
             ExecuteCommand(m_garden.MakePatternCommand(ReverseTrianglePosition, OperationTarget.TileOnly, 0, 0, false));
         }
 
-        private void SequentialCommandOneShotSmoothly(Position position, OperationTarget target, int delayMsec)
+        private void SequentialCommandOneShotSmoothly(uint position, OperationTarget target, int delayMsec)
         {
             ExecuteCommand(m_garden.MakePatternCommand(position, target, 0, 0, false));
 
@@ -271,28 +249,17 @@ namespace Sprinkler
 
         private async void SampleBrightness()
         {
-            var positions = new List<Position>
-            {
-                Position.Hexagon_Center,
-                Position.Hexagon_Up,
-                Position.Hexagon_RightUp,
-                Position.Hexagon_RightDown,
-                Position.Hexagon_Down,
-                Position.Hexagon_LeftDown,
-                Position.Hexagon_LeftUp,
-            };
-
             await Task.Run(() =>
             {
                 CommandRegister();
-                foreach (var position in positions)
+                foreach (var position in Position.Hexagon.All)
                 {
                     SequentialCommandOneShotSmoothly(position, OperationTarget.TileOnly, 50);
                     Thread.Sleep(50);
                     SequentialCommandOneShotSmoothly(position, OperationTarget.InsertedOnly, 50);
                     Thread.Sleep(50);
                 }
-                foreach (var position in positions.AsEnumerable().Reverse())
+                foreach (var position in Position.Hexagon.All.AsEnumerable().Reverse())
                 {
                     SequentialCommandOneShotSmoothly(position, OperationTarget.Both, 50);
                     Thread.Sleep(200);
