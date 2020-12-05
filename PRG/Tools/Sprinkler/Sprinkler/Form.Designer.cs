@@ -32,6 +32,7 @@
             this.buttonConnect = new System.Windows.Forms.Button();
             this.buttonTest = new System.Windows.Forms.Button();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.textBoxKeyInput = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // textBoxSerialLog
@@ -71,11 +72,20 @@
             this.statusStrip.Size = new System.Drawing.Size(800, 22);
             this.statusStrip.TabIndex = 3;
             // 
+            // textBoxKeyInput
+            // 
+            this.textBoxKeyInput.Location = new System.Drawing.Point(663, 12);
+            this.textBoxKeyInput.Name = "textBoxKeyInput";
+            this.textBoxKeyInput.Size = new System.Drawing.Size(125, 27);
+            this.textBoxKeyInput.TabIndex = 4;
+            this.textBoxKeyInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxKeyInput_KeyDown);
+            // 
             // Sprinkler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.textBoxKeyInput);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.buttonTest);
             this.Controls.Add(this.buttonConnect);
@@ -95,6 +105,7 @@
         private System.Windows.Forms.Button buttonConnect;
         private System.Windows.Forms.Button buttonTest;
         private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.TextBox textBoxKeyInput;
     }
 }
 

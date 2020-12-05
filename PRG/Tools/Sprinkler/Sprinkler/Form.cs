@@ -2,9 +2,7 @@
 using System.Diagnostics;
 using System.IO.Ports;
 using System.Windows.Forms;
-using System.Windows.Forms.Design;
 using System.Collections.Generic;
-
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
@@ -70,9 +68,25 @@ namespace Sprinkler
         private void buttonTest_Click(object sender, EventArgs e)
         {
             ExecuteTest();
-            //SampleSequence();
-            //SampleBrightness();
-            //SampleStress();
+        }
+
+        private void textBoxKeyInput_KeyDown(object sender, KeyEventArgs e)
+        {
+            var table = new Dictionary<Keys, Action>
+            {
+                // 1 2 3 4 5 6 7 8 9 0 - ^ \
+                //  q w e r t y u i o p @ [
+                //   a s d f g h j k l ; : ]
+                //    z x c v b n m , . / \
+                { Keys.A, SampleSequence   },
+                { Keys.S, SampleBrightness },
+                { Keys.D, SampleStress     },
+            };
+
+            if (table.ContainsKey(e.KeyCode))
+            {
+                table[e.KeyCode]();
+            }
         }
 
         private delegate void SafeCallDelegate(string value);
