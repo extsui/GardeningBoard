@@ -137,24 +137,26 @@ namespace Sprinkler
         // TODO: PositionList の Not が欲しくなる
         // TODO: Formation 毎にコマンド群 (クラス?) を定義する必要がありそう? (今回であれば Hexagon 用)
 
+        private void ExecuteCommand(List<string> commands)
+        {
+            Trace.Assert(commands != null);
+            string line = String.Join("", commands);
+            SerialSendAsync(line);
+        }
+
         private void CommandRegister()
         {
-            var registerCommands = m_garden.MakeRegisterCommand();
-            SerialSendAsync(String.Join("", registerCommands));
+            ExecuteCommand(m_garden.MakeRegisterCommand());
         }
 
         private void CommandTurnOffAll()
         {
-            // TODO: OperationTarget は無視されるのでオーバーロードで引数無し版を作るべき
-            var operationCommands = m_garden.MakeOperationCommand(Position.Hexagon_All, OperationTarget.Both, 1, 0, false);
-            SerialSendAsync(String.Join("", operationCommands));
+            ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon_All, OperationTarget.Both, 1, 0, false));
         }
 
         private void CommandTurnOnAll()
         {
-            // TODO: OperationTarget は無視されるのでオーバーロードで引数無し版を作るべき
-            var operationCommands = m_garden.MakeOperationCommand(Position.Hexagon_All, OperationTarget.Both, 0, 0, false);
-            SerialSendAsync(String.Join("", operationCommands));
+            ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon_All, OperationTarget.Both, 0, 0, false));
         }
 
         private void SequentialCommandTurnOnInHexagonForm()
@@ -172,8 +174,7 @@ namespace Sprinkler
 
             foreach (var position in positionList)
             {
-                var operationCommands = m_garden.MakeOperationCommand(position, OperationTarget.Both, 0, 0, false);
-                SerialSendAsync(String.Join("", operationCommands));
+                ExecuteCommand(m_garden.MakePatternCommand(position, OperationTarget.Both, 0, 0, false));
                 Thread.Sleep(200);
             }
         }
@@ -193,8 +194,7 @@ namespace Sprinkler
 
             foreach (var position in positionList)
             {
-                var operationCommands = m_garden.MakeOperationCommand(position, OperationTarget.Both, 1, 0, false);
-                SerialSendAsync(String.Join("", operationCommands));
+                ExecuteCommand(m_garden.MakePatternCommand(position, OperationTarget.Both, 1, 0, false));
                 Thread.Sleep(200);
             }
         }
@@ -202,33 +202,31 @@ namespace Sprinkler
         private void CommandTurnOnInTriangleForm()
         {
             var TrianglePosition = new List<Position> { Position.Hexagon_Up, Position.Hexagon_RightDown, Position.Hexagon_LeftDown };
-            var operationCommands = m_garden.MakeOperationCommand(TrianglePosition, OperationTarget.TileOnly, 0, 0, false);
-            SerialSendAsync(String.Join("", operationCommands));
+            ExecuteCommand(m_garden.MakePatternCommand(TrianglePosition, OperationTarget.TileOnly, 0, 0, false));
         }
 
         private void CommandTurnOnInReverseTriangleForm()
         {
             var ReverseTrianglePosition = new List<Position> { Position.Hexagon_Down, Position.Hexagon_LeftUp, Position.Hexagon_RightUp };
-            var operationCommands = m_garden.MakeOperationCommand(ReverseTrianglePosition, OperationTarget.TileOnly, 0, 0, false);
-            SerialSendAsync(String.Join("", operationCommands));
+            ExecuteCommand(m_garden.MakePatternCommand(ReverseTrianglePosition, OperationTarget.TileOnly, 0, 0, false));
         }
 
         private void SequentialCommandOneShotSmoothly(Position position, OperationTarget target, int delayMsec)
         {
-            SerialSendAsync(String.Join("", m_garden.MakeOperationCommand(position, target, 0, 0, false)));
-            
-            SerialSendAsync(String.Join("", m_garden.MakeBrightnessCommand(position, target, 1)));
+            ExecuteCommand(m_garden.MakePatternCommand(position, target, 0, 0, false));
+
+            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, 1));
             Thread.Sleep(delayMsec);
-            SerialSendAsync(String.Join("", m_garden.MakeBrightnessCommand(position, target, 2)));
+            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, 2));
             Thread.Sleep(delayMsec);
-            SerialSendAsync(String.Join("", m_garden.MakeBrightnessCommand(position, target, 3)));
+            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, 3));
             Thread.Sleep(delayMsec);
-            SerialSendAsync(String.Join("", m_garden.MakeBrightnessCommand(position, target, 2)));
+            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, 2));
             Thread.Sleep(delayMsec);
-            SerialSendAsync(String.Join("", m_garden.MakeBrightnessCommand(position, target, 1)));
+            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, 1));
             Thread.Sleep(delayMsec);
 
-            SerialSendAsync(String.Join("", m_garden.MakeOperationCommand(position, target, 1, 0, false)));
+            ExecuteCommand(m_garden.MakePatternCommand(position, target, 1, 0, false));
         }
 
         ////////////////////////////////////////////////////////////////////////////////

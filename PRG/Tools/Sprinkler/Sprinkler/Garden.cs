@@ -108,7 +108,7 @@ namespace Sprinkler
             return commands;
         }
 
-        public List<string> MakeOperationCommand(Position position, OperationTarget target, byte patternId, byte stepTiming, bool isRepeat)
+        public List<string> MakePatternCommand(Position position, OperationTarget target, byte patternId, byte stepTiming, bool isRepeat)
         {
             List<string> commands = new List<string>();
 
@@ -158,28 +158,28 @@ namespace Sprinkler
         }
 
         // 複数位置に対する指示
-        public List<string> MakeOperationCommand(List<Position> positions, OperationTarget target, byte patternId, byte stepTiming, bool isRepeat)
+        public List<string> MakePatternCommand(List<Position> positions, OperationTarget target, byte patternId, byte stepTiming, bool isRepeat)
         {
             List<string> commands = new List<string>();
             foreach (var potision in positions)
             {
-                commands.AddRange(MakeOperationCommand(potision, target, patternId, stepTiming, isRepeat));
+                commands.AddRange(MakePatternCommand(potision, target, patternId, stepTiming, isRepeat));
             }
             return commands;
         }
 
         // 複数対象に対する指示
-        public List<string> MakeOperationCommand(Position position, List<OperationTarget> targets, byte patternId, byte stepTiming, bool isRepeat)
+        public List<string> MakePatternCommand(Position position, List<OperationTarget> targets, byte patternId, byte stepTiming, bool isRepeat)
         {
             List<string> commands = new List<string>();
             foreach (var target in targets)
             {
-                commands.AddRange(MakeOperationCommand(position, target, patternId, stepTiming, isRepeat));
+                commands.AddRange(MakePatternCommand(position, target, patternId, stepTiming, isRepeat));
             }
             return commands;
         }
 
-        // TODO: MakeOperationCommand とのコピペを消す
+        // TODO: MakePatternCommand とのコピペを消す
         public List<string> MakeBrightnessCommand(Position position, OperationTarget target, byte brightness)
         {
             List<string> commands = new List<string>();
