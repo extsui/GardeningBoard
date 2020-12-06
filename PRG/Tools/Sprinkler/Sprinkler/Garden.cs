@@ -102,13 +102,30 @@ namespace Sprinkler
             {
                 foreach (var unit in balan.Units)
                 {
-                    commands.Add(PumpUtil.MakeRegisterBrickCommand((byte)balan.Address, unit.Brick.Address, (byte)unit.Brick.Type));
+                    commands.Add(PumpUtil.MakeRegisterBrickCommand(balan.Address, unit.Brick.Address, (byte)unit.Brick.Type));
                 }
             }
             return commands;
         }
 
-        public List<string> MakePatternCommand(uint position, OperationTarget target, byte patternId, byte stepTiming, bool isRepeat)
+        private Func<byte, byte, BrickCommandArgs, string> OperatePattern = (groupAddress, brickAddress, args) =>
+        {
+            BrickCommandArgs.Pattern pattern = args.PatternArgs;
+            Trace.Assert(pattern != null);
+            return PumpUtil.MakeSetPatternCommand(groupAddress, brickAddress, pattern.Id, pattern.StepTiming, pattern.IsRepeat);
+        };
+
+        private Func<byte, byte, BrickCommandArgs, string> OperateBrightness = (groupAddress, brickAddress, args) =>
+        {
+            BrickCommandArgs.Brightness brightness = args.BrightnessArgs;
+            Trace.Assert(brightness != null);
+            return PumpUtil.MakeSetBrightnessCommand(groupAddress, brickAddress, brightness.Value);
+        };
+
+        /// <summary>
+        /// (Position, Target) に対する汎用コマンドの処理部分
+        /// </summary>
+        private List<string> MakeGenericCommandCore(uint position, OperationTarget target, Func<byte, byte, BrickCommandArgs, string> operate, BrickCommandArgs args)
         {
             List<string> commands = new List<string>();
 
@@ -127,19 +144,19 @@ namespace Sprinkler
                         case OperationTarget.TileOnly:
                             if (unit.Brick.IsTile())
                             {
-                                commands.Add(PumpUtil.MakeSetPatternCommand(balan.Address, unit.Brick.Address, patternId, stepTiming, isRepeat));
+                                commands.Add(operate(balan.Address, unit.Brick.Address, args));
                             }
                             break;
 
                         case OperationTarget.InsertedOnly:
                             if (unit.Brick.IsInserted())
                             {
-                                commands.Add(PumpUtil.MakeSetPatternCommand(balan.Address, unit.Brick.Address, patternId, stepTiming, isRepeat));
+                                commands.Add(operate(balan.Address, unit.Brick.Address, args));
                             }
                             break;
 
                         case OperationTarget.Both:
-                            commands.Add(PumpUtil.MakeSetPatternCommand(balan.Address, unit.Brick.Address, patternId, stepTiming, isRepeat));
+                            commands.Add(operate(balan.Address, unit.Brick.Address, args));
                             break;
 
                         default:
@@ -149,78 +166,120 @@ namespace Sprinkler
             }
             if (commands.Count == 0)
             {
+                // position の事前条件チェックは省略しているが
+                // 意図しない値の場合は一致しないのでここで引っ掛かる
                 throw new InvalidOperationException("Target not found.");
             }
             return commands;
         }
 
+        // 単独に対する指示
+        private List<string> MakeGenericCommand(uint position, OperationTarget target, Func<byte, byte, BrickCommandArgs, string> operate, BrickCommandArgs args)
+        {
+            return MakeGenericCommandCore(position, target, operate, args);
+        }
+
         // 複数位置に対する指示
-        public List<string> MakePatternCommand(List<uint> positions, OperationTarget target, byte patternId, byte stepTiming, bool isRepeat)
+        private List<string> MakeGenericCommand(List<uint> positions, OperationTarget target, Func<byte, byte, BrickCommandArgs, string> operate, BrickCommandArgs args)
         {
             List<string> commands = new List<string>();
             foreach (var potision in positions)
             {
-                commands.AddRange(MakePatternCommand(potision, target, patternId, stepTiming, isRepeat));
+                commands.AddRange(MakeGenericCommand(potision, target, operate, args));
             }
             return commands;
         }
 
         // 複数対象に対する指示
-        public List<string> MakePatternCommand(uint position, List<OperationTarget> targets, byte patternId, byte stepTiming, bool isRepeat)
+        public List<string> MakeGenericCommand(uint position, List<OperationTarget> targets, Func<byte, byte, BrickCommandArgs, string> operate, BrickCommandArgs args)
         {
             List<string> commands = new List<string>();
             foreach (var target in targets)
             {
-                commands.AddRange(MakePatternCommand(position, target, patternId, stepTiming, isRepeat));
+                commands.AddRange(MakeGenericCommand(position, target, operate, args));
             }
             return commands;
         }
 
-        // TODO: MakePatternCommand とのコピペを消す
-        public List<string> MakeBrightnessCommand(uint position, OperationTarget target, byte brightness)
+        public List<string> MakePatternCommand(uint position, OperationTarget target, BrickCommandArgs.Pattern pattern)
         {
-            List<string> commands = new List<string>();
+            return MakeGenericCommand(position, target, OperatePattern, new BrickCommandArgs(pattern));
+        }
 
-            // 位置が一致するものを Balans から検索し対象を絞って指示する
-            foreach (var balan in Balans)
+        public List<string> MakePatternCommand(List<uint> positions, OperationTarget target, BrickCommandArgs.Pattern pattern)
+        {
+            return MakeGenericCommand(positions, target, OperatePattern, new BrickCommandArgs(pattern));
+        }
+
+        public List<string> MakePatternCommand(uint position, List<OperationTarget> targets, BrickCommandArgs.Pattern pattern)
+        {
+            return MakeGenericCommand(position, targets, OperatePattern, new BrickCommandArgs(pattern));
+        }
+
+        public List<string> MakeBrightnessCommand(uint position, OperationTarget target, BrickCommandArgs.Brightness brightness)
+        {
+            return MakeGenericCommand(position, target, OperateBrightness, new BrickCommandArgs(brightness));
+        }
+
+        public List<string> MakeBrightnessCommand(List<uint> positions, OperationTarget target, BrickCommandArgs.Brightness brightness)
+        {
+            return MakeGenericCommand(positions, target, OperateBrightness, new BrickCommandArgs(brightness));
+        }
+
+        public List<string> MakeBrightnessCommand(uint position, List<OperationTarget> targets, BrickCommandArgs.Brightness brightness)
+        {
+            return MakeGenericCommand(position, targets, OperateBrightness, new BrickCommandArgs(brightness));
+        }
+    }
+
+    /// <summary>
+    /// 部品コマンド引数
+    /// </summary>
+    public class BrickCommandArgs
+    {
+        // インスタンスでどちらか一方のみを排他使用する
+        public Pattern PatternArgs { get; private set; }
+        public Brightness BrightnessArgs { get; private set; }
+
+        public class Pattern
+        {
+            public byte Id { get; private set; }
+            public byte StepTiming { get; private set; }
+            public bool IsRepeat { get; private set; }
+
+            public Pattern(byte id, byte stepTiming, bool isRepeat)
             {
-                foreach (var unit in balan.Units)
-                {
-                    if (position != unit.Position)
-                    {
-                        continue;
-                    }
-
-                    switch (target)
-                    {
-                        case OperationTarget.TileOnly:
-                            if (unit.Brick.IsTile())
-                            {
-                                commands.Add(PumpUtil.MakeSetBrightnessCommand(balan.Address, unit.Brick.Address, brightness));
-                            }
-                            break;
-
-                        case OperationTarget.InsertedOnly:
-                            if (unit.Brick.IsInserted())
-                            {
-                                commands.Add(PumpUtil.MakeSetBrightnessCommand(balan.Address, unit.Brick.Address, brightness));
-                            }
-                            break;
-
-                        case OperationTarget.Both:
-                            commands.Add(PumpUtil.MakeSetBrightnessCommand(balan.Address, unit.Brick.Address, brightness));
-                            break;
-
-                        default:
-                            throw new InvalidOperationException("Invalid OperationTarget.");
-                    }
-                }
+                Id = id;
+                StepTiming = stepTiming;
+                IsRepeat = isRepeat;
             }
-            if (commands.Count == 0)
+        }
+
+        public static readonly Pattern PatternTurnOn  = new Pattern(0, 0, false);
+        public static readonly Pattern PatternTurnOff = new Pattern(1, 0, false);
+
+        // MEMO: 引数型をラップしたことで輝度調整がかけやすくなる?
+        // (例: Brightness.Min, Low, Mid, High, Max)
+        public class Brightness
+        {
+            public byte Value { get; private set; }
+
+            public Brightness(byte value)
             {
-                throw new InvalidOperationException("Target not found.");
-            }
-            return commands;
+                Value = value;
+            }   
+        }
+
+        public BrickCommandArgs(Pattern pattern)
+        {
+            PatternArgs    = pattern;
+            BrightnessArgs = null;
+        }
+
+        public BrickCommandArgs(Brightness brightness)
+        {
+            PatternArgs    = null;
+            BrightnessArgs = brightness;
         }
     }
 
@@ -258,7 +317,6 @@ namespace Sprinkler
     /// Brick の位置情報
     /// 各 Brick を別名 (位置) で指示できるようにするための識別情報
     /// </summary>
-    
     public class Position
     {
         public const uint FormationMask     = 0xFFFFFF00;

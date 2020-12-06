@@ -151,19 +151,19 @@ namespace Sprinkler
 
         private void CommandTurnOffAll()
         {
-            ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, 1, 0, false));
+            ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, BrickCommandArgs.PatternTurnOff));
         }
 
         private void CommandTurnOnAll()
         {
-            ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, 0, 0, false));
+            ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, BrickCommandArgs.PatternTurnOn));
         }
 
         private void SequentialCommandTurnOnInHexagonForm()
         {
             foreach (var position in Position.Hexagon.All)
             {
-                ExecuteCommand(m_garden.MakePatternCommand(position, OperationTarget.Both, 0, 0, false));
+                ExecuteCommand(m_garden.MakePatternCommand(position, OperationTarget.Both, BrickCommandArgs.PatternTurnOn));
                 Thread.Sleep(200);
             }
         }
@@ -172,7 +172,7 @@ namespace Sprinkler
         {
             foreach (var position in Position.Hexagon.All)
             {
-                ExecuteCommand(m_garden.MakePatternCommand(position, OperationTarget.Both, 1, 0, false));
+                ExecuteCommand(m_garden.MakePatternCommand(position, OperationTarget.Both, BrickCommandArgs.PatternTurnOff));
                 Thread.Sleep(200);
             }
         }
@@ -180,31 +180,31 @@ namespace Sprinkler
         private void CommandTurnOnInTriangleForm()
         {
             var TrianglePosition = new List<uint> { Position.Hexagon.Up, Position.Hexagon.RightDown, Position.Hexagon.LeftDown };
-            ExecuteCommand(m_garden.MakePatternCommand(TrianglePosition, OperationTarget.TileOnly, 0, 0, false));
+            ExecuteCommand(m_garden.MakePatternCommand(TrianglePosition, OperationTarget.TileOnly, BrickCommandArgs.PatternTurnOn));
         }
 
         private void CommandTurnOnInReverseTriangleForm()
         {
             var ReverseTrianglePosition = new List<uint> { Position.Hexagon.Down, Position.Hexagon.LeftUp, Position.Hexagon.RightUp };
-            ExecuteCommand(m_garden.MakePatternCommand(ReverseTrianglePosition, OperationTarget.TileOnly, 0, 0, false));
+            ExecuteCommand(m_garden.MakePatternCommand(ReverseTrianglePosition, OperationTarget.TileOnly, BrickCommandArgs.PatternTurnOn));
         }
 
         private void SequentialCommandOneShotSmoothly(uint position, OperationTarget target, int delayMsec)
         {
-            ExecuteCommand(m_garden.MakePatternCommand(position, target, 0, 0, false));
+            ExecuteCommand(m_garden.MakePatternCommand(position, target, BrickCommandArgs.PatternTurnOn));
 
-            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, 1));
+            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(1)));
             Thread.Sleep(delayMsec);
-            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, 2));
+            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(2)));
             Thread.Sleep(delayMsec);
-            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, 3));
+            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(3)));
             Thread.Sleep(delayMsec);
-            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, 2));
+            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(2)));
             Thread.Sleep(delayMsec);
-            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, 1));
+            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(1)));
             Thread.Sleep(delayMsec);
 
-            ExecuteCommand(m_garden.MakePatternCommand(position, target, 1, 0, false));
+            ExecuteCommand(m_garden.MakePatternCommand(position, target, BrickCommandArgs.PatternTurnOff));
         }
 
         ////////////////////////////////////////////////////////////////////////////////
