@@ -190,17 +190,6 @@ namespace Sprinkler
             return commands;
         }
 
-        // 複数対象に対する指示
-        public List<string> MakeGenericCommand(uint position, List<OperationTarget> targets, Func<byte, byte, BrickCommandArgs, string> operate, BrickCommandArgs args)
-        {
-            List<string> commands = new List<string>();
-            foreach (var target in targets)
-            {
-                commands.AddRange(MakeGenericCommand(position, target, operate, args));
-            }
-            return commands;
-        }
-
         public List<string> MakePatternCommand(uint position, OperationTarget target, BrickCommandArgs.Pattern pattern)
         {
             return MakeGenericCommand(position, target, OperatePattern, new BrickCommandArgs(pattern));
@@ -211,11 +200,6 @@ namespace Sprinkler
             return MakeGenericCommand(positions, target, OperatePattern, new BrickCommandArgs(pattern));
         }
 
-        public List<string> MakePatternCommand(uint position, List<OperationTarget> targets, BrickCommandArgs.Pattern pattern)
-        {
-            return MakeGenericCommand(position, targets, OperatePattern, new BrickCommandArgs(pattern));
-        }
-
         public List<string> MakeBrightnessCommand(uint position, OperationTarget target, BrickCommandArgs.Brightness brightness)
         {
             return MakeGenericCommand(position, target, OperateBrightness, new BrickCommandArgs(brightness));
@@ -224,11 +208,6 @@ namespace Sprinkler
         public List<string> MakeBrightnessCommand(List<uint> positions, OperationTarget target, BrickCommandArgs.Brightness brightness)
         {
             return MakeGenericCommand(positions, target, OperateBrightness, new BrickCommandArgs(brightness));
-        }
-
-        public List<string> MakeBrightnessCommand(uint position, List<OperationTarget> targets, BrickCommandArgs.Brightness brightness)
-        {
-            return MakeGenericCommand(position, targets, OperateBrightness, new BrickCommandArgs(brightness));
         }
     }
 
