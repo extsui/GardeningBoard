@@ -558,7 +558,6 @@ namespace PruningTool
                 Thread.Sleep(50);
                 WriteSerialLog(MakePatternCommand(brickId, 1, 100, false));
             };
-
             await Task.Run(SmoothOnOffSequence);
         }
 
@@ -656,6 +655,243 @@ namespace PruningTool
                 };
 
                 await Task.Run(Replay);
+            }
+        }
+
+        /// <summary>
+        /// Pump 制御関連
+        /// </summary>
+        public class PumpUtil
+        {
+            // 例: "@send 60030103\n" : グループ 60 の BrickId=3 を Tile(=3) で登録
+            // 例: "@send 61000102\n" : グループ 61 の BrickId=0 を House(=2) で登録
+            public static string MakeRegisterBrickCommand(byte groupAddress, byte brickAddress, byte brickType)
+            {
+                return "@send " +
+                    groupAddress.ToString("X2") +
+                    brickAddress.ToString("X2") +
+                    "01" +
+                    brickType.ToString("X2") +
+                    "\n";
+            }
+
+            // 例: "@send 600502000000\n" : グループ 60 の BrickId=5 を Pattern=0, StepTiming=0[ms], Repeat 無し でパターン設定
+            // 例: "@send 610302046401\n" : グループ 61 の BrickId=3 を Pattern=4, StepTiming=100[ms], Repeat 有り でパターン設定
+            public static string MakeSetPatternCommand(byte groupAddress, byte brickAddress, byte patternId, byte stepTiming, bool isRepeat)
+            {
+                return "@send " +
+                    groupAddress.ToString("X2") +
+                    brickAddress.ToString("X2") +
+                    "02" +
+                    patternId.ToString("X2") +
+                    stepTiming.ToString("X2") +
+                    ((isRepeat == true) ? "01" : "00") +
+                    "\n";
+            }
+        }
+
+        private async void textBoxPumpControl_KeyDown(object sender, KeyEventArgs e)
+        {
+            // 登録
+            Action Register = () =>
+            {
+                /*
+                 * - Group: 0
+                 *   - House: 0
+                 *   - Grass: 1
+                 *   - Grass: 2
+                 *   - Grass: 3
+                 *   - Tile:  4
+                 *   - Tile:  5
+                 *   - Tile:  6
+                 *   - Tile:  7
+                 * - Group: 1
+                 *   - Tree:  1
+                 *   - Tree:  2
+                 *   - Tree:  3
+                 *   - Tile:  4
+                 *   - Tile:  5
+                 *   - Tile:  6
+                 */
+                WriteSerialLog(PumpUtil.MakeRegisterBrickCommand(0x60, 0, 2));
+                WriteSerialLog(PumpUtil.MakeRegisterBrickCommand(0x60, 1, 0));
+                WriteSerialLog(PumpUtil.MakeRegisterBrickCommand(0x60, 2, 0));
+                WriteSerialLog(PumpUtil.MakeRegisterBrickCommand(0x60, 3, 0));
+                WriteSerialLog(PumpUtil.MakeRegisterBrickCommand(0x60, 4, 3));
+                WriteSerialLog(PumpUtil.MakeRegisterBrickCommand(0x60, 5, 3));
+                WriteSerialLog(PumpUtil.MakeRegisterBrickCommand(0x60, 6, 3));
+                WriteSerialLog(PumpUtil.MakeRegisterBrickCommand(0x60, 7, 3));
+
+                WriteSerialLog(PumpUtil.MakeRegisterBrickCommand(0x61, 1, 1));
+                WriteSerialLog(PumpUtil.MakeRegisterBrickCommand(0x61, 2, 1));
+                WriteSerialLog(PumpUtil.MakeRegisterBrickCommand(0x61, 3, 1));
+                WriteSerialLog(PumpUtil.MakeRegisterBrickCommand(0x61, 4, 3));
+                WriteSerialLog(PumpUtil.MakeRegisterBrickCommand(0x61, 5, 3));
+                WriteSerialLog(PumpUtil.MakeRegisterBrickCommand(0x61, 6, 3));
+            };
+
+            // 全点灯
+            Action TurnOffAll = () =>
+            {
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 0, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 1, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 2, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 3, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 4, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 5, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 6, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 7, 0, 0, false));
+
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 0, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 1, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 2, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 3, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 4, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 5, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 6, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 7, 0, 0, false));
+            };
+
+            // 全消灯
+            Action TurnOnAll = () =>
+            {
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 0, 1, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 1, 1, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 2, 1, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 3, 1, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 4, 1, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 5, 1, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 6, 1, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 7, 1, 0, false));
+
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 0, 1, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 1, 1, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 2, 1, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 3, 1, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 4, 1, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 5, 1, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 6, 1, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 7, 1, 0, false));
+            };
+
+            // 土台だけ点灯
+            // TODO: フィルタが欲しい。BrickId を意識したくない。
+            Action TurnOnAllTiles = () =>
+            {
+                //WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 0, 0, 0, false));
+                //WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 1, 0, 0, false));
+                //WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 2, 0, 0, false));
+                //WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 3, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 4, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 5, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 6, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 7, 0, 0, false));
+
+                //WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 0, 0, 0, false));
+                //WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 1, 0, 0, false));
+                //WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 2, 0, 0, false));
+                //WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 3, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 4, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 5, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 6, 0, 0, false));
+                //WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 7, 0, 0, false));
+            };
+
+            // 挿入部品だけ点灯
+            Action TurnOnAllGrowns = () =>
+            {
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 0, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 1, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 2, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 3, 0, 0, false));
+                //WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 4, 0, 0, false));
+                //WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 5, 0, 0, false));
+                //WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 6, 0, 0, false));
+                //WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x60, 7, 0, 0, false));
+
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 0, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 1, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 2, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 3, 0, 0, false));
+                //WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 4, 0, 0, false));
+                //WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 5, 0, 0, false));
+                //WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 6, 0, 0, false));
+                WriteSerialLog(PumpUtil.MakeSetPatternCommand(0x61, 7, 0, 0, false));
+            };
+
+            switch (e.KeyCode)
+            {
+                case Keys.R:
+                    await Task.Run(Register);
+                    break;
+                case Keys.Z:
+                    await Task.Run(TurnOffAll);
+                    break;
+                case Keys.X:
+                    await Task.Run(TurnOnAll);
+                    break;
+                case Keys.C:
+                    break;
+                case Keys.V:
+                    await Task.Run(TurnOnAllTiles);
+                    break;
+                case Keys.B:
+                    await Task.Run(TurnOnAllGrowns);
+                    break;
+
+                case Keys.NumPad0:
+                    await Task.Run(() =>
+                    {
+                        WriteSerialLog("@send 600002031001\n");
+                        WriteSerialLog("@send 600102031001\n");
+                        WriteSerialLog("@send 600202031001\n");
+                        WriteSerialLog("@send 600302031001\n");
+                        WriteSerialLog("@send 600402031001\n");
+                        WriteSerialLog("@send 600502031001\n");
+                        WriteSerialLog("@send 600602031001\n");
+                        WriteSerialLog("@send 600702031001\n");
+
+                        WriteSerialLog("@send 610002031001\n");
+                        WriteSerialLog("@send 610102031001\n");
+                        WriteSerialLog("@send 610202031001\n");
+                        WriteSerialLog("@send 610302031001\n");
+                        WriteSerialLog("@send 610402031001\n");
+                        WriteSerialLog("@send 610502031001\n");
+                        WriteSerialLog("@send 610602031001\n");
+                        WriteSerialLog("@send 610702031001\n");
+                    });
+                    break;
+
+                case Keys.Up:
+                    await Task.Run(() =>
+                    {
+                        WriteSerialLog("@send 60000305\n");
+                        WriteSerialLog("@send 60010305\n");
+                        WriteSerialLog("@send 60020305\n");
+                        WriteSerialLog("@send 60030305\n");
+                        WriteSerialLog("@send 60040305\n");
+                        WriteSerialLog("@send 60050305\n");
+                        WriteSerialLog("@send 60060305\n");
+                        WriteSerialLog("@send 60070305\n");
+                    });
+                    break;
+
+                case Keys.Down:
+                    await Task.Run(() =>
+                    {
+                        WriteSerialLog("@send 60000301\n");
+                        WriteSerialLog("@send 60010301\n");
+                        WriteSerialLog("@send 60020301\n");
+                        WriteSerialLog("@send 60030301\n");
+                        WriteSerialLog("@send 60040301\n");
+                        WriteSerialLog("@send 60050301\n");
+                        WriteSerialLog("@send 60060301\n");
+                        WriteSerialLog("@send 60070301\n");
+                    });
+                    break;
+
+                default:
+                    break;
             }
         }
     }

@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29418.71
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sprinkler", "Sprinkler\Sprinkler.csproj", "{193AF9F4-421F-4764-948D-EB7A00DC35C4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{F9DF5343-3FFC-4146-BDDA-729B91EACAF5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SprinklerTest", "Sprinkler\Test\SprinklerTest\SprinklerTest.csproj", "{8CD54796-E188-4F12-844F-58A569328F04}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{193AF9F4-421F-4764-948D-EB7A00DC35C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{193AF9F4-421F-4764-948D-EB7A00DC35C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{193AF9F4-421F-4764-948D-EB7A00DC35C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{193AF9F4-421F-4764-948D-EB7A00DC35C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CD54796-E188-4F12-844F-58A569328F04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CD54796-E188-4F12-844F-58A569328F04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CD54796-E188-4F12-844F-58A569328F04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CD54796-E188-4F12-844F-58A569328F04}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8CD54796-E188-4F12-844F-58A569328F04} = {F9DF5343-3FFC-4146-BDDA-729B91EACAF5}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A82F2068-F242-49B0-B2FD-315B56EA2497}
+	EndGlobalSection
+EndGlobal

@@ -121,6 +121,8 @@
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.button5 = new System.Windows.Forms.Button();
             this.label21 = new System.Windows.Forms.Label();
+            this.textBoxPumpControl = new System.Windows.Forms.TextBox();
+            this.label22 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTiming2)).BeginInit();
@@ -462,7 +464,7 @@
             // 
             // buttonLogClear
             // 
-            this.buttonLogClear.Location = new System.Drawing.Point(288, 661);
+            this.buttonLogClear.Location = new System.Drawing.Point(283, 661);
             this.buttonLogClear.Name = "buttonLogClear";
             this.buttonLogClear.Size = new System.Drawing.Size(75, 25);
             this.buttonLogClear.TabIndex = 73;
@@ -1051,7 +1053,7 @@
             // 
             // textBoxRealtime
             // 
-            this.textBoxRealtime.Location = new System.Drawing.Point(509, 82);
+            this.textBoxRealtime.Location = new System.Drawing.Point(509, 78);
             this.textBoxRealtime.Multiline = true;
             this.textBoxRealtime.Name = "textBoxRealtime";
             this.textBoxRealtime.Size = new System.Drawing.Size(441, 152);
@@ -1064,13 +1066,13 @@
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(506, 54);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(72, 15);
+            this.label10.Size = new System.Drawing.Size(187, 15);
             this.label10.TabIndex = 110;
-            this.label10.Text = "リアルタイム";
+            this.label10.Text = "Balan リアルタイム制御実験用";
             // 
             // buttonReplay
             // 
-            this.buttonReplay.Location = new System.Drawing.Point(862, 243);
+            this.buttonReplay.Location = new System.Drawing.Point(26, 661);
             this.buttonReplay.Name = "buttonReplay";
             this.buttonReplay.Size = new System.Drawing.Size(88, 25);
             this.buttonReplay.TabIndex = 111;
@@ -1192,11 +1194,31 @@
             this.label21.TabIndex = 122;
             this.label21.Text = "チャネル4";
             // 
+            // textBoxPumpControl
+            // 
+            this.textBoxPumpControl.Location = new System.Drawing.Point(509, 523);
+            this.textBoxPumpControl.Multiline = true;
+            this.textBoxPumpControl.Name = "textBoxPumpControl";
+            this.textBoxPumpControl.Size = new System.Drawing.Size(441, 152);
+            this.textBoxPumpControl.TabIndex = 125;
+            this.textBoxPumpControl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxPumpControl_KeyDown);
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(506, 496);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(122, 15);
+            this.label22.TabIndex = 126;
+            this.label22.Text = "Pump 制御実験場";
+            // 
             // Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(972, 698);
+            this.Controls.Add(this.label22);
+            this.Controls.Add(this.textBoxPumpControl);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.label21);
@@ -1407,6 +1429,8 @@
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.TextBox textBoxPumpControl;
+        private System.Windows.Forms.Label label22;
     }
 }
 
