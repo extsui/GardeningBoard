@@ -81,6 +81,8 @@ namespace Sprinkler
                 { Keys.A, SampleSequence   },
                 { Keys.S, SampleBrightness },
                 { Keys.D, SampleStress     },
+                { Keys.F, SampleCircle     },
+                { Keys.G, InternalMultiThreadTest },
             };
 
             if (table.ContainsKey(e.KeyCode))
@@ -132,16 +134,25 @@ namespace Sprinkler
         //  コマンド部品
         ////////////////////////////////////////////////////////////////////////////////
 
-        // TODO: 単独の TurnOn とかは Position, Target を引数にしたコマンドが欲しくなる
         // TODO: 輝度指定もあり?
         // TODO: PositionList の Not が欲しくなる
         // TODO: Formation 毎にコマンド群 (クラス?) を定義する必要がありそう? (今回であれば Hexagon 用)
+        // TODO: シーケンスなるものは非同期版が欲しい
 
         private void ExecuteCommand(List<string> commands)
         {
             Trace.Assert(commands != null);
             string line = String.Join("", commands);
             SerialSendAsync(line);
+        }
+
+        /// <summary>
+        /// 指定あれたアクションを非同期実行するラッパー
+        /// 対象のアクションは async 指定が不要
+        /// </summary>
+        private async void RunSequenceAsync(Action action)
+        {
+            await Task.Run(action);
         }
 
         private void CommandRegister()
@@ -157,6 +168,23 @@ namespace Sprinkler
         private void CommandTurnOnAll()
         {
             ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, BrickCommandArgs.PatternTurnOn));
+        }
+
+        private void CommandTurnOn(uint position, OperationTarget target)
+        {
+            ExecuteCommand(m_garden.MakePatternCommand(position, target, BrickCommandArgs.PatternTurnOn));
+        }
+
+        private void CommandTurnOff(uint position, OperationTarget target)
+        {
+            ExecuteCommand(m_garden.MakePatternCommand(position, target, BrickCommandArgs.PatternTurnOff));
+        }
+
+        private void SequentialCommandOneShot(uint position, OperationTarget target, int onTimeMsec)
+        {
+            CommandTurnOn(position, target);
+            Thread.Sleep(onTimeMsec);
+            CommandTurnOff(position, target);
         }
 
         private void SequentialCommandTurnOnInHexagonForm()
@@ -189,9 +217,9 @@ namespace Sprinkler
             ExecuteCommand(m_garden.MakePatternCommand(ReverseTrianglePosition, OperationTarget.TileOnly, BrickCommandArgs.PatternTurnOn));
         }
 
-        private void SequentialCommandOneShotSmoothly(uint position, OperationTarget target, int delayMsec)
+        private void SequentialCommandTurnOnSmoothly(uint position, OperationTarget target, int delayMsec)
         {
-            ExecuteCommand(m_garden.MakePatternCommand(position, target, BrickCommandArgs.PatternTurnOn));
+            CommandTurnOn(position, target);
 
             ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(1)));
             Thread.Sleep(delayMsec);
@@ -199,12 +227,41 @@ namespace Sprinkler
             Thread.Sleep(delayMsec);
             ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(3)));
             Thread.Sleep(delayMsec);
+        }
+
+        private void SequentialCommandTurnOffSmoothly(uint position, OperationTarget target, int delayMsec)
+        {
+            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(3)));
+            Thread.Sleep(delayMsec);
             ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(2)));
             Thread.Sleep(delayMsec);
             ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(1)));
             Thread.Sleep(delayMsec);
 
-            ExecuteCommand(m_garden.MakePatternCommand(position, target, BrickCommandArgs.PatternTurnOff));
+            CommandTurnOff(position, target);
+        }
+
+        private void SequentialCommandOneShotSmoothly(uint position, OperationTarget target, int delayMsec)
+        {
+            SequentialCommandOneShotSmoothly(new List<uint> { position }, target, delayMsec);
+        }
+
+        private void SequentialCommandOneShotSmoothly(List<uint> positions, OperationTarget target, int delayMsec)
+        {
+            ExecuteCommand(m_garden.MakePatternCommand(positions, target, BrickCommandArgs.PatternTurnOn));
+
+            ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(1)));
+            Thread.Sleep(delayMsec);
+            ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(2)));
+            Thread.Sleep(delayMsec);
+            ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(3)));
+            Thread.Sleep(delayMsec);
+            ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(2)));
+            Thread.Sleep(delayMsec);
+            ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(1)));
+            Thread.Sleep(delayMsec);
+
+            ExecuteCommand(m_garden.MakePatternCommand(positions, target, BrickCommandArgs.PatternTurnOff));
         }
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -263,6 +320,44 @@ namespace Sprinkler
                 {
                     SequentialCommandOneShotSmoothly(position, OperationTarget.Both, 50);
                     Thread.Sleep(200);
+                }
+            });
+        }
+
+        private async void SampleCircle()
+        {
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                {
+
+                    for (int i = 500; i > 0; i /= 2)
+                    {
+                        SequentialCommandOneShotSmoothly(new List<uint> { Position.Hexagon.Up, Position.Hexagon.Down }, OperationTarget.TileOnly, 10);
+                        Thread.Sleep(i);
+                        SequentialCommandOneShotSmoothly(new List<uint> { Position.Hexagon.RightUp, Position.Hexagon.LeftDown }, OperationTarget.TileOnly, 10);
+                        Thread.Sleep(i);
+                        SequentialCommandOneShotSmoothly(new List<uint> { Position.Hexagon.RightDown, Position.Hexagon.LeftUp }, OperationTarget.TileOnly, 10);
+                        Thread.Sleep(i);
+                    }
+                }
+
+                CommandTurnOffAll();
+            });
+        }
+
+        private async void InternalMultiThreadTest()
+        {
+            await Task.Run(() =>
+            {
+                foreach (var position in Position.Hexagon.Surroundings)
+                {
+                    SequentialCommandTurnOnSmoothly(position, OperationTarget.TileOnly, 50);
+                }
+
+                foreach (var position in Position.Hexagon.Surroundings)
+                {
+                    SequentialCommandTurnOffSmoothly(position, OperationTarget.TileOnly, 50);
                 }
             });
         }

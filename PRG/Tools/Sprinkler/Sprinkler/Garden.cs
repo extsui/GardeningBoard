@@ -323,6 +323,26 @@ namespace Sprinkler
             {
                 Up, RightUp, RightDown, Down, LeftDown, LeftUp, Center
             };
+
+            public static readonly List<uint> Surroundings = new List<uint>
+            {
+                Up, RightUp, RightDown, Down, LeftDown, LeftUp
+            };
+
+            public static readonly List<uint> Diagonal0Clock = new List<uint>
+            {
+                Up, Down,
+            };
+
+            public static readonly List<uint> Diagonal2Clock = new List<uint>
+            {
+                RightUp, LeftDown
+            };
+
+            public static readonly List<uint> Diagonal4Clock = new List<uint>
+            {
+                RightDown, LeftUp
+            };
         }
 
         // -------------
