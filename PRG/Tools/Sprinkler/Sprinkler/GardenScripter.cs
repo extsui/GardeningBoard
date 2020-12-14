@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Sprinkler
 {
-    class GardenScripter
+    public class GardenScripter
     {
         private Garden m_garden;
 
@@ -52,22 +52,22 @@ namespace Sprinkler
             ExecuteCommand(m_garden.MakeRegisterCommand());
         }
 
-        private void CommandTurnOffAll()
+        public void CommandTurnOffAll()
         {
             ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, BrickCommandArgs.PatternTurnOff));
         }
 
-        private void CommandTurnOnAll()
+        public void CommandTurnOnAll()
         {
             ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, BrickCommandArgs.PatternTurnOn));
         }
 
-        private void CommandTurnOn(uint position, OperationTarget target)
+        public void CommandTurnOn(uint position, OperationTarget target)
         {
             ExecuteCommand(m_garden.MakePatternCommand(position, target, BrickCommandArgs.PatternTurnOn));
         }
 
-        private void CommandTurnOff(uint position, OperationTarget target)
+        public void CommandTurnOff(uint position, OperationTarget target)
         {
             ExecuteCommand(m_garden.MakePatternCommand(position, target, BrickCommandArgs.PatternTurnOff));
         }

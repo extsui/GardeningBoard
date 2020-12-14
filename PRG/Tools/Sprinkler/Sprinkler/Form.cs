@@ -4,6 +4,11 @@ using System.IO.Ports;
 using System.Windows.Forms;
 using System.Collections.Generic;
 
+using System.Threading;
+using System.Threading.Tasks;
+using System.Linq;
+using Midi;
+
 namespace Sprinkler
 {
     public partial class Sprinkler : Form
@@ -23,6 +28,8 @@ namespace Sprinkler
         private SerialPort m_serialPort;
         private GardenScripter m_scripter;
 
+        private Summarizer m_summarizer;
+
         /// <summary>
         /// 通信開始時の時刻
         /// </summary>
@@ -41,6 +48,122 @@ namespace Sprinkler
             m_toolStripStatusSerialSendCount = new ToolStripStatusLabel();
             this.statusStrip.Items.Add(m_toolStripStatusSerialSendCount);
             UpdateStatusBar();
+
+            //////////////////////////////////////////////////////////////
+            //  MIDI 実験
+            //////////////////////////////////////////////////////////////
+            foreach (var device in InputDevice.InstalledDevices)
+            {
+                textBoxSerialLog.AppendText(string.Format($"{device.Name}\r\n"));
+            }
+
+            var inputDevice = InputDevice.InstalledDevices.ToList().Find(dev => dev.Name == "microKEY-25");
+            inputDevice.Open();
+            inputDevice.StartReceiving(null);
+
+            m_summarizer = new Summarizer(inputDevice, m_scripter);
+        }
+
+        public class Summarizer
+        {
+            private GardenScripter m_scripter;
+
+            public Summarizer(InputDevice inputDevice, GardenScripter scripter)
+            {
+                m_scripter = scripter;
+
+                this.inputDevice = inputDevice;
+                pitchesPressed = new Dictionary<Pitch, bool>();
+                inputDevice.NoteOn += new InputDevice.NoteOnHandler(this.NoteOn);
+                inputDevice.NoteOff += new InputDevice.NoteOffHandler(this.NoteOff);
+                PrintStatus();
+            }
+
+            private void PrintStatus()
+            {
+                /*
+                Console.Clear();
+                Console.WriteLine("Play notes and chords on the MIDI input device, and watch");
+                Console.WriteLine("their names printed here.  Press any QUERTY key to quit.");
+                Console.WriteLine();
+
+                // Print the currently pressed notes.
+                List<Pitch> pitches = new List<Pitch>(pitchesPressed.Keys);
+                pitches.Sort();
+                Console.Write("Notes: ");
+                for (int i = 0; i < pitches.Count; ++i)
+                {
+                    Pitch pitch = pitches[i];
+                    if (i > 0)
+                    {
+                        Console.Write(", ");
+                    }
+                    Console.Write("{0}", pitch.NotePreferringSharps());
+                    if (pitch.NotePreferringSharps() != pitch.NotePreferringFlats())
+                    {
+                        Console.Write(" or {0}", pitch.NotePreferringFlats());
+                    }
+                }
+                Console.WriteLine();
+                */
+
+
+                List<Pitch> pitches = new List<Pitch>(pitchesPressed.Keys);
+                pitches.Sort();
+
+                foreach (var pitch in pitches)
+                {
+                    switch (pitch.NotePreferringSharps().Letter)
+                    {
+                        case 'C':
+                            m_scripter.CommandTurnOn(Position.Hexagon.Up, OperationTarget.TileOnly);
+                            break;
+                        case 'D':
+                            m_scripter.CommandTurnOn(Position.Hexagon.RightUp, OperationTarget.TileOnly);
+                            break;
+                        case 'E':
+                            m_scripter.CommandTurnOn(Position.Hexagon.RightDown, OperationTarget.TileOnly);
+                            break;
+                        case 'F':
+                            m_scripter.CommandTurnOn(Position.Hexagon.Down, OperationTarget.TileOnly);
+                            break;
+                        case 'G':
+                            m_scripter.CommandTurnOn(Position.Hexagon.LeftDown, OperationTarget.TileOnly);
+                            break;
+                        case 'A':
+                            m_scripter.CommandTurnOn(Position.Hexagon.LeftUp, OperationTarget.TileOnly);
+                            break;
+                        case 'B':
+                            m_scripter.CommandTurnOn(Position.Hexagon.Center, OperationTarget.TileOnly);
+                            break;
+                        default:
+                            m_scripter.CommandTurnOffAll();
+                            break;
+                    }
+                }
+
+            }
+
+            public void NoteOn(NoteOnMessage msg)
+            {
+                lock (this)
+                {
+                    pitchesPressed[msg.Pitch] = true;
+                    PrintStatus();
+                }
+            }
+
+            public void NoteOff(NoteOffMessage msg)
+            {
+                lock (this)
+                {
+                    pitchesPressed.Remove(msg.Pitch);
+                    PrintStatus();
+                }
+            }
+
+            private InputDevice inputDevice;
+            private Dictionary<Pitch, bool> pitchesPressed;
         }
 
         private void Sprinkler_FormClosed(object sender, FormClosedEventArgs e)
