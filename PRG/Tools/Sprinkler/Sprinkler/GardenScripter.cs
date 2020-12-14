@@ -72,14 +72,14 @@ namespace Sprinkler
             ExecuteCommand(m_garden.MakePatternCommand(position, target, BrickCommandArgs.PatternTurnOff));
         }
 
-        private void SequentialCommandOneShot(uint position, OperationTarget target, int onTimeMsec)
+        public void SequentialCommandOneShot(uint position, OperationTarget target, int onTimeMsec)
         {
             CommandTurnOn(position, target);
             Thread.Sleep(onTimeMsec);
             CommandTurnOff(position, target);
         }
 
-        private void SequentialCommandTurnOnInHexagonForm()
+        public void SequentialCommandTurnOnInHexagonForm()
         {
             foreach (var position in Position.Hexagon.All)
             {
@@ -88,7 +88,7 @@ namespace Sprinkler
             }
         }
 
-        private void SequentialCommandTurnOffInHexagonForm()
+        public void SequentialCommandTurnOffInHexagonForm()
         {
             foreach (var position in Position.Hexagon.All)
             {
@@ -97,19 +97,19 @@ namespace Sprinkler
             }
         }
 
-        private void CommandTurnOnInTriangleForm()
+        public void CommandTurnOnInTriangleForm()
         {
             var TrianglePosition = new List<uint> { Position.Hexagon.Up, Position.Hexagon.RightDown, Position.Hexagon.LeftDown };
             ExecuteCommand(m_garden.MakePatternCommand(TrianglePosition, OperationTarget.TileOnly, BrickCommandArgs.PatternTurnOn));
         }
 
-        private void CommandTurnOnInReverseTriangleForm()
+        public void CommandTurnOnInReverseTriangleForm()
         {
             var ReverseTrianglePosition = new List<uint> { Position.Hexagon.Down, Position.Hexagon.LeftUp, Position.Hexagon.RightUp };
             ExecuteCommand(m_garden.MakePatternCommand(ReverseTrianglePosition, OperationTarget.TileOnly, BrickCommandArgs.PatternTurnOn));
         }
 
-        private void SequentialCommandTurnOnSmoothly(uint position, OperationTarget target, int delayMsec)
+        public void SequentialCommandTurnOnSmoothly(uint position, OperationTarget target, int delayMsec)
         {
             CommandTurnOn(position, target);
 
@@ -121,7 +121,7 @@ namespace Sprinkler
             Thread.Sleep(delayMsec);
         }
 
-        private void SequentialCommandTurnOffSmoothly(uint position, OperationTarget target, int delayMsec)
+        public void SequentialCommandTurnOffSmoothly(uint position, OperationTarget target, int delayMsec)
         {
             ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(3)));
             Thread.Sleep(delayMsec);
@@ -133,12 +133,12 @@ namespace Sprinkler
             CommandTurnOff(position, target);
         }
 
-        private void SequentialCommandOneShotSmoothly(uint position, OperationTarget target, int delayMsec)
+        public void SequentialCommandOneShotSmoothly(uint position, OperationTarget target, int delayMsec)
         {
             SequentialCommandOneShotSmoothly(new List<uint> { position }, target, delayMsec);
         }
 
-        private void SequentialCommandOneShotSmoothly(List<uint> positions, OperationTarget target, int delayMsec)
+        public void SequentialCommandOneShotSmoothly(List<uint> positions, OperationTarget target, int delayMsec)
         {
             ExecuteCommand(m_garden.MakePatternCommand(positions, target, BrickCommandArgs.PatternTurnOn));
 

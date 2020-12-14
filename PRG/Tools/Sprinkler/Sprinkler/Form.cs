@@ -71,85 +71,56 @@ namespace Sprinkler
             public Summarizer(InputDevice inputDevice, GardenScripter scripter)
             {
                 m_scripter = scripter;
-
                 this.inputDevice = inputDevice;
-                pitchesPressed = new Dictionary<Pitch, bool>();
                 inputDevice.NoteOn += new InputDevice.NoteOnHandler(this.NoteOn);
                 inputDevice.NoteOff += new InputDevice.NoteOffHandler(this.NoteOff);
-                PrintStatus();
             }
 
-            private void PrintStatus()
+            private async void NoteOnEventHandler(Pitch pitch)
             {
-                /*
-                Console.Clear();
-                Console.WriteLine("Play notes and chords on the MIDI input device, and watch");
-                Console.WriteLine("their names printed here.  Press any QUERTY key to quit.");
-                Console.WriteLine();
-
-                // Print the currently pressed notes.
-                List<Pitch> pitches = new List<Pitch>(pitchesPressed.Keys);
-                pitches.Sort();
-                Console.Write("Notes: ");
-                for (int i = 0; i < pitches.Count; ++i)
+                await Task.Run(() =>
                 {
-                    Pitch pitch = pitches[i];
-                    if (i > 0)
+                    int octave = pitch.Octave();
+                    char scale = pitch.NotePreferringSharps().Letter;
+
+                    var ScaleToPosition = new Dictionary<char, uint>
                     {
-                        Console.Write(", ");
-                    }
-                    Console.Write("{0}", pitch.NotePreferringSharps());
-                    if (pitch.NotePreferringSharps() != pitch.NotePreferringFlats())
+                        { 'C', Position.Hexagon.LeftUp    },
+                        { 'D', Position.Hexagon.Up        },
+                        { 'E', Position.Hexagon.RightUp   },
+                        { 'F', Position.Hexagon.Center    },
+                        { 'G', Position.Hexagon.LeftDown  },
+                        { 'A', Position.Hexagon.Down      },
+                        { 'B', Position.Hexagon.RightDown },
+                    };
+
+                    var OctaveToTarget = new Dictionary<int, OperationTarget>
                     {
-                        Console.Write(" or {0}", pitch.NotePreferringFlats());
-                    }
-                }
-                Console.WriteLine();
-                */
+                        { 3, OperationTarget.TileOnly     },
+                        { 4, OperationTarget.InsertedOnly },
+                    };
 
+                    var position = ScaleToPosition[scale];
 
-                List<Pitch> pitches = new List<Pitch>(pitchesPressed.Keys);
-                pitches.Sort();
-
-                foreach (var pitch in pitches)
-                {
-                    switch (pitch.NotePreferringSharps().Letter)
+                    OperationTarget target;
+                    if (OctaveToTarget.ContainsKey(octave))
                     {
-                        case 'C':
-                            m_scripter.CommandTurnOn(Position.Hexagon.Up, OperationTarget.TileOnly);
-                            break;
-                        case 'D':
-                            m_scripter.CommandTurnOn(Position.Hexagon.RightUp, OperationTarget.TileOnly);
-                            break;
-                        case 'E':
-                            m_scripter.CommandTurnOn(Position.Hexagon.RightDown, OperationTarget.TileOnly);
-                            break;
-                        case 'F':
-                            m_scripter.CommandTurnOn(Position.Hexagon.Down, OperationTarget.TileOnly);
-                            break;
-                        case 'G':
-                            m_scripter.CommandTurnOn(Position.Hexagon.LeftDown, OperationTarget.TileOnly);
-                            break;
-                        case 'A':
-                            m_scripter.CommandTurnOn(Position.Hexagon.LeftUp, OperationTarget.TileOnly);
-                            break;
-                        case 'B':
-                            m_scripter.CommandTurnOn(Position.Hexagon.Center, OperationTarget.TileOnly);
-                            break;
-                        default:
-                            m_scripter.CommandTurnOffAll();
-                            break;
+                        target = OctaveToTarget[octave];
                     }
-                }
+                    else
+                    {
+                        target = OperationTarget.Both;
+                    }
 
+                    m_scripter.SequentialCommandOneShotSmoothly(position, target, 30);
+                });
             }
 
             public void NoteOn(NoteOnMessage msg)
             {
                 lock (this)
                 {
-                    pitchesPressed[msg.Pitch] = true;
-                    PrintStatus();
+                    NoteOnEventHandler(msg.Pitch);
                 }
             }
 
@@ -157,13 +128,11 @@ namespace Sprinkler
             {
                 lock (this)
                 {
-                    pitchesPressed.Remove(msg.Pitch);
-                    PrintStatus();
+                    // NOP
                 }
             }
 
             private InputDevice inputDevice;
-            private Dictionary<Pitch, bool> pitchesPressed;
         }
 
         private void Sprinkler_FormClosed(object sender, FormClosedEventArgs e)
