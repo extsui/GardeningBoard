@@ -76,10 +76,12 @@ namespace Sprinkler
                 inputDevice.NoteOff += new InputDevice.NoteOffHandler(this.NoteOff);
             }
 
-            private async void NoteOnEventHandler(Pitch pitch)
+            private async void NoteEventHandler(Pitch pitch, bool isPressed)
             {
                 await Task.Run(() =>
                 {
+                    // TODO: ベロシティを使う
+
                     int octave = pitch.Octave();
                     char scale = pitch.NotePreferringSharps().Letter;
 
@@ -112,7 +114,14 @@ namespace Sprinkler
                         target = OperationTarget.Both;
                     }
 
-                    m_scripter.SequentialCommandOneShotSmoothly(position, target, 30);
+                    if (isPressed)
+                    {
+                        m_scripter.SequentialCommandTurnOnSmoothly(position, target, 30);
+                    }
+                    else
+                    {
+                        m_scripter.SequentialCommandTurnOffSmoothly(position, target, 30);
+                    }
                 });
             }
 
@@ -120,7 +129,7 @@ namespace Sprinkler
             {
                 lock (this)
                 {
-                    NoteOnEventHandler(msg.Pitch);
+                    NoteEventHandler(msg.Pitch, true);
                 }
             }
 
@@ -128,7 +137,7 @@ namespace Sprinkler
             {
                 lock (this)
                 {
-                    // NOP
+                    NoteEventHandler(msg.Pitch, false);
                 }
             }
 
