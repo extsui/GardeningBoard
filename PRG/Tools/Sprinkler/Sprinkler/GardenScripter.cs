@@ -113,21 +113,19 @@ namespace Sprinkler
         {
             CommandTurnOn(position, target);
 
+            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(0)));
+            Thread.Sleep(delayMsec);
             ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(1)));
             Thread.Sleep(delayMsec);
             ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(2)));
-            Thread.Sleep(delayMsec);
-            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(3)));
             Thread.Sleep(delayMsec);
         }
 
         public void SequentialCommandTurnOffSmoothly(uint position, OperationTarget target, int delayMsec)
         {
-            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(3)));
-            Thread.Sleep(delayMsec);
-            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(2)));
-            Thread.Sleep(delayMsec);
             ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(1)));
+            Thread.Sleep(delayMsec);
+            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(0)));
             Thread.Sleep(delayMsec);
 
             CommandTurnOff(position, target);
@@ -222,7 +220,6 @@ namespace Sprinkler
             {
                 CommandRegister();
                 {
-
                     for (int i = 500; i > 0; i /= 2)
                     {
                         SequentialCommandOneShotSmoothly(new List<uint> { Position.Hexagon.Up, Position.Hexagon.Down }, OperationTarget.TileOnly, 10);
@@ -269,6 +266,53 @@ namespace Sprinkler
                 {
                     CommandTurnOffAll();
                     CommandTurnOnAll();
+                }
+            });
+        }
+
+        public async void ScenarioShootingStar()
+        {
+            await Task.Run(() =>
+            {
+                var PositionsSequence = new List<List<uint>>
+                {
+                    Position.Hexagon.StraightLine0Clock,
+                    Position.Hexagon.StraightLine2Clock,
+                    Position.Hexagon.StraightLine4Clock,
+                    Position.Hexagon.StraightLine6Clock,
+                    Position.Hexagon.StraightLine8Clock,
+                    Position.Hexagon.StraightLine10Clock,
+                };
+
+                foreach (var positions in PositionsSequence)
+                {
+                    Action<OperationTarget, List<uint>, int, int> turnOnSmoothly = (target, positions_, positionDelay, sequenceDelay) =>
+                    {
+                        foreach (var position in positions_)
+                        {
+                            RunSequenceAsync(() => SequentialCommandTurnOnSmoothly(position, target, positionDelay));
+                            Thread.Sleep(sequenceDelay);
+                        }
+                    };
+
+                    // Tile, Inserted をそれぞれ微妙に重ねながら順に点灯
+                    RunSequenceAsync(() => turnOnSmoothly(OperationTarget.TileOnly, positions, 30, 100));
+                    Thread.Sleep(300);
+                    RunSequenceAsync(() => turnOnSmoothly(OperationTarget.InsertedOnly, positions, 30, 100));
+                    Thread.Sleep(400);
+
+                    Action<OperationTarget, List<uint>, int, int> turnOffSmoothly = (target, positions_, positionDelay, sequenceDelay) =>
+                    {
+                        foreach (var position in positions_)
+                        {
+                            RunSequenceAsync(() => SequentialCommandTurnOffSmoothly(position, target, positionDelay));
+                            Thread.Sleep(sequenceDelay);
+                        }
+                    };
+
+                    // 消え方の位置は同じ順だが消えるとき同時
+                    RunSequenceAsync(() => turnOffSmoothly(OperationTarget.Both, positions, 50, 100));
+                    Thread.Sleep(400);
                 }
             });
         }

@@ -336,12 +336,42 @@ namespace Sprinkler
 
             public static readonly List<uint> Diagonal2Clock = new List<uint>
             {
-                RightUp, LeftDown
+                RightUp, LeftDown,
             };
 
             public static readonly List<uint> Diagonal4Clock = new List<uint>
             {
-                RightDown, LeftUp
+                RightDown, LeftUp,
+            };
+
+            public static readonly List<uint> StraightLine0Clock = new List<uint>
+            {
+                Up, Center, Down,
+            };
+
+            public static readonly List<uint> StraightLine2Clock = new List<uint>
+            {
+                RightUp, Center, LeftDown,
+            };
+
+            public static readonly List<uint> StraightLine4Clock = new List<uint>
+            {
+                RightDown, Center, LeftUp,
+            };
+
+            public static readonly List<uint> StraightLine6Clock = new List<uint>
+            {
+                Down, Center, Up,
+            };
+
+            public static readonly List<uint> StraightLine8Clock = new List<uint>
+            {
+                LeftDown, Center, RightUp,
+            };
+
+            public static readonly List<uint> StraightLine10Clock = new List<uint>
+            {
+                LeftUp, Center, RightDown,
             };
         }
 
