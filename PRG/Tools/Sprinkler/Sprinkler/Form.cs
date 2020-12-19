@@ -76,7 +76,7 @@ namespace Sprinkler
                 inputDevice.NoteOff += new InputDevice.NoteOffHandler(this.NoteOff);
             }
 
-            private async void NoteEventHandler(Pitch pitch, bool isPressed)
+            private async void NoteEventHandler(Pitch pitch, bool isPressed, int velocity = 0)
             {
                 await Task.Run(() =>
                 {
@@ -84,7 +84,7 @@ namespace Sprinkler
 
                     int octave = pitch.Octave();
                     char scale = pitch.NotePreferringSharps().Letter;
-
+                    
                     var ScaleToPosition = new Dictionary<char, uint>
                     {
                         { 'C', Position.Hexagon.LeftUp    },
@@ -129,7 +129,7 @@ namespace Sprinkler
             {
                 lock (this)
                 {
-                    NoteEventHandler(msg.Pitch, true);
+                    NoteEventHandler(msg.Pitch, true, msg.Velocity);
                 }
             }
 
@@ -141,6 +141,8 @@ namespace Sprinkler
                 }
             }
 
+            // TODO: Velocity を保持するためのリストが必要な気がする。
+            //       NoteOff の時に輝度の降下率を NoteOn と合わせるために。
             private InputDevice inputDevice;
         }
 
@@ -161,6 +163,10 @@ namespace Sprinkler
 
             m_serialPort.Open();
             m_startTickCount = Environment.TickCount;
+
+            // TORIAEZU: 輝度実験用。後で消す
+            m_scripter.CommandRegister();
+            m_scripter.CommandTurnOnAll();
         }
 
         private void buttonTest_Click(object sender, EventArgs e)
@@ -168,19 +174,146 @@ namespace Sprinkler
             m_scripter.ExecuteTest();
         }
 
+        // ファンクション行
+        private void KeyDownHandlerF1()           { m_scripter.SampleSequence();          }
+        private void KeyDownHandlerF2()           { m_scripter.SampleBrightness();        }
+        private void KeyDownHandlerF3()           { m_scripter.SampleStress();            }
+        private void KeyDownHandlerF4()           { m_scripter.SampleCircle();            }
+        private void KeyDownHandlerF5()           { m_scripter.InternalMultiThreadTest(); }
+        private void KeyDownHandlerF6()           { m_scripter.ScenarioShootingStar();    }
+        private void KeyDownHandlerF7()           {  }
+        private void KeyDownHandlerF8()           {  }
+        private void KeyDownHandlerF9()           {  }
+        private void KeyDownHandlerF10()          {  }
+        private void KeyDownHandlerF11()          {  }
+        private void KeyDownHandlerF12()          {  }
+        // 1234 行
+        private void KeyDownHandler1()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly,  0); }
+        private void KeyDownHandler2()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly,  1); }
+        private void KeyDownHandler3()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly,  2); }
+        private void KeyDownHandler4()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly,  3); }
+        private void KeyDownHandler5()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly,  4); }
+        private void KeyDownHandler6()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly,  5); }
+        private void KeyDownHandler7()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly,  6); }
+        private void KeyDownHandler8()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly,  7); }
+        private void KeyDownHandler9()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly,  8); }
+        private void KeyDownHandler0()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly,  9); }
+        private void KeyDownHandlerMinus()         { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 10); }
+        private void KeyDownHandlerHat()           { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 11); }
+        private void KeyDownHandlerBar()           { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 12); }
+        // QWER 行
+        private void KeyDownHandlerQ()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly,  0); }
+        private void KeyDownHandlerW()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly,  1); }
+        private void KeyDownHandlerE()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly,  2); }
+        private void KeyDownHandlerR()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly,  3); }
+        private void KeyDownHandlerT()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly,  4); }
+        private void KeyDownHandlerY()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly,  5); }
+        private void KeyDownHandlerU()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly,  6); }
+        private void KeyDownHandlerI()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly,  7); }
+        private void KeyDownHandlerO()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly,  8); }
+        private void KeyDownHandlerP()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly,  9); }
+        private void KeyDownHandlerAt()            { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly, 10); }
+        private void KeyDownHandlerOpenBrackets()  { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly, 11); }
+        // ASDF 行
+        private void KeyDownHandlerA()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly,  0);  }
+        private void KeyDownHandlerS()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly,  1);  }
+        private void KeyDownHandlerD()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly,  2);  }
+        private void KeyDownHandlerF()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly,  3);  }
+        private void KeyDownHandlerG()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly,  4);  }
+        private void KeyDownHandlerH()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly,  5);  }
+        private void KeyDownHandlerJ()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly,  6);  }
+        private void KeyDownHandlerK()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly,  7);  }
+        private void KeyDownHandlerL()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly,  8);  }
+        private void KeyDownHandlerSemiColon()     { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly,  9);  }
+        private void KeyDownHandlerColon()         { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly, 10);  }
+        private void KeyDownHandlerCloseBrackets() { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly, 11);  }
+        // ZXCV 行
+        private void KeyDownHandlerZ()             { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly,  0); }
+        private void KeyDownHandlerX()             { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly,  1); }
+        private void KeyDownHandlerC()             { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly,  2); }
+        private void KeyDownHandlerV()             { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly,  3); }
+        private void KeyDownHandlerB()             { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly,  4); }
+        private void KeyDownHandlerN()             { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly,  5); }
+        private void KeyDownHandlerM()             { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly,  6); }
+        private void KeyDownHandlerComma()         { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly,  7); }
+        private void KeyDownHandlerPeriod()        { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly,  8); }
+        private void KeyDownHandlerQuestion()      { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly,  9); }
+        private void KeyDownHandlerUnderBar()      { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly, 10); }
+        // その他
+        private void KeyDownHandlerDelete()        { m_scripter.CommandTurnOffAll(); }
+        private void KeyDownHandlerEnter()         { m_scripter.CommandTurnOnAll();  }
+
         private void textBoxKeyInput_KeyDown(object sender, KeyEventArgs e)
         {
             var table = new Dictionary<Keys, Action>
             {
-                // 1 2 3 4 5 6 7 8 9 0 - ^ \
-                //  q w e r t y u i o p @ [
-                //   a s d f g h j k l ; : ]
-                //    z x c v b n m , . / \
-                { Keys.A, m_scripter.SampleSequence   },
-                { Keys.S, m_scripter.SampleBrightness },
-                { Keys.D, m_scripter.SampleStress     },
-                { Keys.F, m_scripter.SampleCircle     },
-                { Keys.G, m_scripter.InternalMultiThreadTest },
+                { Keys.F1,              KeyDownHandlerF1            },  // F1
+                { Keys.F2,              KeyDownHandlerF2            },  // F2
+                { Keys.F3,              KeyDownHandlerF3            },  // F3
+                { Keys.F4,              KeyDownHandlerF4            },  // F4
+                { Keys.F5,              KeyDownHandlerF5            },  // F5
+                { Keys.F6,              KeyDownHandlerF6            },  // F6
+                { Keys.F7,              KeyDownHandlerF7            },  // F7
+                { Keys.F8,              KeyDownHandlerF8            },  // F8
+                { Keys.F9,              KeyDownHandlerF9            },  // F9
+                { Keys.F10,             KeyDownHandlerF10           },  // F10
+                { Keys.F11,             KeyDownHandlerF11           },  // F11
+                { Keys.F12,             KeyDownHandlerF12           },  // F12
+
+                { Keys.D1,              KeyDownHandler1             },  // 1
+                { Keys.D2,              KeyDownHandler2             },  // 2
+                { Keys.D3,              KeyDownHandler3             },  // 3
+                { Keys.D4,              KeyDownHandler4             },  // 4
+                { Keys.D5,              KeyDownHandler5             },  // 5
+                { Keys.D6,              KeyDownHandler6             },  // 6
+                { Keys.D7,              KeyDownHandler7             },  // 7
+                { Keys.D8,              KeyDownHandler8             },  // 8
+                { Keys.D9,              KeyDownHandler9             },  // 9
+                { Keys.D0,              KeyDownHandler0             },  // 0
+                { Keys.OemMinus,        KeyDownHandlerMinus         },  // -
+                { Keys.Oem7,            KeyDownHandlerHat           },  // ^
+                { Keys.Oem5,            KeyDownHandlerBar           },  // |
+                
+                { Keys.Q,               KeyDownHandlerQ             },  // q
+                { Keys.W,               KeyDownHandlerW             },  // w
+                { Keys.E,               KeyDownHandlerE             },  // e
+                { Keys.R,               KeyDownHandlerR             },  // r
+                { Keys.T,               KeyDownHandlerT             },  // t
+                { Keys.Y,               KeyDownHandlerY             },  // y
+                { Keys.U,               KeyDownHandlerU             },  // u
+                { Keys.I,               KeyDownHandlerI             },  // i
+                { Keys.O,               KeyDownHandlerO             },  // o
+                { Keys.P,               KeyDownHandlerP             },  // p
+                { Keys.Oemtilde,        KeyDownHandlerAt            },  // @
+                { Keys.OemOpenBrackets, KeyDownHandlerOpenBrackets  },  // [
+                
+                { Keys.A,               KeyDownHandlerA             },  // a
+                { Keys.S,               KeyDownHandlerS             },  // s
+                { Keys.D,               KeyDownHandlerD             },  // d
+                { Keys.F,               KeyDownHandlerF             },  // f
+                { Keys.G,               KeyDownHandlerG             },  // g
+                { Keys.H,               KeyDownHandlerH             },  // h
+                { Keys.J,               KeyDownHandlerJ             },  // j
+                { Keys.K,               KeyDownHandlerK             },  // k
+                { Keys.L,               KeyDownHandlerL             },  // l
+                { Keys.Oemplus,         KeyDownHandlerSemiColon     },  // ;
+                { Keys.Oem1,            KeyDownHandlerColon         },  // :
+                { Keys.Oem6,            KeyDownHandlerCloseBrackets },  // ]
+                
+                { Keys.Z,               KeyDownHandlerZ             },  // z
+                { Keys.X,               KeyDownHandlerX             },  // x
+                { Keys.C,               KeyDownHandlerC             },  // c
+                { Keys.V,               KeyDownHandlerV             },  // v
+                { Keys.B,               KeyDownHandlerB             },  // b
+                { Keys.N,               KeyDownHandlerN             },  // n
+                { Keys.M,               KeyDownHandlerM             },  // m
+                { Keys.Oemcomma,        KeyDownHandlerComma         },  // ,
+                { Keys.OemPeriod,       KeyDownHandlerPeriod        },  // .
+                { Keys.OemQuestion,     KeyDownHandlerQuestion      },  // ?
+                { Keys.OemBackslash,    KeyDownHandlerUnderBar      },  // _
+
+                { Keys.Delete,          KeyDownHandlerDelete        },  // DEL
+                { Keys.Enter,           KeyDownHandlerEnter         },  // Enter
             };
 
             if (table.ContainsKey(e.KeyCode))

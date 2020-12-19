@@ -47,7 +47,7 @@ namespace Sprinkler
             await Task.Run(action);
         }
 
-        private void CommandRegister()
+        public void CommandRegister()
         {
             ExecuteCommand(m_garden.MakeRegisterCommand());
         }
@@ -70,6 +70,12 @@ namespace Sprinkler
         public void CommandTurnOff(uint position, OperationTarget target)
         {
             ExecuteCommand(m_garden.MakePatternCommand(position, target, BrickCommandArgs.PatternTurnOff));
+        }
+
+        public void CommandBrightness(uint position, OperationTarget target, byte brightness)
+        {
+            // TODO: new が必要なのは要改善。色に合わせた輝度調整が必要。
+            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(brightness)));
         }
 
         public void SequentialCommandOneShot(uint position, OperationTarget target, int onTimeMsec)
