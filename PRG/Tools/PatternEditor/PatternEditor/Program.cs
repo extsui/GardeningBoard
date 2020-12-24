@@ -15,19 +15,36 @@ namespace PatternEditor
     {
         static void Main(string[] args)
         {
-            BrickPattern grass = BrickPatternReader.Load(@"../../../Resources/Grass.yml");
-            BrickPatternWriter.SaveByCppFormat(grass);
+            BrickPattern grass = BrickPatternReader.LoadYamlFile(@"../../../Resources/Grass.yml");
+
+            BrickPatternWriter.SaveByDebugFormat(grass);
+            //BrickPatternWriter.SaveByCppFormat(grass);
         }
     }
 
     public class BrickPatternReader
     {
-        public static BrickPattern Load(string yamlPath)
+        // Yaml ファイルを指定する場合
+        public static BrickPattern LoadYamlFile(string path)
         {
-            var input = new StreamReader(yamlPath, Encoding.UTF8);
+            StreamReader reader = new StreamReader(path, Encoding.UTF8);
             var yaml = new YamlStream();
-            yaml.Load(input);
+            yaml.Load(reader);
+            return LoadYamlCore(yaml);
+        }
 
+        // Yaml 文字列そのものを指定する場合
+        public static BrickPattern LoadYamlString(string body)
+        {
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(body));
+            TextReader reader = new StreamReader(stream);
+            var yaml = new YamlStream();
+            yaml.Load(reader);
+            return LoadYamlCore(yaml);
+        }
+
+        private static BrickPattern LoadYamlCore(YamlStream yaml)
+        {
             var patterns = new List<BrickPattern.Pattern>();
             var root = (YamlSequenceNode)yaml.Documents[0].RootNode;
             foreach (YamlMappingNode pattern in root.Children)
