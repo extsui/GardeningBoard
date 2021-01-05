@@ -17,8 +17,22 @@ namespace PatternEditor
         {
             BrickPattern grass = BrickPatternReader.LoadYamlFile(@"../../../Resources/Grass.yml");
 
-            BrickPatternWriter.SaveByDebugFormat(grass);
-            //BrickPatternWriter.SaveByCppFormat(grass);
+            //BrickPatternWriter.SaveByDebugFormat(grass);
+            BrickPatternWriter.SaveByCppFormat(grass);
+
+            /*
+            BrickPattern grass = BrickPatternReader.LoadYamlFile(@"../../../Resources/Grass.yml");
+            BrickPatternWriter.SaveByCSharpFormat(grass, "Grass");
+
+            BrickPattern tree = BrickPatternReader.LoadYamlFile(@"../../../Resources/Tree.yml");
+            BrickPatternWriter.SaveByCSharpFormat(tree, "Tree");
+
+            BrickPattern house = BrickPatternReader.LoadYamlFile(@"../../../Resources/House.yml");
+            BrickPatternWriter.SaveByCSharpFormat(house, "House");
+
+            BrickPattern tile = BrickPatternReader.LoadYamlFile(@"../../../Resources/Tile.yml");
+            BrickPatternWriter.SaveByCSharpFormat(house, "Tile");
+            */
         }
     }
 
@@ -79,6 +93,10 @@ namespace PatternEditor
             }
         }
 
+        /// <summary>
+        /// C++ 形式で保存する
+        /// </summary>
+        /// <param name="brickPattern"></param>
         public static void SaveByCppFormat(BrickPattern brickPattern)
         {
             int LedCount = brickPattern.Patterns[0].Data[0].Length;
@@ -99,12 +117,52 @@ namespace PatternEditor
                 Console.WriteLine("");
             }
         }
+
+        /// <summary>
+        /// C# 形式で保存する
+        /// </summary>
+        /// <param name="brickPattern"></param>
+        public static void SaveByCSharpFormat(BrickPattern brickPattern, string brickName)
+        {
+            // TODO: id は class Pattern に含めるべき
+            int id = 0;
+            int indent = 0;
+
+            Console.WriteLine($"namespace PatternEditor");
+            Console.WriteLine($"{{");
+
+            indent += 4;
+            {
+                Console.WriteLine($"{new String(' ', indent)}public enum class {brickName}");
+                Console.WriteLine($"{new String(' ', indent)}{{");
+
+                indent += 4;
+                foreach (var pattern in brickPattern.Patterns)
+                {
+                    Console.WriteLine($"{new String(' ', indent)}{pattern.Name} = {id},");
+                    id++;
+                }
+                indent -= 4;
+
+                Console.WriteLine($"{new String(' ', indent)}}}");
+            }
+            indent -= 4;
+
+            Console.WriteLine($"}}");
+        }
     }
+
+    //public struct YamlPattern
+    //{
+    //    public string Name { get; set; }
+    //    public List<string> Data { get; set; }
+    //}
 
     public class BrickPattern
     {
         public struct Pattern
         {
+            //public int Id { get; set; } 
             public string Name { get; set; }
             public List<string> Data { get; set; }
 
@@ -112,6 +170,11 @@ namespace PatternEditor
             {
                 Name = name;
                 Data = data;
+            }
+
+            public int GetEstimatedTime(int stepTime)
+            {
+                return stepTime * Data.Count;
             }
         }
 
