@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatternEditor", "PatternEditor\PatternEditor.csproj", "{D2FD33E5-9E76-47AA-BA32-C8F0F7028BB6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatternConverter", "PatternConverter\PatternConverter.csproj", "{D2FD33E5-9E76-47AA-BA32-C8F0F7028BB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatternEditorTest", "PatternEditorTest\PatternEditorTest.csproj", "{B266E289-0914-4D34-BD7F-736F6088793B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatternConverterTest", "PatternConverterTest\PatternConverterTest.csproj", "{B266E289-0914-4D34-BD7F-736F6088793B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

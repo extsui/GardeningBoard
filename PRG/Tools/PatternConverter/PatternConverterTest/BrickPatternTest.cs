@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
-using PatternEditor;
+using PatternConverter;
 using System;
 
-namespace PatternEditorTest
+namespace PatternConverterTest
 {
     public class Utils
     {

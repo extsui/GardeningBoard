@@ -9,7 +9,7 @@ using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace PatternEditor
+namespace PatternConverter
 {
     class Program
     {
@@ -128,7 +128,7 @@ namespace PatternEditor
             int id = 0;
             int indent = 0;
 
-            Console.WriteLine($"namespace PatternEditor");
+            Console.WriteLine($"namespace PatternConverter");
             Console.WriteLine($"{{");
 
             indent += 4;

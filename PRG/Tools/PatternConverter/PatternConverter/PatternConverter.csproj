@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{D2FD33E5-9E76-47AA-BA32-C8F0F7028BB6}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>PatternEditor</RootNamespace>
-    <AssemblyName>PatternEditor</AssemblyName>
+    <RootNamespace>PatternConverter</RootNamespace>
+    <AssemblyName>PatternConverter</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
