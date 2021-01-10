@@ -1,0 +1,130 @@
+/* Ç±ÇÃÉtÉ@ÉCÉãÇÕ PatternConverter Ç…ÇÊÇ¡Çƒé©ìÆê∂ê¨Ç≥ÇÍÇ‹ÇµÇΩ */
+.Grass_AllOn {
+    background-color: #00FF00;
+}
+
+.Grass_AllOff {
+    background-color: #00FF00;
+}
+
+.Grass_LeftToRight1 {
+    background-color: #00FF00;
+}
+
+.Grass_RightToLeft1 {
+    background-color: #00FF00;
+}
+
+.Grass_LeftToRight3 {
+    background-color: #00FF00;
+}
+
+.Grass_RightToLeft3 {
+    background-color: #00FF00;
+}
+
+.Grass_BothEdgeToMiddle {
+    background-color: #00FF00;
+}
+
+.Grass_Vibration {
+    background-color: #00FF00;
+}
+
+.Grass_LeftToRightBuffer {
+    background-color: #00FF00;
+}
+
+.Grass_LeftToRightNeg {
+    background-color: #00FF00;
+}
+
+.Grass_RightToLeftNeg {
+    background-color: #00FF00;
+}
+
+.Grass_LeftToRightVertical {
+    background-color: #00FF00;
+}
+
+.Grass_RightToLeftVertical {
+    background-color: #00FF00;
+}
+
+.House_AllOn {
+    background-color: #FF0000;
+}
+
+.House_AllOff {
+    background-color: #FF0000;
+}
+
+.House_OneByOne {
+    background-color: #FF0000;
+}
+
+.House_Stream {
+    background-color: #FF0000;
+}
+
+.Tile_AllOn {
+    background-color: #FFBB00;
+}
+
+.Tile_AllOff {
+    background-color: #FFBB00;
+}
+
+.Tile_OneByOne {
+    background-color: #FFBB00;
+}
+
+.Tile_Stream {
+    background-color: #FFBB00;
+}
+
+.Tree_AllOn {
+    background-color: #0000FF;
+}
+
+.Tree_AllOff {
+    background-color: #0000FF;
+}
+
+.Tree_OneByOne {
+    background-color: #0000FF;
+}
+
+.Tree_TopToBottomHorizontal1 {
+    background-color: #0000FF;
+}
+
+.Tree_TopToBottomHorizontal3 {
+    background-color: #0000FF;
+}
+
+.Tree_TopToBottomBuffer {
+    background-color: #0000FF;
+}
+
+.Tree_UpperLeftToRight {
+    background-color: #0000FF;
+}
+
+.Tree_UpperRightToLeft {
+    background-color: #0000FF;
+}
+
+.Tree_LowerLeftToRight {
+    background-color: #0000FF;
+}
+
+.Tree_LowerRightToLeft {
+    background-color: #0000FF;
+}
+
+.Tree_Candle {
+    background-color: #0000FF;
+}
+
+
