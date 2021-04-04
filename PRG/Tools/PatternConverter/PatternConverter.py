@@ -83,15 +83,35 @@ class BrickPattern:
     def export_as_cpp(self):
         """
         C++ 形式で出力する (Balan 用)
+        - モジュール名の名前空間はクラス名と干渉するので使用を断念
+          (例: namespace Grass と class Grass)
 
         例:
-        static const uint8_t Grass_LeftToRight1[12][11] = {
-          { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-          { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-          /* ...(略)... */
-          { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+        ---------------------------------------------
+        static const unsigned char Grass_LeftToRight1[12][11] = {
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            /* ...(略)... */
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
         };
+
         /* ...(略)... */
+
+        typedef struct {
+            const unsigned char (*pattern)[11];
+            unsigned char stepCount;
+        } Grass_PatternRecord;
+
+        static const Grass_PatternRecord Grass_PatternTable[] = {
+            { Grass_AllOn, 1 },
+            { Grass_AllOff, 1 },
+            /* ...(略)... */
+            { Grass_RightToLeftVertical, 8 },
+        };
+
+        static constexpr const int Grass_PatternCount = sizeof(Grass_PatternTable) / sizeof(Grass_PatternRecord);
+        static constexpr const int Grass_LedCount = 11;
+        ---------------------------------------------
         """
         output_string = ''
 
@@ -99,20 +119,38 @@ class BrickPattern:
         patterns  = self.brick_pattern['Patterns']
         led_count = len(patterns[0]['Data'][0])
 
+        # Pattern 定義
         for pattern in patterns:
             pattern_data = pattern['Data']
             pattern_name = pattern['Name']
-
             output_string += 'static const unsigned char %s[%d][%d] = {\n' % (type_name + '_' + pattern_name, len(pattern_data), led_count)
             for step in pattern_data:
-                # '  { 0, 0, ..., 0, },\n' の部分
-                output_string += '  { '
+                # '{ 0, 0, ..., 0, },\n' の部分
+                output_string += '    { '
                 for bit in step:
                     output_string += '%c, ' % bit
                 output_string += '},\n'
             output_string += '};\n'
             output_string += '\n'
-        
+
+        # PatternRecord
+        output_string += 'typedef struct {\n'
+        output_string += '    const unsigned char (*pattern)[%d];\n' % led_count
+        output_string += '    unsigned char stepCount;\n'
+        output_string += '} %s_PatternRecord;\n' % type_name
+        output_string += '\n'
+
+        # PatternTable
+        output_string += 'static const %s_PatternRecord %s_PatternTable[] = {\n' % (type_name, type_name)
+        for pattern in patterns:
+            output_string += '    { %s, %d },\n' % (type_name + '_' + pattern['Name'], len(pattern['Data']))
+        output_string += '};\n'
+        output_string += '\n'
+
+        # PatternCount
+        output_string += 'static constexpr const int %s_PatternCount = sizeof(%s_PatternTable) / sizeof(%s_PatternRecord);\n' % (type_name, type_name, type_name)
+        output_string += 'static constexpr const int %s_LedCount = %d;\n' % (type_name, led_count)
+
         return output_string
 
     def export_as_javascript(self):
