@@ -322,5 +322,43 @@ namespace Sprinkler
                 }
             });
         }
+
+        public async void PatternTest()
+        {
+            // 部品ごとの点灯パターンをテストする
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                const byte StepTimingMilliseconds = 50;
+
+                // TODO: PatternConstants 側で配列にしたい？
+                // でもパターンを全部通しで使うケースはテストくらいしかないよね。
+                var GrassPatternList = new List<PatternConstants.Pattern>()
+                {
+                    PatternConstants.Grass.AllOn,
+                    PatternConstants.Grass.AllOff,
+                    PatternConstants.Grass.LeftToRight1,
+                    PatternConstants.Grass.RightToLeft1,
+                    PatternConstants.Grass.LeftToRight3,
+                    PatternConstants.Grass.RightToLeft3,
+                    PatternConstants.Grass.BothEdgeToMiddle,
+                    PatternConstants.Grass.Vibration,
+                    PatternConstants.Grass.LeftToRightBuffer,
+                    PatternConstants.Grass.LeftToRightNeg,
+                    PatternConstants.Grass.RightToLeftNeg,
+                    PatternConstants.Grass.LeftToRightVertical,
+                    PatternConstants.Grass.RightToLeftVertical,
+                };
+
+                foreach (var pattern in GrassPatternList)
+                {
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+            });
+        }
     }
 }
