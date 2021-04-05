@@ -215,12 +215,12 @@ class BrickPattern:
     def export_as_csharp(self):
         """
         C# 形式で出力する (Sprinkler 用)
-
+        
         例:
-        public enum class Grass : byte
+        public static class Grass
         {
-            AllOn = 0,
-            AllOff = 1,
+            public static Pattern AllOn = new Pattern(0, 1);    # Pattern は (Id, StepCount)
+            public static Pattern AllOff = new Pattern(1, 1);
             /* ...(略)... */
         }
         """
@@ -229,10 +229,10 @@ class BrickPattern:
         type_name = self.brick_pattern['Type']
         patterns  = self.brick_pattern['Patterns']
         
-        output_string += 'public enum class %s : byte\n' % type_name
+        output_string += 'public static class %s\n' % type_name
         output_string += '{\n'
         for pattern in patterns:
-            output_string += '    %s = %d,\n' % (pattern['Name'], pattern['Id'])
+            output_string += '    public static Pattern %s = new Pattern(%d, %d);\n' % (pattern['Name'], pattern['Id'], len(pattern['Data']))
         output_string += '}\n'
 
         return output_string
@@ -323,21 +323,41 @@ class PatternConverter:
         """
         with open(output_file_path, 'w') as file:
             file.write(self.HEADER_COMMENT)
-            file.write('namespace PatternConstants\n')
-            file.write('{\n')
-            file.write('    public class Pattern\n')
-            file.write('    {\n')
+            file.write("""public static class PatternConstants
+{
+    public struct Pattern
+    {
+        public byte Id { get; private set; }
+        public byte StepCount { get; private set; }
+
+        public Pattern(byte id, byte stepCount)
+        {
+            Id = id;
+            StepCount = stepCount;
+        }
+
+        // パターン終了までにかかる時間の取得(ミリ秒)
+        public int GetTime(byte stepTiming)
+        {
+            return StepCount * stepTiming;
+        }
+    }
+
+    // 以降はパターン定義
+"""
+            )
             for i, brick_pattern in enumerate(self.brick_patterns):
                 # 各パターンクラスにインデントを挿入
                 csharp = brick_pattern.export_as_csharp()
                 # 一番最後に空行が含まれているのでそこを除外
                 for line in csharp.split('\n')[:-1]:
-                    file.write('        %s\n' % line)
+                    file.write('    %s\n' % line)
                 # 各パターンクラスの間に空行を挟む
                 if (i < len(self.brick_patterns) - 1):
                     file.write('\n')
-            file.write('    }\n')
+
             file.write('}\n')
+
         print('Save: %s (C#)' % output_file_path)
 
 ############################################################
