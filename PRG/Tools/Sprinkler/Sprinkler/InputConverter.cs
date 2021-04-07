@@ -138,9 +138,9 @@ namespace Sprinkler
         private void OnKeyF5()            { m_scripter.InternalMultiThreadTest(); }
         private void OnKeyF6()            { m_scripter.ScenarioShootingStar();    }
         private void OnKeyF7()            { }
-        private void OnKeyF8()            { }
-        private void OnKeyF9()            { }
-        private void OnKeyF10()           { }
+        private void OnKeyF8()            { m_scripter.PatternTest5(); }
+        private void OnKeyF9()            { m_scripter.PatternTest4(); }
+        private void OnKeyF10()           { m_scripter.PatternTest3(); }
         private void OnKeyF11()           { m_scripter.PatternTest2(); }
         private void OnKeyF12()           { m_scripter.PatternTest(); }
         // 1234 行

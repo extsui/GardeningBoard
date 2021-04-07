@@ -449,5 +449,50 @@ namespace Sprinkler
                 }
             });
         }
+
+        public static byte TestStepTiming = 100;
+        public const byte AdditionalValue = 20;
+
+        public async void PatternTest3()
+        {
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                byte StepTimingMilliseconds = TestStepTiming;
+
+                // 全消灯
+                ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, BrickCommandArgs.PatternTurnOff));
+
+                var pattern = PatternConstants.Tile.Stream;
+                var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, true);
+                ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs));
+            });
+        }
+
+        public async void PatternTest4()
+        {
+            if (TestStepTiming > AdditionalValue)
+            {
+                TestStepTiming -= AdditionalValue;
+            }
+
+            await Task.Run(() =>
+            {
+                ExecuteCommand(m_garden.MakeStepTimingCommand(Position.Hexagon.All, OperationTarget.TileOnly, TestStepTiming));
+            });
+        }
+
+        public async void PatternTest5()
+        {
+            if (TestStepTiming <= byte.MaxValue - AdditionalValue)
+            {
+                TestStepTiming += AdditionalValue;
+            }
+
+            await Task.Run(() =>
+            {
+                ExecuteCommand(m_garden.MakeStepTimingCommand(Position.Hexagon.All, OperationTarget.TileOnly, TestStepTiming));
+            });
+        }
     }
 }

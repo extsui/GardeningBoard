@@ -46,6 +46,17 @@ namespace Sprinkler
                 brightness.ToString("X2") +
                 "\n";
         }
+
+        // 例: "@send 600264\n" : グループ 60 の brickAddress=02, StepTiming=100[ms] で輝度設定
+        public static string MakeSetStepTimingCommand(byte groupAddress, byte brickAddress, byte stepTiming)
+        {
+            return "@send " +
+                groupAddress.ToString("X2") +
+                brickAddress.ToString("X2") +
+                "04" +
+                stepTiming.ToString("X2") +
+                "\n";
+        }
     }
 
     /// <summary>
@@ -122,6 +133,13 @@ namespace Sprinkler
             return PumpUtil.MakeSetBrightnessCommand(groupAddress, brickAddress, brightness.Value);
         };
 
+        private Func<byte, byte, BrickCommandArgs, string> OperateStepTiming = (groupAddress, brickAddress, args) =>
+        {
+            Trace.Assert(args.StepTimingArgs.HasValue == true);
+            byte stepTiming = args.StepTimingArgs.Value;
+            return PumpUtil.MakeSetStepTimingCommand(groupAddress, brickAddress, stepTiming);
+        };
+
         /// <summary>
         /// (Position, Target) に対する汎用コマンドの処理部分
         /// </summary>
@@ -196,6 +214,16 @@ namespace Sprinkler
         {
             return MakeGenericCommand(positions, target, OperateBrightness, new BrickCommandArgs(brightness));
         }
+
+        public List<string> MakeStepTimingCommand(uint position, OperationTarget target, byte stepTiming)
+        {
+            return MakeGenericCommand(position, target, OperateStepTiming, new BrickCommandArgs(stepTiming));
+        }
+
+        public List<string> MakeStepTimingCommand(List<uint> positions, OperationTarget target, byte stepTiming)
+        {
+            return MakeGenericCommand(positions, target, OperateStepTiming, new BrickCommandArgs(stepTiming));
+        }
     }
 
     /// <summary>
@@ -203,9 +231,10 @@ namespace Sprinkler
     /// </summary>
     public class BrickCommandArgs
     {
-        // インスタンスでどちらか一方のみを排他使用する
+        // インスタンスでいずれか一つのみを排他使用する
         public Pattern PatternArgs { get; private set; }
         public Brightness BrightnessArgs { get; private set; }
+        public byte? StepTimingArgs { get; private set; }
 
         public class Pattern
         {
@@ -240,12 +269,21 @@ namespace Sprinkler
         {
             PatternArgs    = pattern;
             BrightnessArgs = null;
+            StepTimingArgs = null;
         }
 
         public BrickCommandArgs(Brightness brightness)
         {
             PatternArgs    = null;
             BrightnessArgs = brightness;
+            StepTimingArgs = null;
+        }
+
+        public BrickCommandArgs(byte stepTiming)
+        {
+            PatternArgs    = null;
+            BrightnessArgs = null;
+            StepTimingArgs = stepTiming;
         }
     }
 
