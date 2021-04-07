@@ -139,37 +139,24 @@ namespace Sprinkler
                         continue;
                     }
 
-                    switch (target)
+                    // コマンドを送信する対象か否かの判定
+                    // - Both なら問答無用で OK
+                    // - GrassOnly, TreeOnly, HouseOnly, TileOnly で BrickType 一致なら OK
+                    // - InsertedOnly で IsInserted() == true なら OK
+                    if ((target == OperationTarget.Both) ||
+                        ((unit.Brick.Type == BrickType.Grass) && (target == OperationTarget.GrassOnly)) ||
+                        ((unit.Brick.Type == BrickType.Tree) && (target == OperationTarget.TreeOnly)) ||
+                        ((unit.Brick.Type == BrickType.House) && (target == OperationTarget.HouseOnly)) ||
+                        ((unit.Brick.Type == BrickType.Tile) && (target == OperationTarget.TileOnly)) ||
+                        ((unit.Brick.IsInserted() && (target == OperationTarget.InsertedOnly))))
                     {
-                        case OperationTarget.TileOnly:
-                            if (unit.Brick.IsTile())
-                            {
-                                commands.Add(operate(balan.Address, unit.Brick.Address, args));
-                            }
-                            break;
-
-                        case OperationTarget.InsertedOnly:
-                            if (unit.Brick.IsInserted())
-                            {
-                                commands.Add(operate(balan.Address, unit.Brick.Address, args));
-                            }
-                            break;
-
-                        case OperationTarget.Both:
-                            commands.Add(operate(balan.Address, unit.Brick.Address, args));
-                            break;
-
-                        default:
-                            throw new InvalidOperationException("Invalid OperationTarget.");
+                        commands.Add(operate(balan.Address, unit.Brick.Address, args));
                     }
                 }
             }
-            if (commands.Count == 0)
-            {
-                // position の事前条件チェックは省略しているが
-                // 意図しない値の場合は一致しないのでここで引っ掛かる
-                throw new InvalidOperationException("Target not found.");
-            }
+
+            // コマンドが空の場合も発生しうるがこれは正常系。
+            // 例: 草+土台 の位置に TreeOnly を指定したケース
             return commands;
         }
 
@@ -267,8 +254,16 @@ namespace Sprinkler
     /// </summary>
     public enum OperationTarget
     {
-        TileOnly = 0,
+        // 指定した部品のみが対象
+        GrassOnly = 0,
+        TreeOnly,
+        HouseOnly,
+        TileOnly,
+
+        // 挿入部品 (土台以外) が対象
         InsertedOnly,
+
+        // 挿入部品と土台の両方が対象
         Both,
     }
 
@@ -449,14 +444,9 @@ namespace Sprinkler
             Color = color;
         }
 
-        public bool IsTile()
-        {
-            return Type == BrickType.Tile;
-        }
-
         public bool IsInserted()
         {
-            return !IsTile();
+            return Type != BrickType.Tile;
         }
     }
 }

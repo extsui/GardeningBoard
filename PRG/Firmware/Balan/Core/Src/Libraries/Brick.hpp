@@ -39,8 +39,6 @@ public:
     virtual void Update() = 0;
     /** パターン内の最後のステップか */
     virtual bool IsLastStep() = 0;
-    /** テスト */
-    virtual void Test(uint8_t stepInterval) = 0;
 
 protected:
     /** I2C デバイス */

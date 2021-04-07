@@ -19,6 +19,8 @@ var patternList = {
     "01": { text: "House_AllOff", stepCount: 1, stepTiming: 10, isRepeat: false },
     "02": { text: "House_OneByOne", stepCount: 28, stepTiming: 10, isRepeat: false },
     "03": { text: "House_Stream", stepCount: 54, stepTiming: 10, isRepeat: false },
+    "04": { text: "House_OpenDoor", stepCount: 11, stepTiming: 10, isRepeat: false },
+    "05": { text: "House_CloseDoor", stepCount: 11, stepTiming: 10, isRepeat: false },
     // Tile
     "00": { text: "Tile_AllOn", stepCount: 1, stepTiming: 10, isRepeat: false },
     "01": { text: "Tile_AllOff", stepCount: 1, stepTiming: 10, isRepeat: false },

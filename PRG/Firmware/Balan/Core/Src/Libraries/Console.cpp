@@ -253,18 +253,7 @@ uint8_t Console::GetReceivedByte()
 
 void Console::ExecuteCommand(const uint8_t *command, uint32_t currentTick)
 {
-	if (strncmp((const char*)command, "test", 5) == 0) {
-		Log("Brick Test\n");
-		SoftwareI2c dev;
-		for (int i = 0; i < StepScheduler::BrickNum; i++) {
-			Log(".");
-			auto brick(std::make_unique<Tile>(&dev, Ht16k33::BaseAddress + i));
-			brick->SetBrightness(1);
-			brick->Test(10);
-		}
-		Log("\nDone.\n");
-
-	} else if (strncmp((const char*)command, "addr", 5) == 0) {
+	if (strncmp((const char*)command, "addr", 5) == 0) {
 		Log("I2C Address Check\n");
 
 		const int CheckCount = 10000;

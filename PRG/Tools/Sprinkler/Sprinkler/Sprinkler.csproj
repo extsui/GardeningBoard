@@ -61,6 +61,7 @@
     </Compile>
     <Compile Include="Garden.cs" />
     <Compile Include="GardenScripter.cs" />
+    <Compile Include="PatternConstants.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form.resx">

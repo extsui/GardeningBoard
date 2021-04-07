@@ -22,6 +22,9 @@ namespace Sprinkler
         {
             m_scripter = scripter;
 
+            // TODO: MIDI デバイスが刺さってない場合に落ちないようにする
+            // TORIAEZU: 暫定でコメントアウト (よろしくない)
+            /*
             // DEBUG: MIDI デバイス表示
             foreach (var device in InputDevice.InstalledDevices)
             {
@@ -34,8 +37,9 @@ namespace Sprinkler
 
             inputDevice.NoteOn  += new InputDevice.NoteOnHandler(this.OnNoteOn);
             inputDevice.NoteOff += new InputDevice.NoteOffHandler(this.OnNoteOff);
-
+            
             m_inputDevice = inputDevice;
+            */
         }
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -137,8 +141,8 @@ namespace Sprinkler
         private void OnKeyF8()            { }
         private void OnKeyF9()            { }
         private void OnKeyF10()           { }
-        private void OnKeyF11()           { }
-        private void OnKeyF12()           { }
+        private void OnKeyF11()           { m_scripter.PatternTest2(); }
+        private void OnKeyF12()           { m_scripter.PatternTest(); }
         // 1234 行
         private void OnKey1()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 0);  }
         private void OnKey2()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 1);  }

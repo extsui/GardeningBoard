@@ -39,7 +39,7 @@ namespace Sprinkler
         }
 
         /// <summary>
-        /// 指定あれたアクションを非同期実行するラッパー
+        /// 指定されたアクションを非同期実行するラッパー
         /// 対象のアクションは async 指定が不要
         /// </summary>
         private async void RunSequenceAsync(Action action)
@@ -319,6 +319,133 @@ namespace Sprinkler
                     // 消え方の位置は同じ順だが消えるとき同時
                     RunSequenceAsync(() => turnOffSmoothly(OperationTarget.Both, positions, 50, 100));
                     Thread.Sleep(400);
+                }
+            });
+        }
+
+        public async void PatternTest()
+        {
+            // 部品ごとの点灯パターンをテストする
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                const byte StepTimingMilliseconds = 50;
+
+                // TODO: PatternConstants 側で配列にしたい？
+                // でもパターンを全部通しで使うケースはテストくらいしかないよね。
+                var GrassPatternList = new List<PatternConstants.Pattern>()
+                {
+                    PatternConstants.Grass.AllOn,
+                    PatternConstants.Grass.AllOff,
+                    PatternConstants.Grass.LeftToRight1,
+                    PatternConstants.Grass.RightToLeft1,
+                    PatternConstants.Grass.LeftToRight3,
+                    PatternConstants.Grass.RightToLeft3,
+                    PatternConstants.Grass.BothEdgeToMiddle,
+                    PatternConstants.Grass.Vibration,
+                    PatternConstants.Grass.LeftToRightBuffer,
+                    PatternConstants.Grass.LeftToRightNeg,
+                    PatternConstants.Grass.RightToLeftNeg,
+                    PatternConstants.Grass.LeftToRightVertical,
+                    PatternConstants.Grass.RightToLeftVertical,
+                };
+
+                var HousePatternList = new List<PatternConstants.Pattern>()
+                {
+                    PatternConstants.House.AllOn,
+                    PatternConstants.House.AllOff,
+                    PatternConstants.House.OneByOne,
+                    PatternConstants.House.Stream,
+                };
+
+                var TilePatternList = new List<PatternConstants.Pattern>()
+                {
+                    PatternConstants.Tile.AllOn,
+                    PatternConstants.Tile.AllOff,
+                    PatternConstants.Tile.OneByOne,
+                    PatternConstants.Tile.Stream,
+                };
+
+                var TreePatternList = new List<PatternConstants.Pattern>()
+                {
+                    PatternConstants.Tree.AllOn,
+                    PatternConstants.Tree.AllOff,
+                    PatternConstants.Tree.OneByOne,
+                    PatternConstants.Tree.TopToBottomHorizontal1,
+                    PatternConstants.Tree.TopToBottomHorizontal3,
+                    PatternConstants.Tree.TopToBottomBuffer,
+                    PatternConstants.Tree.UpperLeftToRight,
+                    PatternConstants.Tree.UpperRightToLeft,
+                    PatternConstants.Tree.LowerLeftToRight,
+                    PatternConstants.Tree.LowerRightToLeft,
+                    PatternConstants.Tree.Candle,
+                };
+
+                // 全消灯
+                ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, BrickCommandArgs.PatternTurnOff));
+                Thread.Sleep(500);
+
+                // 全点灯
+                ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, BrickCommandArgs.PatternTurnOn));
+                Thread.Sleep(500);
+
+                // 全消灯
+                ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, BrickCommandArgs.PatternTurnOff));
+                Thread.Sleep(500);
+
+                Action<List<PatternConstants.Pattern>, OperationTarget> TestBrickPattern = (patterns, targets) =>
+                {
+                    foreach (var pattern in patterns)
+                    {
+                        var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                        ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, targets, patternCommandArgs));
+
+                        // パターンが終わるまで待つ
+                        Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                    }
+                };
+
+                Action TestGrassPattern = () => TestBrickPattern(GrassPatternList, OperationTarget.GrassOnly);
+                Action TestHousePattern = () => TestBrickPattern(HousePatternList, OperationTarget.HouseOnly);
+                Action TestTilePattern = () => TestBrickPattern(TilePatternList, OperationTarget.TileOnly);
+                Action TestTreePattern = () => TestBrickPattern(TreePatternList, OperationTarget.TreeOnly);
+
+                // ここから並列実行
+                RunSequenceAsync(TestGrassPattern);
+                RunSequenceAsync(TestHousePattern);
+                RunSequenceAsync(TestTilePattern);
+                RunSequenceAsync(TestTreePattern);
+            });
+        }
+
+        public async void PatternTest2()
+        {
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                const byte StepTimingMilliseconds = 70;
+
+                // 全消灯
+                ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, BrickCommandArgs.PatternTurnOff));
+
+                for (int i = 0; i < 10; i++)
+                {
+                    var pattern = PatternConstants.House.OpenDoor;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.HouseOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+
+                for (int i = 0; i < 10; i++)
+                {
+                    var pattern = PatternConstants.House.CloseDoor;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.HouseOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
                 }
             });
         }
