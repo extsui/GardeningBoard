@@ -18,6 +18,7 @@ public:
 	int BeginPattern(uint32_t currentTick, uint8_t brickId, int patternId, uint8_t stepTiming, bool isRepeat);
     void SetBrightness(uint8_t brightness);
     int SetBrightness(uint8_t brickId, uint8_t brightness);
+	int SetStepTiming(uint8_t brickId, uint8_t stepTiming);
     void Process(uint32_t currentTick);
 
 private:
@@ -25,7 +26,6 @@ private:
     typedef struct {
     	std::unique_ptr<Brick> brick;
     	uint8_t stepTiming;
-    	int stepTimingLength;
     	int currentStepIndex;
     	bool isRepeat;
     	// 次に更新するタイミング (Tick 指定)

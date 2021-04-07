@@ -63,6 +63,7 @@ enum class PumpCommandType : uint8_t {
 	RegisterType	= 0x01,
 	SetPattern		= 0x02,
 	SetBrightness	= 0x03,
+	SetStepTiming   = 0x04,
 };
 
 // ポンプからの指令フレームの解析成功回数
@@ -112,6 +113,14 @@ int AnalyzePumpFrame(const uint8_t *buffer, int count, uint32_t currentTick, Ste
 			return -4;
 		}
 		break;
+
+	case PumpCommandType::SetStepTiming:
+		if (count != 3) {
+			return -3;
+		}
+		if (stepScheduler->SetStepTiming(buffer[0], buffer[2]) != 0) {
+			return -4;
+		}
 
 	default:
 		DEBUG_LOG("[pump] Unknown command!\n");

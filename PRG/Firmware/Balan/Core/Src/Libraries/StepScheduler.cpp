@@ -27,7 +27,6 @@ StepScheduler::StepScheduler()
 		schedule->brick->SetBrightness(1);
 
 		schedule->stepTiming = 0;
-		schedule->stepTimingLength = 0;
 		schedule->currentStepIndex = 0;
 		schedule->isRepeat = false;
 		schedule->nextStepTiming = 0;
@@ -122,6 +121,16 @@ int StepScheduler::SetBrightness(uint8_t brickId, uint8_t brightness)
 	auto brick = m_scheduleList[brickId].brick.get();
 	brick->SetBrightness(brightness);
 
+	return 0;
+}
+
+int StepScheduler::SetStepTiming(uint8_t brickId, uint8_t stepTiming)
+{
+	if (brickId >= BrickNum) {
+		return -1;
+	}
+
+	m_scheduleList[brickId].stepTiming = stepTiming;
 	return 0;
 }
 
