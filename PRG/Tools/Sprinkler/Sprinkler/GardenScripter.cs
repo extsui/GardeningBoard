@@ -417,5 +417,37 @@ namespace Sprinkler
                 RunSequenceAsync(TestTreePattern);
             });
         }
+
+        public async void PatternTest2()
+        {
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                const byte StepTimingMilliseconds = 70;
+
+                // 全消灯
+                ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, BrickCommandArgs.PatternTurnOff));
+
+                for (int i = 0; i < 10; i++)
+                {
+                    var pattern = PatternConstants.House.OpenDoor;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.HouseOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+
+                for (int i = 0; i < 10; i++)
+                {
+                    var pattern = PatternConstants.House.CloseDoor;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.HouseOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+            });
+        }
     }
 }

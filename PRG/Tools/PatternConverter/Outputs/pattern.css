@@ -67,6 +67,14 @@
     background-color: #FF0000;
 }
 
+.House_OpenDoor {
+    background-color: #FF0000;
+}
+
+.House_CloseDoor {
+    background-color: #FF0000;
+}
+
 .Tile_AllOn {
     background-color: #FFBB00;
 }

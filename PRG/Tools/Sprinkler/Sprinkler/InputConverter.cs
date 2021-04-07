@@ -141,7 +141,7 @@ namespace Sprinkler
         private void OnKeyF8()            { }
         private void OnKeyF9()            { }
         private void OnKeyF10()           { }
-        private void OnKeyF11()           { }
+        private void OnKeyF11()           { m_scripter.PatternTest2(); }
         private void OnKeyF12()           { m_scripter.PatternTest(); }
         // 1234 行
         private void OnKey1()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 0);  }

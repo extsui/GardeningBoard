@@ -43,6 +43,8 @@ public static class PatternConstants
         public static Pattern AllOff = new Pattern(1, 1);
         public static Pattern OneByOne = new Pattern(2, 28);
         public static Pattern Stream = new Pattern(3, 54);
+        public static Pattern OpenDoor = new Pattern(4, 11);
+        public static Pattern CloseDoor = new Pattern(5, 11);
     }
 
     public static class Tile
