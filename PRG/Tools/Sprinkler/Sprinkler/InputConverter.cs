@@ -137,67 +137,73 @@ namespace Sprinkler
         private void OnKeyF4()            { m_scripter.SampleCircle();            }
         private void OnKeyF5()            { m_scripter.InternalMultiThreadTest(); }
         private void OnKeyF6()            { m_scripter.ScenarioShootingStar();    }
-        private void OnKeyF7()            { }
-        private void OnKeyF8()            { m_scripter.PatternTest5(); }
-        private void OnKeyF9()            { m_scripter.PatternTest4(); }
+        private void OnKeyF7()            {  }
+        private void OnKeyF8()            {  }
+        private void OnKeyF9()            {  }
         private void OnKeyF10()           { m_scripter.PatternTest3(); }
         private void OnKeyF11()           { m_scripter.PatternTest2(); }
         private void OnKeyF12()           { m_scripter.PatternTest(); }
         // 1234 行
-        private void OnKey1()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 0);  }
-        private void OnKey2()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 1);  }
-        private void OnKey3()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 2);  }
-        private void OnKey4()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 3);  }
-        private void OnKey5()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 4);  }
-        private void OnKey6()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 5);  }
-        private void OnKey7()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 6);  }
-        private void OnKey8()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 7);  }
-        private void OnKey9()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 8);  }
-        private void OnKey0()             { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 9);  }
-        private void OnKeyMinus()         { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 10); }
-        private void OnKeyHat()           { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 11); }
-        private void OnKeyBar()           { m_scripter.CommandBrightness(Position.Hexagon.Up, OperationTarget.TileOnly, 12); }
+        private void OnKey1()             { m_scripter.PatternTestKey1(); }
+        private void OnKey2()             { m_scripter.PatternTestKey2(); }
+        private void OnKey3()             { m_scripter.PatternTestKey3(); }
+        private void OnKey4()             { m_scripter.PatternTestKey4(); }
+        private void OnKey5()             { m_scripter.PatternTestKey5(); }
+        private void OnKey6()             { m_scripter.PatternTestKey6(); }
+        private void OnKey7()             { m_scripter.PatternTestKey7(); }
+        private void OnKey8()             { m_scripter.PatternTestKey8(); }
+        private void OnKey9()             { m_scripter.PatternTestKey9(); }
+        private void OnKey0()             { m_scripter.PatternTestKey0(); }
+        private void OnKeyMinus()         { m_scripter.PatternTestKeyMinus(); }
+        private void OnKeyHat()           { m_scripter.PatternTestKeyHat();   }
+        private void OnKeyBar()           { m_scripter.PatternTestKeyBar();   }
         // QWER 行
-        private void OnKeyQ()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly, 0);  }
-        private void OnKeyW()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly, 1);  }
-        private void OnKeyE()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly, 2);  }
-        private void OnKeyR()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly, 3);  }
-        private void OnKeyT()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly, 4);  }
-        private void OnKeyY()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly, 5);  }
-        private void OnKeyU()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly, 6);  }
-        private void OnKeyI()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly, 7);  }
-        private void OnKeyO()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly, 8);  }
-        private void OnKeyP()             { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly, 9);  }
-        private void OnKeyAt()            { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly, 10); }
-        private void OnKeyOpenBrackets()  { m_scripter.CommandBrightness(Position.Hexagon.RightUp, OperationTarget.TileOnly, 11); }
+        private void OnKeyQ()             {  }
+        private void OnKeyW()             {  }
+        private void OnKeyE()             {  }
+        private void OnKeyR()             {  }
+        private void OnKeyT()             {  }
+        private void OnKeyY()             {  }
+        private void OnKeyU()             {  }
+        private void OnKeyI()             {  }
+        private void OnKeyO()             {  }
+        private void OnKeyP()             {  }
+        private void OnKeyAt()            {  }
+        private void OnKeyOpenBrackets()  {  }
         // ASDF 行
-        private void OnKeyA()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly, 0);  }
-        private void OnKeyS()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly, 1);  }
-        private void OnKeyD()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly, 2);  }
-        private void OnKeyF()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly, 3);  }
-        private void OnKeyG()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly, 4);  }
-        private void OnKeyH()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly, 5);  }
-        private void OnKeyJ()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly, 6);  }
-        private void OnKeyK()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly, 7);  }
-        private void OnKeyL()             { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly, 8);  }
-        private void OnKeySemiColon()     { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly, 9);  }
-        private void OnKeyColon()         { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly, 10); }
-        private void OnKeyCloseBrackets() { m_scripter.CommandBrightness(Position.Hexagon.RightDown, OperationTarget.TileOnly, 11); }
+        private void OnKeyA()             {  }
+        private void OnKeyS()             {  }
+        private void OnKeyD()             {  }
+        private void OnKeyF()             {  }
+        private void OnKeyG()             {  }
+        private void OnKeyH()             {  }
+        private void OnKeyJ()             {  }
+        private void OnKeyK()             {  }
+        private void OnKeyL()             {  }
+        private void OnKeySemiColon()     {  }
+        private void OnKeyColon()         {  }
+        private void OnKeyCloseBrackets() {  }
         // ZXCV 行
-        private void OnKeyZ()             { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly, 0);  }
-        private void OnKeyX()             { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly, 1);  }
-        private void OnKeyC()             { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly, 2);  }
-        private void OnKeyV()             { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly, 3);  }
-        private void OnKeyB()             { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly, 4);  }
-        private void OnKeyN()             { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly, 5);  }
-        private void OnKeyM()             { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly, 6);  }
-        private void OnKeyComma()         { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly, 7);  }
-        private void OnKeyPeriod()        { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly, 8);  }
-        private void OnKeyQuestion()      { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly, 9);  }
-        private void OnKeyUnderBar()      { m_scripter.CommandBrightness(Position.Hexagon.Down, OperationTarget.TileOnly, 10); }
+        private void OnKeyZ()             {  }
+        private void OnKeyX()             {  }
+        private void OnKeyC()             {  }
+        private void OnKeyV()             {  }
+        private void OnKeyB()             {  }
+        private void OnKeyN()             {  }
+        private void OnKeyM()             {  }
+        private void OnKeyComma()         {  }
+        private void OnKeyPeriod()        {  }
+        private void OnKeyQuestion()      {  }
+        private void OnKeyUnderBar()      {  }
         // その他
         private void OnKeyDelete()        { m_scripter.CommandTurnOffAll(); }
         private void OnKeyEnter()         { m_scripter.CommandTurnOnAll();  }
+        // 矢印
+        private void OnKeyUp()            { m_scripter.PatternTestBrightnessUp();   }
+        private void OnKeyDown()          { m_scripter.PatternTestBrightnessDown(); }
+        private void OnKeyLeft()          { m_scripter.PatternTestStepTimingToLong(); }
+        private void OnKeyRight()         { m_scripter.PatternTestStepTimingToShort(); }
+
 
         public void OnKeyboardEvent(Keys keyCode)
         {
@@ -270,6 +276,11 @@ namespace Sprinkler
 
                 { Keys.Delete,          OnKeyDelete        },  // DEL
                 { Keys.Enter,           OnKeyEnter         },  // Enter
+
+                { Keys.Up,              OnKeyUp            },  // ↑
+                { Keys.Down,            OnKeyDown          },  // ↓
+                { Keys.Left,            OnKeyLeft          },  // ←
+                { Keys.Right,           OnKeyRight         },  // →
             };
 
             if (table.ContainsKey(keyCode))

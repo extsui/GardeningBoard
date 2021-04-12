@@ -13,3 +13,5 @@ copy .\Outputs\TreePattern.h  ..\..\Firmware\Balan\Core\Src\Patterns\
 
 :: (2-b) C\# コピー
 copy .\Outputs\PatternConstants.cs ..\Sprinkler\Sprinkler\
+
+pause

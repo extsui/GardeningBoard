@@ -323,6 +323,73 @@ namespace Sprinkler
             });
         }
 
+        ////////////////////////////////////////////////////////////////////////////////
+        //  輝度操作テスト
+        ////////////////////////////////////////////////////////////////////////////////
+
+        public static byte TestAllBrightness = 0;
+
+        public async void PatternTestBrightnessUp()
+        {
+            if (TestAllBrightness < 15)
+            {
+                TestAllBrightness++;
+            }
+            await Task.Run(() =>
+            {
+                ExecuteCommand(m_garden.MakeBrightnessCommand(Position.Hexagon.All, OperationTarget.Both, new BrickCommandArgs.Brightness(TestAllBrightness)));
+            });
+        }
+
+        public async void PatternTestBrightnessDown()
+        {
+            if (TestAllBrightness > 0)
+            {
+                TestAllBrightness--;
+            }
+            await Task.Run(() =>
+            {
+                ExecuteCommand(m_garden.MakeBrightnessCommand(Position.Hexagon.All, OperationTarget.Both, new BrickCommandArgs.Brightness(TestAllBrightness)));
+            });
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////
+        //  周期操作テスト
+        ////////////////////////////////////////////////////////////////////////////////
+
+        public static byte TestStepTiming = 100;
+        public const byte AdditionalValue = 20;
+
+        public async void PatternTestStepTimingToShort()
+        {
+            if (TestStepTiming > AdditionalValue)
+            {
+                TestStepTiming -= AdditionalValue;
+            }
+
+            await Task.Run(() =>
+            {
+                ExecuteCommand(m_garden.MakeStepTimingCommand(Position.Hexagon.All, OperationTarget.TileOnly, TestStepTiming));
+            });
+        }
+
+        public async void PatternTestStepTimingToLong()
+        {
+            if (TestStepTiming <= byte.MaxValue - AdditionalValue)
+            {
+                TestStepTiming += AdditionalValue;
+            }
+
+            await Task.Run(() =>
+            {
+                ExecuteCommand(m_garden.MakeStepTimingCommand(Position.Hexagon.All, OperationTarget.TileOnly, TestStepTiming));
+            });
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////
+        //  テスト
+        ////////////////////////////////////////////////////////////////////////////////
+        
         public async void PatternTest()
         {
             // 部品ごとの点灯パターンをテストする
@@ -450,9 +517,6 @@ namespace Sprinkler
             });
         }
 
-        public static byte TestStepTiming = 100;
-        public const byte AdditionalValue = 20;
-
         public async void PatternTest3()
         {
             await Task.Run(() =>
@@ -469,30 +533,224 @@ namespace Sprinkler
             });
         }
 
-        public async void PatternTest4()
+        public async void PatternTestKey1()
         {
-            if (TestStepTiming > AdditionalValue)
-            {
-                TestStepTiming -= AdditionalValue;
-            }
-
             await Task.Run(() =>
             {
-                ExecuteCommand(m_garden.MakeStepTimingCommand(Position.Hexagon.All, OperationTarget.TileOnly, TestStepTiming));
+                CommandRegister();
+                byte StepTimingMilliseconds = TestStepTiming;
+
+                {
+                    var pattern = PatternConstants.Tile.BackToFrontSpreadly;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
             });
         }
 
-        public async void PatternTest5()
+        public async void PatternTestKey2()
         {
-            if (TestStepTiming <= byte.MaxValue - AdditionalValue)
-            {
-                TestStepTiming += AdditionalValue;
-            }
-
             await Task.Run(() =>
             {
-                ExecuteCommand(m_garden.MakeStepTimingCommand(Position.Hexagon.All, OperationTarget.TileOnly, TestStepTiming));
+                CommandRegister();
+                byte StepTimingMilliseconds = TestStepTiming;
+
+                {
+                    var pattern = PatternConstants.Tile.FrontToBackSpreadly;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
             });
+        }
+
+        public async void PatternTestKey3()
+        {
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                byte StepTimingMilliseconds = TestStepTiming;
+
+                {
+                    var pattern = PatternConstants.Tile.FrontToBack;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+            });
+        }
+
+        public async void PatternTestKey4()
+        {
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                byte StepTimingMilliseconds = TestStepTiming;
+
+                {
+                    var pattern = PatternConstants.Tile.BackToFront;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+            });
+        }
+
+        public async void PatternTestKey5()
+        {
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                byte StepTimingMilliseconds = TestStepTiming;
+
+                {
+                    var pattern = PatternConstants.Tile.RightToLeft;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+            });
+        }
+
+        public async void PatternTestKey6()
+        {
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                byte StepTimingMilliseconds = TestStepTiming;
+
+                {
+                    var pattern = PatternConstants.Tile.LeftToRight;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+            });
+        }
+
+        public async void PatternTestKey7()
+        {
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                byte StepTimingMilliseconds = TestStepTiming;
+
+                {
+                    var pattern = PatternConstants.Tile.Circle_Led3Point1;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, true);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+            });
+        }
+
+        public async void PatternTestKey8()
+        {
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                byte StepTimingMilliseconds = TestStepTiming;
+
+                {
+                    var pattern = PatternConstants.Tile.Circle_Led3Point2;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, true);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+            });
+        }
+
+        public async void PatternTestKey9()
+        {
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                byte StepTimingMilliseconds = TestStepTiming;
+
+                {
+                    var pattern = PatternConstants.Tile.Circle_Led3Point3;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, true);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+            });
+        }
+
+        public async void PatternTestKey0()
+        {
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                byte StepTimingMilliseconds = TestStepTiming;
+
+                {
+                    var pattern = PatternConstants.Tile.Circle_Led1Point6;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, true);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+            });
+        }
+
+        public async void PatternTestKeyMinus()
+        {
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                byte StepTimingMilliseconds = TestStepTiming;
+
+                {
+                    var pattern = PatternConstants.Tile.Circle_Led2Point6;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, true);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+            });
+        }
+
+        public async void PatternTestKeyHat()
+        {
+            await Task.Run(() =>
+            {
+                CommandRegister();
+                byte StepTimingMilliseconds = TestStepTiming;
+
+                {
+                    var pattern = PatternConstants.Tile.Cross;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, true);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+            });
+        }
+
+        public async void PatternTestKeyBar()
+        {
         }
     }
 }
