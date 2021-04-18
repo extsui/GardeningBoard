@@ -369,7 +369,7 @@ namespace Sprinkler
 
             await Task.Run(() =>
             {
-                ExecuteCommand(m_garden.MakeStepTimingCommand(Position.Hexagon.All, OperationTarget.TileOnly, TestStepTiming));
+                ExecuteCommand(m_garden.MakeStepTimingCommand(Position.Hexagon.All, OperationTarget.Both, TestStepTiming));
             });
         }
 
@@ -382,7 +382,7 @@ namespace Sprinkler
 
             await Task.Run(() =>
             {
-                ExecuteCommand(m_garden.MakeStepTimingCommand(Position.Hexagon.All, OperationTarget.TileOnly, TestStepTiming));
+                ExecuteCommand(m_garden.MakeStepTimingCommand(Position.Hexagon.All, OperationTarget.Both, TestStepTiming));
             });
         }
 
@@ -533,11 +533,14 @@ namespace Sprinkler
             });
         }
 
+        ////////////////////////////////////////////////////////////////////////////////
+        //  1, 2, 3, ..., \
+        ////////////////////////////////////////////////////////////////////////////////
+
         public async void PatternTestKey1()
         {
             await Task.Run(() =>
             {
-                CommandRegister();
                 byte StepTimingMilliseconds = TestStepTiming;
 
                 {
@@ -555,7 +558,6 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                CommandRegister();
                 byte StepTimingMilliseconds = TestStepTiming;
 
                 {
@@ -573,7 +575,6 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                CommandRegister();
                 byte StepTimingMilliseconds = TestStepTiming;
 
                 {
@@ -591,7 +592,6 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                CommandRegister();
                 byte StepTimingMilliseconds = TestStepTiming;
 
                 {
@@ -609,7 +609,6 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                CommandRegister();
                 byte StepTimingMilliseconds = TestStepTiming;
 
                 {
@@ -627,7 +626,6 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                CommandRegister();
                 byte StepTimingMilliseconds = TestStepTiming;
 
                 {
@@ -645,7 +643,6 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                CommandRegister();
                 byte StepTimingMilliseconds = TestStepTiming;
 
                 {
@@ -663,7 +660,6 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                CommandRegister();
                 byte StepTimingMilliseconds = TestStepTiming;
 
                 {
@@ -681,7 +677,6 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                CommandRegister();
                 byte StepTimingMilliseconds = TestStepTiming;
 
                 {
@@ -699,7 +694,6 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                CommandRegister();
                 byte StepTimingMilliseconds = TestStepTiming;
 
                 {
@@ -717,7 +711,6 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                CommandRegister();
                 byte StepTimingMilliseconds = TestStepTiming;
 
                 {
@@ -735,7 +728,6 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                CommandRegister();
                 byte StepTimingMilliseconds = TestStepTiming;
 
                 {
@@ -751,6 +743,91 @@ namespace Sprinkler
 
         public async void PatternTestKeyBar()
         {
+            // 右から左に同期して順に点灯させていく
+
+            await Task.Run(() =>
+            {
+                byte StepTimingMilliseconds = TestStepTiming;
+
+                // 右列→真ん中列の遅延
+                var ColumnDelay = StepTimingMilliseconds * 8;
+
+                {
+                    var pattern = PatternConstants.Tile.RightToLeft;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.RightUp, OperationTarget.TileOnly, patternCommandArgs));
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.RightDown, OperationTarget.TileOnly, patternCommandArgs));
+                    Thread.Sleep(ColumnDelay);
+
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Up, OperationTarget.TileOnly, patternCommandArgs));
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Center, OperationTarget.TileOnly, patternCommandArgs));
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Down, OperationTarget.TileOnly, patternCommandArgs));
+                    Thread.Sleep(ColumnDelay);
+
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftUp, OperationTarget.TileOnly, patternCommandArgs));
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftDown, OperationTarget.TileOnly, patternCommandArgs));
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+
+                // 折り返し
+
+                {
+                    var pattern = PatternConstants.Tile.LeftToRight;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftUp, OperationTarget.TileOnly, patternCommandArgs));
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftDown, OperationTarget.TileOnly, patternCommandArgs));
+                    Thread.Sleep(ColumnDelay);
+
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Up, OperationTarget.TileOnly, patternCommandArgs));
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Center, OperationTarget.TileOnly, patternCommandArgs));
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Down, OperationTarget.TileOnly, patternCommandArgs));
+                    Thread.Sleep(ColumnDelay);
+
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.RightUp, OperationTarget.TileOnly, patternCommandArgs));
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.RightDown, OperationTarget.TileOnly, patternCommandArgs));
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+            });
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////
+        //  q, w, e, ..., [
+        ////////////////////////////////////////////////////////////////////////////////
+
+        public async void PatternTestKeyQ()
+        {
+            await Task.Run(() =>
+            {
+                byte StepTimingMilliseconds = TestStepTiming;
+
+                {
+                    var pattern = PatternConstants.Tree.BottomToTop;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TreeOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+            });
+        }
+
+        public async void PatternTestKeyW()
+        {
+            await Task.Run(() =>
+            {
+                byte StepTimingMilliseconds = TestStepTiming;
+
+                {
+                    var pattern = PatternConstants.Tree.Wave;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TreeOnly, patternCommandArgs));
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+            });
         }
     }
 }

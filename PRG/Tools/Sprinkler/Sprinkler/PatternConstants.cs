@@ -82,5 +82,7 @@ public static class PatternConstants
         public static Pattern LowerLeftToRight = new Pattern(8, 6);
         public static Pattern LowerRightToLeft = new Pattern(9, 6);
         public static Pattern Candle = new Pattern(10, 22);
+        public static Pattern BottomToTop = new Pattern(11, 11);
+        public static Pattern Wave = new Pattern(12, 14);
     }
 }

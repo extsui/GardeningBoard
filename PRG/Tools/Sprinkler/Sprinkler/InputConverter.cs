@@ -155,11 +155,11 @@ namespace Sprinkler
         private void OnKey9()             { m_scripter.PatternTestKey9(); }
         private void OnKey0()             { m_scripter.PatternTestKey0(); }
         private void OnKeyMinus()         { m_scripter.PatternTestKeyMinus(); }
-        private void OnKeyHat()           { m_scripter.PatternTestKeyHat();   }
-        private void OnKeyBar()           { m_scripter.PatternTestKeyBar();   }
+        private void OnKeyHat()           { m_scripter.PatternTestKeyHat(); }
+        private void OnKeyBar()           { m_scripter.PatternTestKeyBar(); }
         // QWER 行
-        private void OnKeyQ()             {  }
-        private void OnKeyW()             {  }
+        private void OnKeyQ()             { m_scripter.PatternTestKeyQ(); }
+        private void OnKeyW()             { m_scripter.PatternTestKeyW(); }
         private void OnKeyE()             {  }
         private void OnKeyR()             {  }
         private void OnKeyT()             {  }
