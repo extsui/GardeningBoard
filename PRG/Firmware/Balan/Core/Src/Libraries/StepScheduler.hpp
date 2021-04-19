@@ -15,17 +15,17 @@ public:
     ~StepScheduler();
     
     int RegisterBrick(uint8_t brickId, BrickType type);
-	int BeginPattern(uint32_t currentTick, uint8_t brickId, int patternId, uint8_t stepTiming, bool isRepeat);
+	int BeginPattern(uint32_t currentTick, uint8_t brickId, int patternId, uint16_t stepTiming, bool isRepeat);
     void SetBrightness(uint8_t brightness);
     int SetBrightness(uint8_t brickId, uint8_t brightness);
+	int SetStepTiming(uint8_t brickId, uint16_t stepTiming);
     void Process(uint32_t currentTick);
 
 private:
     /** パーツスケジュールタイミング管理 */
     typedef struct {
     	std::unique_ptr<Brick> brick;
-    	uint8_t stepTiming;
-    	int stepTimingLength;
+    	uint16_t stepTiming;
     	int currentStepIndex;
     	bool isRepeat;
     	// 次に更新するタイミング (Tick 指定)

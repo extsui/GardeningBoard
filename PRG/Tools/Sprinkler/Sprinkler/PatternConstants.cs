@@ -13,7 +13,7 @@ public static class PatternConstants
         }
 
         // パターン終了までにかかる時間の取得(ミリ秒)
-        public int GetTime(byte stepTiming)
+        public int GetTime(ushort stepTiming)
         {
             return StepCount * stepTiming;
         }
@@ -51,8 +51,22 @@ public static class PatternConstants
     {
         public static Pattern AllOn = new Pattern(0, 1);
         public static Pattern AllOff = new Pattern(1, 1);
-        public static Pattern OneByOne = new Pattern(2, 24);
+        public static Pattern OneByOne = new Pattern(2, 25);
         public static Pattern Stream = new Pattern(3, 48);
+        public static Pattern BackToFrontSpreadly = new Pattern(4, 12);
+        public static Pattern FrontToBackSpreadly = new Pattern(5, 12);
+        public static Pattern FrontToBack = new Pattern(6, 15);
+        public static Pattern BackToFront = new Pattern(7, 15);
+        public static Pattern RightToLeft = new Pattern(8, 15);
+        public static Pattern LeftToRight = new Pattern(9, 15);
+        public static Pattern Circle_Led3Point1 = new Pattern(10, 24);
+        public static Pattern Circle_Led3Point2 = new Pattern(11, 12);
+        public static Pattern Circle_Led2Point3 = new Pattern(12, 8);
+        public static Pattern Circle_Led3Point3 = new Pattern(13, 8);
+        public static Pattern Circle_Led1Point6 = new Pattern(14, 4);
+        public static Pattern Circle_Led2Point6 = new Pattern(15, 4);
+        public static Pattern Circle_Led3Point6 = new Pattern(16, 4);
+        public static Pattern Cross = new Pattern(17, 26);
     }
 
     public static class Tree
@@ -68,5 +82,7 @@ public static class PatternConstants
         public static Pattern LowerLeftToRight = new Pattern(8, 6);
         public static Pattern LowerRightToLeft = new Pattern(9, 6);
         public static Pattern Candle = new Pattern(10, 22);
+        public static Pattern BottomToTop = new Pattern(11, 11);
+        public static Pattern Wave = new Pattern(12, 14);
     }
 }

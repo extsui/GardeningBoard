@@ -63,6 +63,7 @@ enum class PumpCommandType : uint8_t {
 	RegisterType	= 0x01,
 	SetPattern		= 0x02,
 	SetBrightness	= 0x03,
+	SetStepTiming   = 0x04,
 };
 
 // ポンプからの指令フレームの解析成功回数
@@ -74,6 +75,8 @@ static int g_PumpFrameSuccessCount = 0;
  */
 int AnalyzePumpFrame(const uint8_t *buffer, int count, uint32_t currentTick, StepScheduler *stepScheduler)
 {
+	uint16_t stepTiming = 0;
+
 	if (count < 2) {
 		return -1;
 	}
@@ -96,10 +99,13 @@ int AnalyzePumpFrame(const uint8_t *buffer, int count, uint32_t currentTick, Ste
 		break;
 
 	case PumpCommandType::SetPattern:
-		if (count != 5) {
+		// ビッグエンディアン
+		stepTiming = (buffer[3] << 8) | buffer[4];
+
+		if (count != 6) {
 			return -3;
 		}
-		if (stepScheduler->BeginPattern(currentTick, buffer[0], buffer[2], buffer[3], (buffer[4] != 0)) != 0) {
+		if (stepScheduler->BeginPattern(currentTick, buffer[0], buffer[2], stepTiming, (buffer[5] != 0)) != 0) {
 			return -4;
 		}
 		break;
@@ -112,6 +118,17 @@ int AnalyzePumpFrame(const uint8_t *buffer, int count, uint32_t currentTick, Ste
 			return -4;
 		}
 		break;
+
+	case PumpCommandType::SetStepTiming:
+
+		stepTiming = (buffer[2] << 8) | buffer[3];
+
+		if (count != 4) {
+			return -3;
+		}
+		if (stepScheduler->SetStepTiming(buffer[0], stepTiming) != 0) {
+			return -4;
+		}
 
 	default:
 		DEBUG_LOG("[pump] Unknown command!\n");

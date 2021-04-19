@@ -22,16 +22,16 @@ namespace Sprinkler
                 "\n";
         }
 
-        // 例: "@send 600502000000\n" : グループ 60 の BrickId=5 を Pattern=0, StepTiming=0[ms], Repeat 無し でパターン設定
-        // 例: "@send 610302046401\n" : グループ 61 の BrickId=3 を Pattern=4, StepTiming=100[ms], Repeat 有り でパターン設定
-        public static string MakeSetPatternCommand(byte groupAddress, byte brickAddress, byte patternId, byte stepTiming, bool isRepeat)
+        // 例: "@send 60050200000000\n" : グループ 60 の BrickId=5 を Pattern=0, StepTiming=0[ms], Repeat 無し でパターン設定
+        // 例: "@send 61030204006401\n" : グループ 61 の BrickId=3 を Pattern=4, StepTiming=100[ms], Repeat 有り でパターン設定
+        public static string MakeSetPatternCommand(byte groupAddress, byte brickAddress, byte patternId, ushort stepTiming, bool isRepeat)
         {
             return "@send " +
                 groupAddress.ToString("X2") +
                 brickAddress.ToString("X2") +
                 "02" +
                 patternId.ToString("X2") +
-                stepTiming.ToString("X2") +
+                stepTiming.ToString("X4") +
                 ((isRepeat == true) ? "01" : "00") +
                 "\n";
         }
@@ -44,6 +44,18 @@ namespace Sprinkler
                 brickAddress.ToString("X2") +
                 "03" +
                 brightness.ToString("X2") +
+                "\n";
+        }
+
+        // 例: "@send 60020064\n" : グループ 60 の brickAddress=02, StepTiming=100[ms] で周期設定
+        // 例: "@send 6002FFFF\n" : グループ 60 の brickAddress=02, StepTiming=65535[ms] で周期設定
+        public static string MakeSetStepTimingCommand(byte groupAddress, byte brickAddress, ushort stepTiming)
+        {
+            return "@send " +
+                groupAddress.ToString("X2") +
+                brickAddress.ToString("X2") +
+                "04" +
+                stepTiming.ToString("X4") +
                 "\n";
         }
     }
@@ -122,6 +134,13 @@ namespace Sprinkler
             return PumpUtil.MakeSetBrightnessCommand(groupAddress, brickAddress, brightness.Value);
         };
 
+        private Func<byte, byte, BrickCommandArgs, string> OperateStepTiming = (groupAddress, brickAddress, args) =>
+        {
+            Trace.Assert(args.StepTimingArgs.HasValue == true);
+            var stepTiming = args.StepTimingArgs.Value;
+            return PumpUtil.MakeSetStepTimingCommand(groupAddress, brickAddress, stepTiming);
+        };
+
         /// <summary>
         /// (Position, Target) に対する汎用コマンドの処理部分
         /// </summary>
@@ -196,6 +215,16 @@ namespace Sprinkler
         {
             return MakeGenericCommand(positions, target, OperateBrightness, new BrickCommandArgs(brightness));
         }
+
+        public List<string> MakeStepTimingCommand(uint position, OperationTarget target, ushort stepTiming)
+        {
+            return MakeGenericCommand(position, target, OperateStepTiming, new BrickCommandArgs(stepTiming));
+        }
+
+        public List<string> MakeStepTimingCommand(List<uint> positions, OperationTarget target, ushort stepTiming)
+        {
+            return MakeGenericCommand(positions, target, OperateStepTiming, new BrickCommandArgs(stepTiming));
+        }
     }
 
     /// <summary>
@@ -203,17 +232,18 @@ namespace Sprinkler
     /// </summary>
     public class BrickCommandArgs
     {
-        // インスタンスでどちらか一方のみを排他使用する
+        // インスタンスでいずれか一つのみを排他使用する
         public Pattern PatternArgs { get; private set; }
         public Brightness BrightnessArgs { get; private set; }
+        public ushort? StepTimingArgs { get; private set; }
 
         public class Pattern
         {
             public byte Id { get; private set; }
-            public byte StepTiming { get; private set; }
+            public ushort StepTiming { get; private set; }
             public bool IsRepeat { get; private set; }
 
-            public Pattern(byte id, byte stepTiming, bool isRepeat)
+            public Pattern(byte id, ushort stepTiming, bool isRepeat)
             {
                 Id = id;
                 StepTiming = stepTiming;
@@ -240,12 +270,21 @@ namespace Sprinkler
         {
             PatternArgs    = pattern;
             BrightnessArgs = null;
+            StepTimingArgs = null;
         }
 
         public BrickCommandArgs(Brightness brightness)
         {
             PatternArgs    = null;
             BrightnessArgs = brightness;
+            StepTimingArgs = null;
+        }
+
+        public BrickCommandArgs(ushort stepTiming)
+        {
+            PatternArgs    = null;
+            BrightnessArgs = null;
+            StepTimingArgs = stepTiming;
         }
     }
 
