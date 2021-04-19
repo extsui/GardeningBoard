@@ -337,7 +337,7 @@ class PatternConverter:
         }
 
         // パターン終了までにかかる時間の取得(ミリ秒)
-        public int GetTime(byte stepTiming)
+        public int GetTime(ushort stepTiming)
         {
             return StepCount * stepTiming;
         }

@@ -357,14 +357,44 @@ namespace Sprinkler
         //  周期操作テスト
         ////////////////////////////////////////////////////////////////////////////////
 
-        public static byte TestStepTiming = 100;
-        public const byte AdditionalValue = 20;
+        // 1Tick = 1ms
+        // 後で加減算するので初期値は適当。
+        private static ushort TestStepTiming = 100;
+
+        // Tick =   0 ～   N: 変化が大きいので 傾き (小) ずつ加減算
+        // Tick = N+1 ～ 255: 変化が小さいので 傾き (大) ずつ加減算
+
+        // 傾き (小)
+        private const ushort StepTimingTickSlopeSmall = 5;
+        // 傾き (大)
+        private const ushort StepTimingTickSlopeLarge = 20;
+        // N (変曲点)
+        private const ushort StepTimingTickInflectionPoint = 100;
+
+        // 上記の傾き変換を行う関数
+        private Func<ushort, ushort> GetStepTimingAdditionalValue = (ushort currentStepTimingTick) =>
+        {
+            if (currentStepTimingTick <= StepTimingTickInflectionPoint)
+            {
+                return StepTimingTickSlopeSmall;
+            }
+            else
+            {
+                return StepTimingTickSlopeLarge;
+            }
+        };
 
         public async void PatternTestStepTimingToShort()
         {
+            var AdditionalValue = GetStepTimingAdditionalValue(TestStepTiming);
+
             if (TestStepTiming > AdditionalValue)
             {
                 TestStepTiming -= AdditionalValue;
+            }
+            else
+            {
+                TestStepTiming = 0;
             }
 
             await Task.Run(() =>
@@ -375,9 +405,15 @@ namespace Sprinkler
 
         public async void PatternTestStepTimingToLong()
         {
-            if (TestStepTiming <= byte.MaxValue - AdditionalValue)
+            var AdditionalValue = GetStepTimingAdditionalValue(TestStepTiming);
+
+            if (TestStepTiming <= ushort.MaxValue - AdditionalValue)
             {
                 TestStepTiming += AdditionalValue;
+            }
+            else
+            {
+                TestStepTiming = ushort.MaxValue;
             }
 
             await Task.Run(() =>
@@ -522,7 +558,7 @@ namespace Sprinkler
             await Task.Run(() =>
             {
                 CommandRegister();
-                byte StepTimingMilliseconds = TestStepTiming;
+                var StepTimingMilliseconds = TestStepTiming;
 
                 // 全消灯
                 ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.Both, BrickCommandArgs.PatternTurnOff));
@@ -541,7 +577,7 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                byte StepTimingMilliseconds = TestStepTiming;
+                var StepTimingMilliseconds = TestStepTiming;
 
                 {
                     var pattern = PatternConstants.Tile.BackToFrontSpreadly;
@@ -558,7 +594,7 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                byte StepTimingMilliseconds = TestStepTiming;
+                var StepTimingMilliseconds = TestStepTiming;
 
                 {
                     var pattern = PatternConstants.Tile.FrontToBackSpreadly;
@@ -575,7 +611,7 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                byte StepTimingMilliseconds = TestStepTiming;
+                var StepTimingMilliseconds = TestStepTiming;
 
                 {
                     var pattern = PatternConstants.Tile.FrontToBack;
@@ -592,7 +628,7 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                byte StepTimingMilliseconds = TestStepTiming;
+                var StepTimingMilliseconds = TestStepTiming;
 
                 {
                     var pattern = PatternConstants.Tile.BackToFront;
@@ -609,7 +645,7 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                byte StepTimingMilliseconds = TestStepTiming;
+                var StepTimingMilliseconds = TestStepTiming;
 
                 {
                     var pattern = PatternConstants.Tile.RightToLeft;
@@ -626,7 +662,7 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                byte StepTimingMilliseconds = TestStepTiming;
+                var StepTimingMilliseconds = TestStepTiming;
 
                 {
                     var pattern = PatternConstants.Tile.LeftToRight;
@@ -643,7 +679,7 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                byte StepTimingMilliseconds = TestStepTiming;
+                var StepTimingMilliseconds = TestStepTiming;
 
                 {
                     var pattern = PatternConstants.Tile.Circle_Led3Point1;
@@ -660,7 +696,7 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                byte StepTimingMilliseconds = TestStepTiming;
+                var StepTimingMilliseconds = TestStepTiming;
 
                 {
                     var pattern = PatternConstants.Tile.Circle_Led3Point2;
@@ -677,7 +713,7 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                byte StepTimingMilliseconds = TestStepTiming;
+                var StepTimingMilliseconds = TestStepTiming;
 
                 {
                     var pattern = PatternConstants.Tile.Circle_Led3Point3;
@@ -694,7 +730,7 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                byte StepTimingMilliseconds = TestStepTiming;
+                var StepTimingMilliseconds = TestStepTiming;
 
                 {
                     var pattern = PatternConstants.Tile.Circle_Led1Point6;
@@ -711,7 +747,7 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                byte StepTimingMilliseconds = TestStepTiming;
+                var StepTimingMilliseconds = TestStepTiming;
 
                 {
                     var pattern = PatternConstants.Tile.Circle_Led2Point6;
@@ -728,7 +764,7 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                byte StepTimingMilliseconds = TestStepTiming;
+                var StepTimingMilliseconds = TestStepTiming;
 
                 {
                     var pattern = PatternConstants.Tile.Cross;
@@ -747,7 +783,7 @@ namespace Sprinkler
 
             await Task.Run(() =>
             {
-                byte StepTimingMilliseconds = TestStepTiming;
+                var StepTimingMilliseconds = TestStepTiming;
 
                 // 右列→真ん中列の遅延
                 var ColumnDelay = StepTimingMilliseconds * 8;
@@ -800,7 +836,7 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                byte StepTimingMilliseconds = TestStepTiming;
+                var StepTimingMilliseconds = TestStepTiming;
 
                 {
                     var pattern = PatternConstants.Tree.BottomToTop;
@@ -817,7 +853,7 @@ namespace Sprinkler
         {
             await Task.Run(() =>
             {
-                byte StepTimingMilliseconds = TestStepTiming;
+                var StepTimingMilliseconds = TestStepTiming;
 
                 {
                     var pattern = PatternConstants.Tree.Wave;
