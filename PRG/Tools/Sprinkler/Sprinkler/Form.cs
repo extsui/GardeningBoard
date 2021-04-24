@@ -16,6 +16,11 @@ namespace Sprinkler
         /// </summary>
         private int m_startTickCount;
 
+        /// <summary>
+        /// スクリプト開始時の時刻
+        /// </summary>
+        private int m_scriptStartTick;
+
         public Sprinkler()
         {
             InitializeComponent();
@@ -24,7 +29,7 @@ namespace Sprinkler
         private void Sprinkler_Load(object sender, EventArgs e)
         {
             m_statusBar = new SprinklerStatusBar(this.statusStrip);
-            var scripter = new GardenScripter(SerialSendAsync);
+            var scripter = new GardenScripter(SerialSendAsync, SetScriptStartTick);
             m_inputConverter = new InputConverter(scripter, "microKEY-25");
         }
 
@@ -93,9 +98,22 @@ namespace Sprinkler
                     // テキストボックスは "\r\n" しか改行と見なさないので置換
                     textBoxSerialLog.AppendText(string.Format("[{0}.{1:D03}] {2}", tickToSec, tickToMsec, line + "\r\n"));
 
+                    // スクリプト形式でも同時に吐き出す
+                    var script = line.Replace(PumpUtil.SendCommandHeader, "");
+                    var tickInScript = tick - m_scriptStartTick;
+                    textBoxScript.AppendText(string.Format("{0},{1}", tickInScript, script + "\r\n"));
+
                     m_statusBar.UpdateStatusBar();
                 }
             }
+        }
+
+        /// <summary>
+        /// スクリプトの記録を開始する
+        /// </summary>
+        private void SetScriptStartTick()
+        {
+            m_scriptStartTick = Environment.TickCount - m_startTickCount;
         }
     }
 
