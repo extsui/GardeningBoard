@@ -5,6 +5,7 @@
 #include <cstring>
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -33,4 +34,46 @@ void PumpScript::ParseLine(ScriptPiece *pOutPiece, const char *line)
         pOutPiece->commandByte[i / 2] = value;
     }
     pOutPiece->commandLength = length / 2;
+}
+
+int PumpScript::Load(const char *path)
+{
+    assert(m_isRunnable == false);
+
+    std::ifstream ifs(path);
+    if (!ifs) {
+        return -1;
+    }
+    // 1 行バッファサイズは適当
+    char line[80];
+    while (ifs.getline(line, sizeof(line))) {
+        PumpScript::ScriptPiece piece;
+        PumpScript::ParseLine(&piece, line);
+        m_script.emplace_back(piece);
+    }
+
+    // 読み込むファイルはプログラムが出力したものなので
+    // 各行の変換が成功すれば読み込み成功とみなし追加検査はしない
+    m_isRunnable = true;
+
+    return 0;
+}
+
+void PumpScript::Run()
+{
+    assert(m_isRunnable == true);
+    // TODO:
+}
+
+void PumpScript::Dump()
+{
+    assert(m_isRunnable == true);
+
+    for (auto piece : m_script) {
+        printf("[%5d] ", piece.timingMilliSecond);
+        for (int i = 0; i < piece.commandLength; i++) {
+            printf("%02X ", piece.commandByte[i]);
+        }
+        printf("\n");
+    }
 }

@@ -79,6 +79,17 @@ TEST(PumpScriptTest, ParseLine)
     EXPECT_EQ(piece, expected);
 }
 
+TEST(PumpScriptTest, Load)
+{
+    int result = 0;
+    
+    PumpScript script;
+    result = script.Load("./Resources/TestScript.gbs");
+    ASSERT_EQ(result, 0);
+    
+    script.Dump();
+}
+
 int main(int argc, char* argv[])
 {
     ::testing::InitGoogleTest(&argc,argv);

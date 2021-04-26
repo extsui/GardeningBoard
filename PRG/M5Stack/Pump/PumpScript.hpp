@@ -48,15 +48,30 @@ public:
         }
     };
 
+    static_assert(sizeof(ScriptPiece) == 24);
+
     static void ParseLine(ScriptPiece *pOutPiece, const char *line);
 
 public:
     PumpScript()
+     : m_script(),
+       m_isRunnable(false)
     {
     }
 
+    // スクリプトファイルを読み込む
+    int Load(const char *path);
+
+    // スクリプトを実行する
+    // ブロッキングすることに注意
+    void Run();
+    
+    // 読み込んだスクリプトを表示する
+    void Dump();
+
 private:
-    //std::vector<ScriptPiece> 
+    std::vector<ScriptPiece> m_script;
+    bool m_isRunnable;
 };
 
 #endif /* PUMP_SCRIPT_HPP */
