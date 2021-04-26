@@ -90,6 +90,17 @@ TEST(PumpScriptTest, Load)
     script.Dump();
 }
 
+TEST(PumpScriptTest, Run)
+{
+    int result = 0;
+    
+    PumpScript script;
+    result = script.Load("./Resources/TestScript.gbs");
+    ASSERT_EQ(result, 0);
+    
+    script.Run();
+}
+
 int main(int argc, char* argv[])
 {
     ::testing::InitGoogleTest(&argc,argv);

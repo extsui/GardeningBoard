@@ -9,6 +9,8 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <thread>
+#include <chrono>
 
 void PumpScript::ParseLine(ScriptPiece *pOutPiece, const char *line)
 {
@@ -62,7 +64,30 @@ int PumpScript::Load(const char *path)
 void PumpScript::Run()
 {
     assert(m_isRunnable == true);
-    // TODO:
+    
+    // TODO: DEBUG 時のみ表示
+    printf("ideal :  real :  diff\n");
+
+    auto startTime = std::chrono::system_clock::now();
+    for (auto piece : m_script) {
+        while (true) {
+            auto elapsedTime = std::chrono::system_clock::now() - startTime;
+            auto pieceTime = std::chrono::milliseconds(piece.timingMilliSecond);
+            if (elapsedTime >= pieceTime) {
+                // TODO: 時間に応じた処理
+
+                // TODO: DEBUG 時のみ表示
+                auto elapsedTimeMilliSeconds = std::chrono::duration_cast<std::chrono::milliseconds>(elapsedTime);
+                int64_t ideal = pieceTime.count();
+                int64_t real  = elapsedTimeMilliSeconds.count();
+                int64_t diff  = (elapsedTimeMilliSeconds - pieceTime).count();
+                printf("%5ld : %5ld : %5ld\n", ideal, real, diff);
+                
+                break;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        }
+    }
 }
 
 void PumpScript::Dump()
