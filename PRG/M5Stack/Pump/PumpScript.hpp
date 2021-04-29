@@ -48,7 +48,7 @@ public:
         }
     };
 
-    static_assert(sizeof(ScriptPiece) == 24);
+    static_assert(sizeof(ScriptPiece) == 24, "ScriptPiece's size is Bad!");
 
     static void ParseLine(ScriptPiece *pOutPiece, const char *line);
 

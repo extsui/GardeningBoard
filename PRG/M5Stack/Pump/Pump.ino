@@ -1,9 +1,15 @@
+#include "PumpConfig.hpp"
+
 #include <M5Stack.h>
 #include <ctype.h>
 #include "PumpUtil.hpp"
+#include "PumpScript.hpp"
 
 void setup()
 {
+  // SD
+  M5.begin();
+  
   M5.Lcd.begin();
   M5.Lcd.fillScreen( BLACK );
   M5.Lcd.setCursor(0, 0);
@@ -12,13 +18,14 @@ void setup()
 
   M5.Lcd.fillScreen( BLACK );
   M5.Lcd.setCursor(0, 0);
-  M5.Lcd.println("Pump Start!");
 
   // UART
   Serial.begin(115200);
 
   // I2C
   Wire.begin();
+
+  LCD_LOG("Pump Start!");
 
   delay(3000);
   M5.Lcd.fillScreen( BLACK );
@@ -31,6 +38,7 @@ static int g_receiveBufferIndex = 0;
 
 void loop()
 {
+  /*
   if (Serial.available()) {
     uint8_t data = Serial.read();
 		g_receiveBuffer[g_receiveBufferIndex] = data;
@@ -41,13 +49,40 @@ void loop()
 			g_receiveBuffer[g_receiveBufferIndex - 1] = '\0';
 		  int result = ExecuteCommand(g_receiveBuffer);
       if (result == -1) {
-        Serial.printf("Error! [%s]\n", g_receiveBuffer);
+        LOG("Error! [%s]\n", g_receiveBuffer);
       }
 
       memset(g_receiveBuffer, 0, sizeof(g_receiveBuffer));
 		  g_receiveBufferIndex = 0;
 		}
 	}
+  */
+
+  LOG("Hello World!\n");
+
+  PumpScript script;
+  
+  delay(500);
+
+  LOG("Script Load\n");
+
+  int result = 0;
+  const char *path = "/Resources/TestScript.gbs";
+
+  LOG("path = %s\n", path);
+
+  result = script.Load(path);
+  LOG("result = %d\n", result);
+
+  delay(500);
+
+  LOG("Script Dump\n");
+  script.Dump();
+
+  delay(500);
+
+  LOG("Script Run\n");
+  script.Run();
 
   // TODO: 受信回数、エラー回数の結果更新
   // ...
@@ -92,7 +127,7 @@ int ExecuteCommand(const uint8_t *command)
     uint8_t array[16] = { 0 };
     int length = PumpUtil::ParseRawSendCommand((const char*)command, array, sizeof(array));
     if (length == -1) {
-      Serial.printf("[RawSendCommand] Parse Error!\n");
+      LOG("[RawSendCommand] Parse Error!\n");
       return -1;
     }
 
@@ -100,13 +135,13 @@ int ExecuteCommand(const uint8_t *command)
     
     // TORIAEZU: ログ出力すると処理が間に合わないので制限
     // 送信ログ
-    // Serial.printf("[RawSendCommand] result = %d %s\n",
+    // LOG("[RawSendCommand] result = %d %s\n",
     //   result, (result == 0 ? "(success)" : "(failed)"));
     // for (int i = 0; i < length; i++) {
-    //   Serial.printf(" %02x", array[i]);
+    //   LOG(" %02x", array[i]);
     // }
-    // Serial.printf("\n");
-    Serial.printf("o");
+    // LOG("\n");
+    LOG("o");
 
     return 0;
   }
@@ -152,12 +187,12 @@ int ExecuteCommand(const uint8_t *command)
     isRepeat = str[pos] - '0';
     pos += 1;
 
-    Serial.printf("addr      = 0x%02x\n", addr);
-    Serial.printf("commandId = 0x%02x\n", commandId);
-    Serial.printf("brickId   = 0x%02x\n", brickId);
-    Serial.printf("patternId = 0x%02x\n", patternId);
-    Serial.printf("timing    = 0x%02x\n", timing);
-    Serial.printf("isRepeat  = 0x%02x\n", isRepeat);
+    LOG("addr      = 0x%02x\n", addr);
+    LOG("commandId = 0x%02x\n", commandId);
+    LOG("brickId   = 0x%02x\n", brickId);
+    LOG("patternId = 0x%02x\n", patternId);
+    LOG("timing    = 0x%02x\n", timing);
+    LOG("isRepeat  = 0x%02x\n", isRepeat);
 
     if (str[pos] != '\0') {
       return -1;
@@ -173,10 +208,10 @@ int ExecuteCommand(const uint8_t *command)
     brightness = atoi(&str[pos]);
     pos += GetDigitLength(brightness);
 
-    Serial.printf("addr       = 0x%02x\n", addr);
-    Serial.printf("commandId  = 0x%02x\n", commandId);
-    Serial.printf("brickId    = 0x%02x\n", brickId);
-    Serial.printf("brightness = 0x%02x\n", brightness);
+    LOG("addr       = 0x%02x\n", addr);
+    LOG("commandId  = 0x%02x\n", commandId);
+    LOG("brickId    = 0x%02x\n", brickId);
+    LOG("brightness = 0x%02x\n", brightness);
 
     if (str[pos] != '\0') {
       return -1;
@@ -189,7 +224,7 @@ int ExecuteCommand(const uint8_t *command)
   // 解析成功
   switch (commandId) {
     case 0x10:
-      Serial.printf("[ 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x ]\n",
+      LOG("[ 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x ]\n",
         addr, commandId, brickId, patternId, timing, isRepeat);
       Wire.beginTransmission(addr);
       Wire.write(commandId);
@@ -201,7 +236,7 @@ int ExecuteCommand(const uint8_t *command)
       break;
 
     case 0x20:
-      Serial.printf("[ 0x%02x 0x%02x 0x%02x 0x%02x ]\n",
+      LOG("[ 0x%02x 0x%02x 0x%02x 0x%02x ]\n",
         addr, commandId, brickId, brightness);
       Wire.beginTransmission(addr);
       Wire.write(commandId);
@@ -214,7 +249,7 @@ int ExecuteCommand(const uint8_t *command)
       return -1;
   }
 
-  Serial.printf("[%s]\n", str);
+  LOG("[%s]\n", str);
 
   return 0;
 }
