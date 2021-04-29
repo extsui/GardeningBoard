@@ -4,6 +4,13 @@
 #include <cstddef>
 #include <string.h>
 
+#if CONFIG_M5
+#include <M5Stack.h>
+#endif
+
+//////////////////////////////////////////////////////////////////////
+//  プラットフォーム非依存
+//////////////////////////////////////////////////////////////////////
 /**
  * 16 進表記の 2 文字を 1 バイトに変換する。
  * 成功した場合は outValue に変換後の値が代入される。
@@ -74,3 +81,47 @@ int PumpUtil::ParseRawSendCommand(const char *command, uint8_t *array, int array
 
     return writePos;
 }
+
+/**
+ * 10 進数にした時の文字列長
+ */
+int PumpUtil::GetDigitLength(uint8_t value)
+{
+    if (value < 10) {
+        return 1;
+    } else if (value < 100) {
+        return 2;
+    } else {
+        return 3;
+    }
+}
+
+//////////////////////////////////////////////////////////////////////
+//  M5Stack 依存
+//////////////////////////////////////////////////////////////////////
+
+#if CONFIG_M5
+/**
+ * I2C データ送信トランザクション
+ * @param [in] data データ列
+ * - data[0]            : I2C アドレス
+ * - data[1 ~ length-1] : I2C 送信データ
+ * @param [in] length データサイズ
+ * @return Wire.endTransmission() の戻り値をそのまま流用
+ * - 0 : 成功
+ * - 1 : データが長すぎて送信バッファに収まらない
+ * - 2 : アドレスの送信時に受信されたNACK
+ * - 3 : データの送信時に受信されたNACK
+ * - 4 : その他のエラー
+ */
+int PumpUtil::WireTransaction(const uint8_t *data, int length)
+{
+    assert(data != NULL);
+    Wire.beginTransmission(data[0]);
+    if (length >= 1) {
+        Wire.write(&data[1], length - 1);
+    }
+    return Wire.endTransmission();
+}
+
+#endif

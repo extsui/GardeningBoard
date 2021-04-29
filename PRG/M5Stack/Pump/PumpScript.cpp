@@ -15,7 +15,7 @@
 #include <chrono>
 
 #if CONFIG_M5
-#include <stdlib.h> // atoi()
+#include <stdlib.h>
 #include <M5Stack.h>
 #include <SD.h>
 #endif
@@ -127,6 +127,10 @@ void PumpScript::Run()
                     static_cast<int>(real),
                     static_cast<int>(diff));
                 
+                #if CONFIG_M5
+                    PumpUtil::WireTransaction(piece.commandByte, piece.commandLength);
+                #endif
+
                 break;
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
