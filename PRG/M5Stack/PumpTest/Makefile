@@ -1,7 +1,9 @@
 TARGET = PumpTest.exe
+SRC = ../Pump/PumpUtil.cpp ../Pump/PumpScript.cpp PumpTest.cpp
+DEF = -DBUILD_CONFIG_PC
 
 all:
-	g++ PumpTest.cpp ../Pump/PumpUtil.cpp -lgtest -lpthread -o $(TARGET)
-	
+	g++ $(SRC) $(DEF) -lgtest -lpthread -o $(TARGET)
+
 run:
 	./PumpTest.exe

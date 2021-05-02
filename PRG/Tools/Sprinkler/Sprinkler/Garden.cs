@@ -10,11 +10,13 @@ namespace Sprinkler
     /// </summary>
     public class PumpUtil
     {
+        public const string SendCommandHeader = "@send ";
+
         // 例: "@send 60030103\n" : グループ 60 の BrickId=3 を Tile(=3) で登録
         // 例: "@send 61000102\n" : グループ 61 の BrickId=0 を House(=2) で登録
         public static string MakeRegisterBrickCommand(byte groupAddress, byte brickAddress, byte brickType)
         {
-            return "@send " +
+            return SendCommandHeader +
                 groupAddress.ToString("X2") +
                 brickAddress.ToString("X2") +
                 "01" +
@@ -26,7 +28,7 @@ namespace Sprinkler
         // 例: "@send 61030204006401\n" : グループ 61 の BrickId=3 を Pattern=4, StepTiming=100[ms], Repeat 有り でパターン設定
         public static string MakeSetPatternCommand(byte groupAddress, byte brickAddress, byte patternId, ushort stepTiming, bool isRepeat)
         {
-            return "@send " +
+            return SendCommandHeader +
                 groupAddress.ToString("X2") +
                 brickAddress.ToString("X2") +
                 "02" +
@@ -39,7 +41,7 @@ namespace Sprinkler
         // 例: "@send 600201\n" : グループ 60 の brickAddress=02, Brightness=01 で輝度設定
         public static string MakeSetBrightnessCommand(byte groupAddress, byte brickAddress, byte brightness)
         {
-            return "@send " +
+            return SendCommandHeader +
                 groupAddress.ToString("X2") +
                 brickAddress.ToString("X2") +
                 "03" +
@@ -51,7 +53,7 @@ namespace Sprinkler
         // 例: "@send 6002FFFF\n" : グループ 60 の brickAddress=02, StepTiming=65535[ms] で周期設定
         public static string MakeSetStepTimingCommand(byte groupAddress, byte brickAddress, ushort stepTiming)
         {
-            return "@send " +
+            return SendCommandHeader +
                 groupAddress.ToString("X2") +
                 brickAddress.ToString("X2") +
                 "04" +

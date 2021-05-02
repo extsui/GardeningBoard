@@ -33,6 +33,9 @@
             this.buttonTest = new System.Windows.Forms.Button();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.textBoxKeyInput = new System.Windows.Forms.TextBox();
+            this.textBoxScript = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBoxSerialLog
@@ -40,12 +43,12 @@
             this.textBoxSerialLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxSerialLog.Location = new System.Drawing.Point(12, 47);
+            this.textBoxSerialLog.Location = new System.Drawing.Point(12, 81);
             this.textBoxSerialLog.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxSerialLog.Multiline = true;
             this.textBoxSerialLog.Name = "textBoxSerialLog";
             this.textBoxSerialLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxSerialLog.Size = new System.Drawing.Size(776, 389);
+            this.textBoxSerialLog.Size = new System.Drawing.Size(377, 355);
             this.textBoxSerialLog.TabIndex = 0;
             // 
             // buttonConnect
@@ -88,11 +91,45 @@
             this.textBoxKeyInput.TabIndex = 4;
             this.textBoxKeyInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxKeyInput_KeyDown);
             // 
+            // textBoxScript
+            // 
+            this.textBoxScript.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxScript.Location = new System.Drawing.Point(412, 81);
+            this.textBoxScript.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBoxScript.Multiline = true;
+            this.textBoxScript.Name = "textBoxScript";
+            this.textBoxScript.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBoxScript.Size = new System.Drawing.Size(377, 355);
+            this.textBoxScript.TabIndex = 5;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(13, 55);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(60, 15);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "送信ログ";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(413, 55);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(89, 15);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "スクリプト形式";
+            // 
             // Sprinkler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(802, 472);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.textBoxScript);
             this.Controls.Add(this.textBoxKeyInput);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.buttonTest);
@@ -116,6 +153,9 @@
         private System.Windows.Forms.Button buttonTest;
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.TextBox textBoxKeyInput;
+        private System.Windows.Forms.TextBox textBoxScript;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
     }
 }
 

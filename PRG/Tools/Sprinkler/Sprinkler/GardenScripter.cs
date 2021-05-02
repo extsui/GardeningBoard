@@ -11,15 +11,15 @@ namespace Sprinkler
     {
         private Garden m_garden;
 
-        /// <summary>
-        /// ログ付き非同期シリアル送信デリゲート
-        /// </summary>
+        // 安全な Form 操作呼び出し
         private Action<string> m_serialSendAsync;
+        private Action m_setScriptStartTick;
         
-        public GardenScripter(Action<string> serialSendAsync)
+        public GardenScripter(Action<string> serialSendAsync, Action setScriptStartTick)
         {
             m_garden = new Garden();
             m_serialSendAsync = serialSendAsync;
+            m_setScriptStartTick = setScriptStartTick;
         }
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -36,6 +36,11 @@ namespace Sprinkler
             Trace.Assert(commands != null);
             string line = String.Join("", commands);
             m_serialSendAsync(line);
+        }
+
+        private void StartScript()
+        {
+            m_setScriptStartTick();
         }
 
         /// <summary>
@@ -779,14 +784,18 @@ namespace Sprinkler
 
         public async void PatternTestKeyBar()
         {
-            // 右から左に同期して順に点灯させていく
+            StartScript();
 
+            // 右から左に同期して順に点灯させていく
             await Task.Run(() =>
             {
                 var StepTimingMilliseconds = TestStepTiming;
 
                 // 右列→真ん中列の遅延
                 var ColumnDelay = StepTimingMilliseconds * 8;
+
+                // DEBUG: アニメーション出力用の仮
+                CommandRegister();
 
                 {
                     var pattern = PatternConstants.Tile.RightToLeft;

@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "../Pump/PumpUtil.hpp"
+#include "../Pump/PumpScript.hpp"
 
 void ToHexTestCaseSuccess(const char *str, uint8_t expectOutValue)
 {
@@ -65,6 +66,39 @@ TEST(PumpUtilTest, ParseRawCommandTest)
             EXPECT_EQ(array[i], expectArray[i]);
         }
     }
+}
+
+// スクリプト 1 行を読み取って ScriptPiece に変換するテスト
+TEST(PumpScriptTest, ParseLine)
+{
+    PumpScript::ScriptPiece piece;
+    PumpScript::ParseLine(&piece, "9999,0102030405060708");
+
+    uint8_t expectedArray[] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, };
+    PumpScript::ScriptPiece expected(9999, expectedArray, sizeof(expectedArray));
+    EXPECT_EQ(piece, expected);
+}
+
+TEST(PumpScriptTest, Load)
+{
+    int result = 0;
+    
+    PumpScript script;
+    result = script.Load("./Resources/TestScript.gbs");
+    ASSERT_EQ(result, 0);
+    
+    script.Dump();
+}
+
+TEST(PumpScriptTest, Run)
+{
+    int result = 0;
+    
+    PumpScript script;
+    result = script.Load("./Resources/TestScript.gbs");
+    ASSERT_EQ(result, 0);
+    
+    script.Run();
 }
 
 int main(int argc, char* argv[])
