@@ -17,7 +17,7 @@ namespace Sprinkler
         
         public GardenScripter(Action<string> serialSendAsync, Action setScriptStartTick)
         {
-            m_garden = new Garden();
+            m_garden = new Garden("../../GardenConfig.yml");
             m_serialSendAsync = serialSendAsync;
             m_setScriptStartTick = setScriptStartTick;
         }

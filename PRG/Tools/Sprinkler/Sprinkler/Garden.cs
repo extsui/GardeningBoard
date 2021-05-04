@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
+using YamlDotNet;
+using YamlDotNet.RepresentationModel;
 
 namespace Sprinkler
 {
@@ -71,42 +75,59 @@ namespace Sprinkler
 
         public Garden()
         {
-            // TORIAEZU: まずは固定設定
-            var balans = new List<Balan>();
-            {
-                var units = new List<OperationUnit>
-                {
-                    new OperationUnit(new Brick(0, BrickType.House, BrickColor.Red    ), Position.Hexagon.Center   ),
-                    new OperationUnit(new Brick(6, BrickType.Tile,  BrickColor.Red    ), Position.Hexagon.Center   ),
-                    new OperationUnit(new Brick(3, BrickType.Grass, BrickColor.Orange ), Position.Hexagon.RightDown),
-                    new OperationUnit(new Brick(4, BrickType.Tile,  BrickColor.Green  ), Position.Hexagon.RightDown),
-                    new OperationUnit(new Brick(1, BrickType.Grass, BrickColor.Green  ), Position.Hexagon.Down     ),
-                    new OperationUnit(new Brick(5, BrickType.Tile,  BrickColor.White  ), Position.Hexagon.Down     ),
-                    new OperationUnit(new Brick(2, BrickType.Grass, BrickColor.Rainbow), Position.Hexagon.LeftDown ),
-                    new OperationUnit(new Brick(7, BrickType.Tile,  BrickColor.Orange ), Position.Hexagon.LeftDown ),
-                };
-                balans.Add(new Balan(0x60, units));
-            }
-            {
-                var units = new List<OperationUnit>
-                {
-                    new OperationUnit(new Brick(3, BrickType.Tree,  BrickColor.Yellow), Position.Hexagon.LeftUp ),
-                    new OperationUnit(new Brick(4, BrickType.Tile,  BrickColor.White ), Position.Hexagon.LeftUp ),
-                    new OperationUnit(new Brick(2, BrickType.Tile,  BrickColor.White ), Position.Hexagon.Up     ),
-                    new OperationUnit(new Brick(6, BrickType.Tree,  BrickColor.Blue  ), Position.Hexagon.Up     ),
-                    new OperationUnit(new Brick(5, BrickType.Tile,  BrickColor.Blue  ), Position.Hexagon.RightUp),
-                    new OperationUnit(new Brick(1, BrickType.Tree,  BrickColor.Green ), Position.Hexagon.RightUp),
-                };
-                balans.Add(new Balan(0x61, units));
-            }
-
-            Balans = balans;
+            throw new NotSupportedException("path 指定を使用すること");
         }
 
         public Garden(string path)
         {
-            // TODO: 設定ファイルから読み込むようにする
-            throw new NotImplementedException();
+            var reader = new StreamReader(path, Encoding.UTF8);
+            var yaml = new YamlStream();
+            yaml.Load(reader);
+            var root = (YamlMappingNode)yaml.Documents[0].RootNode;
+
+            var balanGroupsInstance = new List<Balan>();
+
+            var garden = (YamlSequenceNode)root.Children[new YamlScalarNode("Garden")];
+            var gardenMapping = (YamlMappingNode)garden.Children[0];
+            var balanGroups = (YamlSequenceNode)gardenMapping.Children[new YamlScalarNode("BalanGroups")];
+
+            foreach (YamlMappingNode balanGroupsMapping in balanGroups.Children)
+            {
+                var operationUnitsInstance = new List<OperationUnit>();
+
+                var balanAddress = (string)balanGroupsMapping.Children[new YamlScalarNode("BalanAddress")];
+                var operationUnits = (YamlSequenceNode)balanGroupsMapping.Children[new YamlScalarNode("OperationUnits")];
+
+                foreach (YamlMappingNode operationUnitsMapping in operationUnits.Children)
+                {
+                    var position = (string)operationUnitsMapping.Children[new YamlScalarNode("Position")];
+
+                    var brick = (YamlSequenceNode)operationUnitsMapping.Children[new YamlScalarNode("Brick")];
+                    var brickMapping = (YamlMappingNode)brick.Children[0];
+                    var brickAddress = (string)brickMapping.Children[new YamlScalarNode("BrickAddress")];
+                    var brickType    = (string)brickMapping.Children[new YamlScalarNode("BrickType")];
+                    var brickColor   = (string)brickMapping.Children[new YamlScalarNode("BrickColor")];
+
+                    // インスタンス化
+                    var brickInstance = new Brick(
+                        byte.Parse(brickAddress),
+                        (BrickType)Enum.Parse(typeof(BrickType), brickType),
+                        (BrickColor)Enum.Parse(typeof(BrickColor), brickColor));
+                    // TODO: 他の図形対応時に拡張すること (Position.ParseXxx())
+                    var positionInstance = Position.ParseHexagon(position);
+
+                    var operationUnitInstance = new OperationUnit(brickInstance, positionInstance);
+                    operationUnitsInstance.Add(operationUnitInstance);
+                }
+
+                // インスタンス化
+                var balanAddressInstance = Convert.ToByte(balanAddress, 16);
+                var balanInstance = new Balan(balanAddressInstance, operationUnitsInstance);
+                balanGroupsInstance.Add(balanInstance);
+            }
+
+            // インスタンス化
+            Balans = balanGroupsInstance;
         }
 
         public List<string> MakeRegisterCommand()
@@ -337,6 +358,34 @@ namespace Sprinkler
         public const uint FormationMask     = 0xFFFFFF00;
         public const uint FormationHexagon  = 0x00000100;
         public const uint FormationTriangle = 0x00000200;
+
+        static public uint ParseHexagon(string position)
+        {
+            var dictionary = new Dictionary<string, uint>()
+            {
+                { "Hexagon.Up",        Hexagon.Up        },
+                { "Hexagon.RightUp",   Hexagon.RightUp   },
+                { "Hexagon.RightDown", Hexagon.RightDown },
+                { "Hexagon.Down",      Hexagon.Down      },
+                { "Hexagon.LeftDown",  Hexagon.LeftDown  },
+                { "Hexagon.LeftUp",    Hexagon.LeftUp    },
+                { "Hexagon.Center",    Hexagon.Center    },
+            };
+            Trace.Assert(dictionary.ContainsKey(position));
+            return dictionary[position];
+        }
+
+        static public uint ParseTriangle(string position)
+        {
+            var dictionary = new Dictionary<string, uint>()
+            {
+                { "Triangle.Left",   Triangle.Left   },
+                { "Triangle.Center", Triangle.Center },
+                { "Triangle.Right",  Triangle.Right  },
+            };
+            Trace.Assert(dictionary.ContainsKey(position));
+            return dictionary[position];
+        }
 
         // -------------
         //       1
