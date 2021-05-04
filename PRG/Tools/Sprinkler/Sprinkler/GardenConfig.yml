@@ -1,0 +1,92 @@
+Garden:
+
+# 複数の Balan から構成 (操作単位は最大 8 個まで)
+- BalanGroups:
+
+  - BalanAddress: 0x60
+    OperationUnits:
+    - Position: "Hexagon.Center"
+      Brick:
+      - BrickAddress: 0
+        BrickType:    "House"
+        BrickColor:   "Red"
+
+    - Position: "Hexagon.Center"
+      Brick:
+      - BrickAddress: 6
+        BrickType:    "Tile"
+        BrickColor:   "Red"
+
+    - Position: "Hexagon.RightDown"
+      Brick:
+      - BrickAddress: 3
+        BrickType:    "Grass"
+        BrickColor:   "Orange"
+
+    - Position: "Hexagon.RightDown"
+      Brick:
+      - BrickAddress: 4
+        BrickType:    "Tile"
+        BrickColor:   "Green"
+
+    - Position: "Hexagon.Down"
+      Brick:
+      - BrickAddress: 1
+        BrickType:    "Grass"
+        BrickColor:   "Green"
+
+    - Position: "Hexagon.Down"
+      Brick:
+      - BrickAddress: 5
+        BrickType:    "Tile"
+        BrickColor:   "White"
+
+    - Position: "Hexagon.LeftDown"
+      Brick:
+      - BrickAddress: 2
+        BrickType:    "Grass"
+        BrickColor:   "Rainbow"
+
+    - Position: "Hexagon.LeftDown"
+      Brick:
+      - BrickAddress: 7
+        BrickType:    "Tile"
+        BrickColor:   "Orange"
+
+  - BalanAddress: 0x61
+    OperationUnits:
+    - Position: "Hexagon.LeftUp"
+      Brick:
+      - BrickAddress: 3
+        BrickType:    "Tree"
+        BrickColor:   "Yellow"
+
+    - Position: "Hexagon.LeftUp"
+      Brick:
+      - BrickAddress: 4
+        BrickType:    "Tile"
+        BrickColor:   "White"
+
+    - Position: "Hexagon.Up"
+      Brick:
+      - BrickAddress: 2
+        BrickType:    "Tile"
+        BrickColor:   "White"
+
+    - Position: "Hexagon.Up"
+      Brick:
+      - BrickAddress: 6
+        BrickType:    "Tree"
+        BrickColor:   "Blue"
+
+    - Position: "Hexagon.RightUp"
+      Brick:
+      - BrickAddress: 5
+        BrickType:    "Tile"
+        BrickColor:   "Blue"
+
+    - Position: "Hexagon.RightUp"
+      Brick:
+      - BrickAddress: 1
+        BrickType:    "Tree"
+        BrickColor:   "Green"
