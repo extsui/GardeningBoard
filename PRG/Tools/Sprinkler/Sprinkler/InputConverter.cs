@@ -160,7 +160,7 @@ namespace Sprinkler
         // QWER 行
         private void OnKeyQ()             { m_scripter.PatternTestKeyQ(); }
         private void OnKeyW()             { m_scripter.PatternTestKeyW(); }
-        private void OnKeyE()             {  }
+        private void OnKeyE()             { m_scripter.PatternTestKeyE(); }
         private void OnKeyR()             {  }
         private void OnKeyT()             {  }
         private void OnKeyY()             {  }

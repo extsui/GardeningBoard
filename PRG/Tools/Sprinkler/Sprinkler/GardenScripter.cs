@@ -874,5 +874,49 @@ namespace Sprinkler
                 }
             });
         }
+
+        /// <summary>
+        /// 指定した時間後にコマンド実行するクラス
+        /// </summary>
+        public class CommandTimingRunner
+        {
+            private Action m_action;
+            private int m_timing;
+
+            // TODO: 指定時間からの相対時間実行もあった方がよさそう
+            //       ↑は個別のコマンド実行メソッドに書いた方が良いかも？
+            public CommandTimingRunner(int timing, Action action)
+            {
+                m_action = action;
+                m_timing = timing;
+            }
+
+            public async void Run()
+            {
+                await Task.Run(() =>
+                {
+                    Thread.Sleep(m_timing);
+                    m_action();
+                });
+            }
+        }
+
+        public async void PatternTestKeyE()
+        {
+            var timingCommands = new List<CommandTimingRunner>()
+            {
+                new CommandTimingRunner(0,    () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.InsertedOnly)),
+                new CommandTimingRunner(500,  () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.InsertedOnly)),
+                new CommandTimingRunner(1000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.InsertedOnly)),
+                new CommandTimingRunner(1500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.InsertedOnly)),
+                new CommandTimingRunner(2000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.InsertedOnly)),
+                new CommandTimingRunner(2500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.InsertedOnly)),
+            };
+
+            await Task.Run(() =>
+            {
+                timingCommands.ForEach((command) => command.Run());
+            });
+        }
     }
 }
