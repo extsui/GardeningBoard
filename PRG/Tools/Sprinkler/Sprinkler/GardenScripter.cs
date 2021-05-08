@@ -879,55 +879,85 @@ namespace Sprinkler
         /// <summary>
         /// 指定した時間後にコマンド実行するクラス
         /// </summary>
-        public class CommandTimingRunner
+        public class CommandSequencer
         {
-            private Action m_action;
-            public int Timing { get; private set; }
+            // 本来は非公開で良いがデバッグ用のために公開
+            public List<(int timing, Action command)> TimedEventList { get; private set; }
 
-            // TODO: 指定時間からの相対時間実行もあった方がよさそう
-            //       ↑は個別のコマンド実行メソッドに書いた方が良いかも？
-            public CommandTimingRunner(int timing, Action action)
+            public CommandSequencer()
             {
-                m_action = action;
-                Timing = timing;
+                TimedEventList = new List<(int, Action)>();
             }
 
-            public async void Run()
+            public void SetTimedEvent(int timing, Action command)
             {
-                await Task.Run(() =>
+                TimedEventList.Add((timing, command));
+            }
+
+            public void Run(int startTime)
+            {
+                // 昇順に並び替え
+                TimedEventList.Sort((a, b) => (a.timing - b.timing));
+
+                foreach (var timedEvent in TimedEventList)
                 {
-                    // 一度に長時間スリープすると精度が秒単位でズレる程悪くなるので小刻みにスリープさせてみる
-                    // --> 効果なし!!! 10秒付近で糞応答になる
-                    int rest = Timing;
-                    int wakeupInterval = 1000;
-
-                    while (rest > wakeupInterval)
+                    while (true)
                     {
-                        Thread.Sleep(wakeupInterval);
-                        rest -= wakeupInterval;
+                        int spentTime = Environment.TickCount - startTime;
+                        if (spentTime > timedEvent.timing)
+                        {
+                            // コマンド自体が長時間のシーケンスの場合があるので非同期実行にする
+                            Task.Run(() => timedEvent.command());
+                            break;
+                        }
+                        Thread.Sleep(1);
                     }
-
-                    Thread.Sleep(rest);
-                    m_action();
-                });
+                }
             }
         }
 
+        // コマンドシーケンサを使用した単純な例
         public async void PatternTestKeyE()
         {
-            var timingCommands = new List<CommandTimingRunner>()
-            {
-                new CommandTimingRunner(0,    () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.InsertedOnly)),
-                new CommandTimingRunner(500,  () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.InsertedOnly)),
-                new CommandTimingRunner(1000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.InsertedOnly)),
-                new CommandTimingRunner(1500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.InsertedOnly)),
-                new CommandTimingRunner(2000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.InsertedOnly)),
-                new CommandTimingRunner(2500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.InsertedOnly)),
-            };
+            // 手前の Grass の ON/OFF を繰り返す
+
+            var commandSequencer = new CommandSequencer();
+
+            commandSequencer.SetTimedEvent(0, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(1000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(1500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(2000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(2500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
+
+            // 逆順に登録しても問題ないハズ
+            commandSequencer.SetTimedEvent(5500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(5000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(4500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(4000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(3500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(3000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
 
             await Task.Run(() =>
             {
-                timingCommands.ForEach((command) => command.Run());
+                commandSequencer.Run(Environment.TickCount);
+            });
+        }
+
+        // コマンドシーケンサを使用した非同期コマンドの例
+        public async void PatternTestKeyR()
+        {
+            // 外周をゆっくりワンショットさせている間に手前の Grass をワンショットさせる
+
+            var commandSequencer = new CommandSequencer();
+
+            commandSequencer.SetTimedEvent(0,    () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1000));
+            commandSequencer.SetTimedEvent(500,  () => SequentialCommandOneShotSmoothly(Position.Hexagon.Down, OperationTarget.GrassOnly, 50));
+            commandSequencer.SetTimedEvent(1000, () => SequentialCommandOneShotSmoothly(Position.Hexagon.Down, OperationTarget.GrassOnly, 50));
+
+            await Task.Run(() =>
+            {
+                commandSequencer.Run(Environment.TickCount);
             });
         }
 
@@ -936,7 +966,18 @@ namespace Sprinkler
         //////////////////////////////////////////////////////////////////////
 
         // Wizards in Winter の情報
-        const double Tempo = 148.2;
+
+        // 曲のテンポ
+        // - 148 と 149 だと全然合わないので小数点まで設定
+        // - 再生タイミング遅延との兼ね合いもあるが割と妥当な値のハズ
+        const double Tempo = 148.4;
+
+        // 音楽再生タイミング遅延 (ミリ秒)
+        // - 曲の頭の無音区間も含む
+        // - 環境ごとに要再設定
+        const int PlayStartBias = 500;
+
+        // 小節数
         const int BarCount = 113;
 
         // 小節番号から小節の時間 (秒) を算出する
@@ -948,42 +989,26 @@ namespace Sprinkler
 
         public async void PatternTestKeyOpenBrackets()
         {
-            var timingCommands = new List<CommandTimingRunner>();
-            for (int bar = 1; bar < BarCount; bar++)
-            {
-                // 音楽再生タイミング遅延 (ミリ秒)
-                const int PlayStartBias = 400;
+            var commandSequencer = new CommandSequencer();
 
+            for (int bar = 1; bar <= BarCount; bar++)
+            {
                 // 小節開始時刻
                 int barTiming = (int)(GetBarTime(bar) * 1000 + PlayStartBias);
                 // 小節内の4分音符タイミング
                 int noteInterval = (int)((60 / Tempo) * 1000);
 
-                var timingCommand1 = new CommandTimingRunner(barTiming + noteInterval * 0, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.InsertedOnly, 20));
-                var timingCommand2 = new CommandTimingRunner(barTiming + noteInterval * 1, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 20));
-                var timingCommand3 = new CommandTimingRunner(barTiming + noteInterval * 2, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 20));
-                var timingCommand4 = new CommandTimingRunner(barTiming + noteInterval * 3, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 20));
-
-                timingCommands.Add(timingCommand1);
-                timingCommands.Add(timingCommand2);
-                timingCommands.Add(timingCommand3);
-                timingCommands.Add(timingCommand4);
-            }
-
-            // TODO: Sleep 時間が 10 秒とか? を越えたあたりから精度がゴミ糞になるぞ…
-            // Windows のスケジューラの影響の可能性があるかも…
-            int index = 0;
-            foreach (var c in timingCommands)
-            {
-                Console.WriteLine($"{index}: {c.Timing}");
-                index++;
+                commandSequencer.SetTimedEvent(barTiming + noteInterval * 0, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.InsertedOnly, 10));
+                commandSequencer.SetTimedEvent(barTiming + noteInterval * 1, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
+                commandSequencer.SetTimedEvent(barTiming + noteInterval * 2, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
+                commandSequencer.SetTimedEvent(barTiming + noteInterval * 3, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
             }
 
             await Task.Run(() =>
             {
                 var player = new SoundPlayer("../../Wizards_in_Winter.wav");
                 player.Play();
-                timingCommands.ForEach((command) => command.Run());
+                commandSequencer.Run(Environment.TickCount);
             });
         }
     }
