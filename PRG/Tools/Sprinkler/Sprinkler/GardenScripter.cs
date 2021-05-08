@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Media;
 
 namespace Sprinkler
 {
@@ -881,21 +882,32 @@ namespace Sprinkler
         public class CommandTimingRunner
         {
             private Action m_action;
-            private int m_timing;
+            public int Timing { get; private set; }
 
             // TODO: 指定時間からの相対時間実行もあった方がよさそう
             //       ↑は個別のコマンド実行メソッドに書いた方が良いかも？
             public CommandTimingRunner(int timing, Action action)
             {
                 m_action = action;
-                m_timing = timing;
+                Timing = timing;
             }
 
             public async void Run()
             {
                 await Task.Run(() =>
                 {
-                    Thread.Sleep(m_timing);
+                    // 一度に長時間スリープすると精度が秒単位でズレる程悪くなるので小刻みにスリープさせてみる
+                    // --> 効果なし!!! 10秒付近で糞応答になる
+                    int rest = Timing;
+                    int wakeupInterval = 1000;
+
+                    while (rest > wakeupInterval)
+                    {
+                        Thread.Sleep(wakeupInterval);
+                        rest -= wakeupInterval;
+                    }
+
+                    Thread.Sleep(rest);
                     m_action();
                 });
             }
@@ -915,6 +927,62 @@ namespace Sprinkler
 
             await Task.Run(() =>
             {
+                timingCommands.ForEach((command) => command.Run());
+            });
+        }
+
+        //////////////////////////////////////////////////////////////////////
+        //  Wizards in Winter 用パーツ
+        //////////////////////////////////////////////////////////////////////
+
+        // Wizards in Winter の情報
+        const double Tempo = 148.2;
+        const int BarCount = 113;
+
+        // 小節番号から小節の時間 (秒) を算出する
+        static public double GetBarTime(int barNumber)
+        {
+            Trace.Assert(barNumber >= 1);
+            return (((barNumber - 1) * 4) / Tempo) * 60;
+        }
+
+        public async void PatternTestKeyOpenBrackets()
+        {
+            var timingCommands = new List<CommandTimingRunner>();
+            for (int bar = 1; bar < BarCount; bar++)
+            {
+                // 音楽再生タイミング遅延 (ミリ秒)
+                const int PlayStartBias = 400;
+
+                // 小節開始時刻
+                int barTiming = (int)(GetBarTime(bar) * 1000 + PlayStartBias);
+                // 小節内の4分音符タイミング
+                int noteInterval = (int)((60 / Tempo) * 1000);
+
+                var timingCommand1 = new CommandTimingRunner(barTiming + noteInterval * 0, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.InsertedOnly, 20));
+                var timingCommand2 = new CommandTimingRunner(barTiming + noteInterval * 1, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 20));
+                var timingCommand3 = new CommandTimingRunner(barTiming + noteInterval * 2, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 20));
+                var timingCommand4 = new CommandTimingRunner(barTiming + noteInterval * 3, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 20));
+
+                timingCommands.Add(timingCommand1);
+                timingCommands.Add(timingCommand2);
+                timingCommands.Add(timingCommand3);
+                timingCommands.Add(timingCommand4);
+            }
+
+            // TODO: Sleep 時間が 10 秒とか? を越えたあたりから精度がゴミ糞になるぞ…
+            // Windows のスケジューラの影響の可能性があるかも…
+            int index = 0;
+            foreach (var c in timingCommands)
+            {
+                Console.WriteLine($"{index}: {c.Timing}");
+                index++;
+            }
+
+            await Task.Run(() =>
+            {
+                var player = new SoundPlayer("../../Wizards_in_Winter.wav");
+                player.Play();
                 timingCommands.ForEach((command) => command.Run());
             });
         }
