@@ -981,91 +981,126 @@ namespace Sprinkler
             });
         }
 
-        //////////////////////////////////////////////////////////////////////
-        //  Wizards in Winter 用パーツ
-        //////////////////////////////////////////////////////////////////////
-
-        // Wizards in Winter の情報
-
-        // 曲のテンポ
-        // - 148 と 149 だと全然合わないので小数点まで設定
-        // - 再生タイミング遅延との兼ね合いもあるが割と妥当な値のハズ
-        const double Tempo = 148.4;
-
-        // 音楽再生タイミング遅延 (ミリ秒)
-        // - 曲の頭の無音区間も含む
-        // - 環境ごとに要再設定
-        const int PlayStartBias = 500;
-
-        // 小節数
-        const int BarCount = 113;
-
-        // 小節内のタイミング
-        // - 2分音符  : half note
-        // - 4分音符  : quarter note
-        // - 8分音符  : eighth note
-        // - 16分音符 : sixteenth note
-        // 1  |0               |
-        // 2  |0       1       |
-        // 4  |0   1   2   3   |
-        // 8  |0 1 2 3 4 5 6 7 |
-        // 16 |0123456789ABCDEF|
-        const int HalfNoteTiming      = (int)((60 / Tempo * 2) * 1000);
-        const int QuarterNoteTiming   = (int)((60 / Tempo    ) * 1000);
-        const int EightNoteTiming     = (int)((60 / Tempo / 2) * 1000);
-        const int SixteenthNoteTiming = (int)((60 / Tempo / 4) * 1000);
-
-        // 小節番号から小節の時間 (秒) を算出する
-        static public double GetBarTime(int barNumber)
+        /// <summary>
+        /// GardeningBoard 用の曲クラス
+        /// </summary>
+        public class GardenMusic
         {
-            Trace.Assert(barNumber >= 1);
-            return (((barNumber - 1) * 4) / Tempo) * 60;
+            // 曲のテンポ
+            // 整数だと合わない場合があるので浮動小数
+            public double Tempo { get; private set; }
+
+            // 曲の小節数 (1～)
+            public int BarCount { get; private set; }
+
+            // 曲再生タイミング遅延 (ミリ秒)
+            // - 曲の頭の無音区間も含む
+            // - PC 環境ごとに再設定が必要かも
+            public int PlayStartOffsetMilliSeconds { get; private set; }
+
+            public GardenMusic(double tempo, int barCount, int playStartOffsetMilliSeconds)
+            {
+                Tempo = tempo;
+                BarCount = barCount;
+                PlayStartOffsetMilliSeconds = playStartOffsetMilliSeconds;
+            }
+
+            // 小節内のタイミング
+            // - 2分音符  : half note
+            // - 4分音符  : quarter note
+            // - 8分音符  : eighth note
+            // - 16分音符 : sixteenth note
+            // 1  |1               |
+            // 2  |1       2       |
+            // 4  |1   2   3   4   |
+            // 8  |1 2 3 4 5 6 7 8 |
+            // 16 |123456789.......|
+            private int HalfNoteTiming      => (int)((60 / Tempo * 2) * 1000);
+            private int QuarterNoteTiming   => (int)((60 / Tempo)     * 1000);
+            private int EightNoteTiming     => (int)((60 / Tempo / 2) * 1000);
+            private int SixteenthNoteTiming => (int)((60 / Tempo / 4) * 1000);
+
+            // 小節の開始時間 (秒・浮動小数) の取得
+            // オフセット考慮無しであることに注意
+            private double GetBarTime(int barNumber)
+            {
+                Trace.Assert(barNumber >= 1);
+                return (((barNumber - 1) * 4) / Tempo) * 60;
+            }
+
+            // 曲の中のノーツ時間の取得
+            public int GetNoteTime(int barNumber, int beat, int noteNumber)
+            {
+                Trace.Assert(noteNumber >= 1);
+                Trace.Assert(noteNumber <= beat);
+
+                // 小節開始時刻
+                int barTiming = (int)(GetBarTime(barNumber) * 1000 + PlayStartOffsetMilliSeconds);
+
+                switch (beat)
+                {
+                    case 2:
+                        return barTiming + HalfNoteTiming * (noteNumber - 1);
+                    case 4:
+                        return barTiming + QuarterNoteTiming * (noteNumber - 1);
+                    case 8:
+                        return barTiming + EightNoteTiming * (noteNumber - 1);
+                    case 16:
+                        return barTiming + SixteenthNoteTiming * (noteNumber - 1);
+                    default:
+                        throw new NotSupportedException("");
+                }
+            }
         }
 
         public async void PatternTestKeyOpenBrackets()
         {
             var commandSequencer = new CommandSequencer();
 
-            for (int bar = 1; bar <= BarCount; bar++)
-            {
-                // 小節開始時刻
-                int barTiming = (int)(GetBarTime(bar) * 1000 + PlayStartBias);
+            // Wizards in Winter の情報
+            //
+            // 曲のテンポ
+            // - 148 と 149 だと全然合わないので小数点まで設定
+            // - 再生タイミング遅延との兼ね合いもあるが割と妥当な値のハズ
+            var music = new GardenMusic(148.4, 113, 500);
 
+            for (int bar = 1; bar <= music.BarCount; bar++)
+            {
                 if (1 <= bar && bar <= 8)
                 {
                     if (bar % 4 != 0)
                     {
-                        // 8  |0 1 2 3 4 5 6 7 |
+                        // 8  |1 2 3 4 5 6 7 8 |
                         //    |x x     x x     | Tile                    
-                        commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 0, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
-                        commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 1, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
 
-                        commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 4, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
-                        commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 5, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 5), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 6), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
                     }
                     else
                     {
-                        // 8  |0 1 2 3 4 5 6 7 |
+                        // 8  |1 2 3 4 5 6 7 8 |
                         //    |x               | Tile
                         //    |        x       | Grass
-                        commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 0, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
-                        commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 4, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.GrassOnly, new BrickCommandArgs.Pattern(PatternConstants.Grass.BothEdgeToMiddle.Id, 50, false))));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 5), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.GrassOnly, new BrickCommandArgs.Pattern(PatternConstants.Grass.BothEdgeToMiddle.Id, 50, false))));
                     }
                 }
                 else if (9 <= bar && bar <= 15)
                 {
-                    commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 0, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
-                    commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 1, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
 
-                    commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 4, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
-                    commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 5, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 5), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 6), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
                 }
                 else
                 {
-                    commandSequencer.SetTimedEvent(barTiming + QuarterNoteTiming * 0, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.InsertedOnly, 10));
-                    commandSequencer.SetTimedEvent(barTiming + QuarterNoteTiming * 1, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
-                    commandSequencer.SetTimedEvent(barTiming + QuarterNoteTiming * 2, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
-                    commandSequencer.SetTimedEvent(barTiming + QuarterNoteTiming * 3, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.InsertedOnly, 10));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 3), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 4), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
                 }
             }
 
