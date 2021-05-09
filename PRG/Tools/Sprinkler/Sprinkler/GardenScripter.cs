@@ -73,9 +73,19 @@ namespace Sprinkler
             ExecuteCommand(m_garden.MakePatternCommand(position, target, BrickCommandArgs.PatternTurnOn));
         }
 
+        public void CommandTurnOn(List<uint> positions, OperationTarget target)
+        {
+            ExecuteCommand(m_garden.MakePatternCommand(positions, target, BrickCommandArgs.PatternTurnOn));
+        }
+
         public void CommandTurnOff(uint position, OperationTarget target)
         {
             ExecuteCommand(m_garden.MakePatternCommand(position, target, BrickCommandArgs.PatternTurnOff));
+        }
+
+        public void CommandTurnOff(List<uint> positions, OperationTarget target)
+        {
+            ExecuteCommand(m_garden.MakePatternCommand(positions, target, BrickCommandArgs.PatternTurnOff));
         }
 
         public void CommandBrightness(uint position, OperationTarget target, byte brightness)
@@ -123,24 +133,34 @@ namespace Sprinkler
 
         public void SequentialCommandTurnOnSmoothly(uint position, OperationTarget target, int delayMsec)
         {
-            CommandTurnOn(position, target);
+            SequentialCommandTurnOnSmoothly(new List<uint> { position }, target, delayMsec);
+        }
 
-            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(0)));
+        public void SequentialCommandTurnOnSmoothly(List<uint> positions, OperationTarget target, int delayMsec)
+        {
+            CommandTurnOn(positions, target);
+
+            ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(0)));
             Thread.Sleep(delayMsec);
-            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(1)));
+            ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(1)));
             Thread.Sleep(delayMsec);
-            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(2)));
+            ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(2)));
             Thread.Sleep(delayMsec);
         }
 
         public void SequentialCommandTurnOffSmoothly(uint position, OperationTarget target, int delayMsec)
         {
-            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(1)));
+            SequentialCommandTurnOffSmoothly(new List<uint> { position }, target, delayMsec);
+        }
+
+        public void SequentialCommandTurnOffSmoothly(List<uint> positions, OperationTarget target, int delayMsec)
+        {
+            ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(1)));
             Thread.Sleep(delayMsec);
-            ExecuteCommand(m_garden.MakeBrightnessCommand(position, target, new BrickCommandArgs.Brightness(0)));
+            ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(0)));
             Thread.Sleep(delayMsec);
 
-            CommandTurnOff(position, target);
+            CommandTurnOff(positions, target);
         }
 
         public void SequentialCommandOneShotSmoothly(uint position, OperationTarget target, int delayMsec)
@@ -980,6 +1000,21 @@ namespace Sprinkler
         // 小節数
         const int BarCount = 113;
 
+        // 小節内のタイミング
+        // - 2分音符  : half note
+        // - 4分音符  : quarter note
+        // - 8分音符  : eighth note
+        // - 16分音符 : sixteenth note
+        // 1  |0               |
+        // 2  |0       1       |
+        // 4  |0   1   2   3   |
+        // 8  |0 1 2 3 4 5 6 7 |
+        // 16 |0123456789ABCDEF|
+        const int HalfNoteTiming      = (int)((60 / Tempo * 2) * 1000);
+        const int QuarterNoteTiming   = (int)((60 / Tempo    ) * 1000);
+        const int EightNoteTiming     = (int)((60 / Tempo / 2) * 1000);
+        const int SixteenthNoteTiming = (int)((60 / Tempo / 4) * 1000);
+
         // 小節番号から小節の時間 (秒) を算出する
         static public double GetBarTime(int barNumber)
         {
@@ -995,13 +1030,43 @@ namespace Sprinkler
             {
                 // 小節開始時刻
                 int barTiming = (int)(GetBarTime(bar) * 1000 + PlayStartBias);
-                // 小節内の4分音符タイミング
-                int noteInterval = (int)((60 / Tempo) * 1000);
 
-                commandSequencer.SetTimedEvent(barTiming + noteInterval * 0, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.InsertedOnly, 10));
-                commandSequencer.SetTimedEvent(barTiming + noteInterval * 1, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
-                commandSequencer.SetTimedEvent(barTiming + noteInterval * 2, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
-                commandSequencer.SetTimedEvent(barTiming + noteInterval * 3, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
+                if (1 <= bar && bar <= 8)
+                {
+                    if (bar % 4 != 0)
+                    {
+                        // 8  |0 1 2 3 4 5 6 7 |
+                        //    |x x     x x     | Tile                    
+                        commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 0, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                        commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 1, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+
+                        commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 4, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                        commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 5, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                    }
+                    else
+                    {
+                        // 8  |0 1 2 3 4 5 6 7 |
+                        //    |x               | Tile
+                        //    |        x       | Grass
+                        commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 0, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                        commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 4, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.GrassOnly, new BrickCommandArgs.Pattern(PatternConstants.Grass.BothEdgeToMiddle.Id, 50, false))));
+                    }
+                }
+                else if (9 <= bar && bar <= 15)
+                {
+                    commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 0, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                    commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 1, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+
+                    commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 4, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                    commandSequencer.SetTimedEvent(barTiming + EightNoteTiming * 5, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                }
+                else
+                {
+                    commandSequencer.SetTimedEvent(barTiming + QuarterNoteTiming * 0, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.InsertedOnly, 10));
+                    commandSequencer.SetTimedEvent(barTiming + QuarterNoteTiming * 1, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
+                    commandSequencer.SetTimedEvent(barTiming + QuarterNoteTiming * 2, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
+                    commandSequencer.SetTimedEvent(barTiming + QuarterNoteTiming * 3, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
+                }
             }
 
             await Task.Run(() =>
