@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Media;
+using NAudio.Wave;
 
 namespace Sprinkler
 {
@@ -914,16 +914,36 @@ namespace Sprinkler
                 TimedEventList.Add((timing, command));
             }
 
-            public void Run(int startTime)
+            public void Run()
+            {
+                // 最初から再生
+                Run(0);
+            }
+
+            // 開始タイミング指定版
+            public void Run(int startTiming)
             {
                 // 昇順に並び替え
                 TimedEventList.Sort((a, b) => (a.timing - b.timing));
 
+                // 開始タイミング以前のイベントはスキップ
+                int startIndex = 0;
                 foreach (var timedEvent in TimedEventList)
                 {
+                    if (startTiming < timedEvent.timing)
+                    {
+                        break;
+                    }
+                    startIndex++;
+                }
+
+                int nowTime = Environment.TickCount - startTiming;
+                for (int i = startIndex; i < TimedEventList.Count; i++)
+                {
+                    var timedEvent = TimedEventList[i];
                     while (true)
                     {
-                        int spentTime = Environment.TickCount - startTime;
+                        int spentTime = Environment.TickCount - nowTime;
                         if (spentTime > timedEvent.timing)
                         {
                             // コマンド自体が長時間のシーケンスの場合があるので非同期実行にする
@@ -1062,7 +1082,7 @@ namespace Sprinkler
             // 曲のテンポ
             // - 148 と 149 だと全然合わないので小数点まで設定
             // - 再生タイミング遅延との兼ね合いもあるが割と妥当な値のハズ
-            var music = new GardenMusic(148.4, 113, 500);
+            var music = new GardenMusic(148.4, 113, 300);
 
             for (int bar = 1; bar <= music.BarCount; bar++)
             {
@@ -1071,7 +1091,7 @@ namespace Sprinkler
                     if (bar % 4 != 0)
                     {
                         // 8  |1 2 3 4 5 6 7 8 |
-                        //    |x x     x x     | Tile                    
+                        //    |x x     x x     | Tile
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
 
@@ -1104,11 +1124,24 @@ namespace Sprinkler
                 }
             }
 
+            var reader = new AudioFileReader("../../Wizards_in_Winter.mp3");
+
+            var waveOut = new WaveOut();
+            waveOut.Init(reader);
+            //waveOut.Play();
+            //waveOut.Pause();
+
             await Task.Run(() =>
             {
-                var player = new SoundPlayer("../../Wizards_in_Winter.wav");
-                player.Play();
-                commandSequencer.Run(Environment.TickCount);
+                int timing = music.GetNoteTime(1, 8, 1);     // 静かなフレーズ・コーラス
+                //int timing = music.GetNoteTime(66, 8, 1);     // 静かなフレーズ・コーラス
+
+                reader.CurrentTime = TimeSpan.FromMilliseconds(timing);
+
+                //waveOut.Resume();
+                waveOut.Play();
+                
+                commandSequencer.Run(timing);
             });
         }
     }
