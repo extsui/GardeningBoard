@@ -163,25 +163,40 @@ namespace Sprinkler
             CommandTurnOff(positions, target);
         }
 
-        public void SequentialCommandOneShotSmoothly(uint position, OperationTarget target, int delayMsec)
+        public void SequentialCommandOneShotSmoothly(uint position, OperationTarget target, int delayMsec, bool isShort = false)
         {
-            SequentialCommandOneShotSmoothly(new List<uint> { position }, target, delayMsec);
+            SequentialCommandOneShotSmoothly(new List<uint> { position }, target, delayMsec, isShort);
         }
 
-        public void SequentialCommandOneShotSmoothly(List<uint> positions, OperationTarget target, int delayMsec)
+        public void SequentialCommandOneShotSmoothly(List<uint> positions, OperationTarget target, int delayMsec, bool isShort = false)
         {
             ExecuteCommand(m_garden.MakePatternCommand(positions, target, BrickCommandArgs.PatternTurnOn));
 
-            ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(1)));
-            Thread.Sleep(delayMsec);
-            ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(2)));
-            Thread.Sleep(delayMsec);
-            ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(3)));
-            Thread.Sleep(delayMsec);
-            ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(2)));
-            Thread.Sleep(delayMsec);
-            ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(1)));
-            Thread.Sleep(delayMsec);
+            if (!isShort)
+            {
+                // テンポ 148 の 8 分音符で、delayMsec = 1 とすると間に合わないのでその場合は短い版を使用すること
+                ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(1)));
+                Thread.Sleep(delayMsec);
+                ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(2)));
+                Thread.Sleep(delayMsec);
+                ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(3)));
+                Thread.Sleep(delayMsec);
+                ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(2)));
+                Thread.Sleep(delayMsec);
+                ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(1)));
+                Thread.Sleep(delayMsec);
+            }
+            else
+            {
+                ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(1)));
+                Thread.Sleep(delayMsec);
+                ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(2)));
+                Thread.Sleep(delayMsec);
+                ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(1)));
+                Thread.Sleep(delayMsec);
+                ExecuteCommand(m_garden.MakeBrightnessCommand(positions, target, new BrickCommandArgs.Brightness(0)));
+                Thread.Sleep(delayMsec);
+            }
 
             ExecuteCommand(m_garden.MakePatternCommand(positions, target, BrickCommandArgs.PatternTurnOff));
         }
@@ -930,7 +945,9 @@ namespace Sprinkler
                 int startIndex = 0;
                 foreach (var timedEvent in TimedEventList)
                 {
-                    if (startTiming < timedEvent.timing)
+                    // startTiming で指定したタイミングのコマンドも実行されることを
+                    // 想定しているので必要なので < ではなく <= とする必要がある
+                    if (startTiming <= timedEvent.timing)
                     {
                         break;
                     }
@@ -1082,63 +1099,89 @@ namespace Sprinkler
             // 曲のテンポ
             // - 148 と 149 だと全然合わないので小数点まで設定
             // - 再生タイミング遅延との兼ね合いもあるが割と妥当な値のハズ
-            var music = new GardenMusic(148.4, 113, 300);
+            var music = new GardenMusic(148.4, 113, 400);
 
             for (int bar = 1; bar <= music.BarCount; bar++)
             {
                 if (1 <= bar && bar <= 8)
                 {
+                    // 床、草、木 の顔見せ
+                    // 家は後出し
                     if (bar % 4 != 0)
                     {
                         // 8  |1 2 3 4 5 6 7 8 |
                         //    |x x     x x     | Tile
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
-
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 5), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 6), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1, true));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1, true));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 5), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1, true));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 6), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1, true));
                     }
-                    else
+                    else if (bar == 4)
                     {
                         // 8  |1 2 3 4 5 6 7 8 |
                         //    |x               | Tile
-                        //    |        x       | Grass
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                        //    |        x-----> | Grass
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1, true));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 5), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.GrassOnly, new BrickCommandArgs.Pattern(PatternConstants.Grass.BothEdgeToMiddle.Id, 50, false))));
                     }
+                    else if (bar == 8)
+                    {
+                        // 8  |1 2 3 4 5 6 7 8 |
+                        //    |x               | Tile
+                        //    |        x-----> | Tree
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1, true));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 5), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TreeOnly, new BrickCommandArgs.Pattern(PatternConstants.Tree.BottomToTop.Id, 50, false))));
+                    }
                 }
-                else if (9 <= bar && bar <= 15)
+                else if (9 <= bar && bar <= 16)
                 {
-                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
-                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
-
-                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 5), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
-                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 6), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1));
+                    // ここから家を出していく
+                    if (bar % 4 != 0)
+                    {
+                        // 8  |1 2 3 4 5 6 7 8 |1 2 3 4 5 6 7 8 |
+                        //    |x---------------|--------------> |  Tile
+                        //    |x-----> x-----> |x-----> x-----> |  House
+                        if (bar == 9 || bar == 11 || bar == 13 || bar == 15)
+                        {
+                            // TODO: Cross だと表現がむずい。isRepeat=true とするとタイミング合わんくなるのでLED が消える版の Cross が欲しい。
+                            // TODO: Tile を一個ずつ時間差で個別制御するとさらに良くなりそうな気はする。
+                            commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, new BrickCommandArgs.Pattern(PatternConstants.Tile.Cross.Id, 100, true))));
+                        }
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.HouseOnly, new BrickCommandArgs.Pattern(PatternConstants.House.OpenDoor.Id, 50, false))));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 5), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.HouseOnly, new BrickCommandArgs.Pattern(PatternConstants.House.CloseDoor.Id, 50, false))));
+                    }
+                    else if (bar == 12)
+                    {
+                        // TODO:
+                    }
+                    else if (bar == 16)
+                    {
+                        // TODO:
+                    }
                 }
                 else
                 {
-                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.InsertedOnly, 10));
-                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
-                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 3), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
-                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 4), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10));
+                    // TORIAEZU:
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.InsertedOnly, 10, true));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10, true));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 3), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10, true));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 4), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10, true));
                 }
             }
 
             var reader = new AudioFileReader("../../Wizards_in_Winter.mp3");
+            reader.Volume = 0.2f;
 
             var waveOut = new WaveOut();
             waveOut.Init(reader);
-            //waveOut.Play();
-            //waveOut.Pause();
 
             await Task.Run(() =>
             {
-                int timing = music.GetNoteTime(1, 8, 1);     // 静かなフレーズ・コーラス
+                int timing = music.GetNoteTime(1, 8, 1);      // イントロ (最初)
+                //int timing = music.GetNoteTime(9, 8, 1);        // イントロ・伴奏あり
                 //int timing = music.GetNoteTime(66, 8, 1);     // 静かなフレーズ・コーラス
 
                 reader.CurrentTime = TimeSpan.FromMilliseconds(timing);
-
-                //waveOut.Resume();
                 waveOut.Play();
                 
                 commandSequencer.Run(timing);
