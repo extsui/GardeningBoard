@@ -1105,6 +1105,8 @@ namespace Sprinkler
             {
                 if (1 <= bar && bar <= 8)
                 {
+                    // [イントロ]
+
                     // 床、草、木 の顔見せ
                     // 家は後出し
                     if (bar % 4 != 0)
@@ -1135,6 +1137,8 @@ namespace Sprinkler
                 }
                 else if (9 <= bar && bar <= 16)
                 {
+                    // [イントロ・伴奏あり]
+
                     // ここから家を出していく
                     if (bar % 4 != 0)
                     {
@@ -1143,21 +1147,188 @@ namespace Sprinkler
                         //    |x-----> x-----> |x-----> x-----> |  House
                         if (bar == 9 || bar == 11 || bar == 13 || bar == 15)
                         {
-                            // TODO: Cross だと表現がむずい。isRepeat=true とするとタイミング合わんくなるのでLED が消える版の Cross が欲しい。
-                            // TODO: Tile を一個ずつ時間差で個別制御するとさらに良くなりそうな気はする。
-                            commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, new BrickCommandArgs.Pattern(PatternConstants.Tile.Cross.Id, 100, true))));
+                            commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, new BrickCommandArgs.Pattern(PatternConstants.Tile.BackToFront.Id, 80, false))));
+                        }
+                        else
+                        {
+                            commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, new BrickCommandArgs.Pattern(PatternConstants.Tile.FrontToBack.Id, 80, false))));
                         }
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.HouseOnly, new BrickCommandArgs.Pattern(PatternConstants.House.OpenDoor.Id, 50, false))));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 5), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.HouseOnly, new BrickCommandArgs.Pattern(PatternConstants.House.CloseDoor.Id, 50, false))));
                     }
                     else if (bar == 12)
                     {
-                        // TODO:
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 5, false));
                     }
                     else if (bar == 16)
                     {
-                        // TODO:
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 5, false));
                     }
+                }
+                else if (17 <= bar && bar <= 19)
+                {
+                    // [サビの前の溜め]
+                    // ﾃﾞﾝｯﾃﾞﾚﾚﾚ
+                    // ﾃﾞﾝｯﾃﾞﾚﾚﾚ
+                    // ﾃﾞﾝｯﾃﾞﾃﾞﾝｯﾝﾃﾞ
+                    // ﾃﾞｯﾃﾞｯﾃﾞｯﾃﾞｯ
+                }
+                else if (20 <= bar && bar <= 27)
+                {
+                    // [サビ]
+                    if (bar % 4 != 0)
+                    {
+                        // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ * 3
+                    }
+                    else
+                    {
+                        // ﾃﾞｯﾚﾚﾚﾚﾚ
+                    }
+                }
+                else if (28 <= bar && bar <= 31)
+                {
+                    // [クールダウン]
+                    // ﾃﾞﾝｯ ﾃﾞﾚﾚﾚ
+                    // ﾃﾞｯﾃﾞﾃﾞｯﾃﾞﾃﾞ
+                    // ﾃﾞｯﾃﾞｯﾃﾞｯﾃﾞｯ
+                    // ﾃﾞｯﾃﾞｯﾃﾞｯﾃﾞｯ(↓)
+                }
+                else if (32 <= bar && bar <= 35)
+                {
+                    // [静かなフレーズ]
+                    // ﾃﾞﾝﾃﾞﾝﾃﾞﾝﾃﾞﾝﾃﾞﾝﾃﾞﾝﾃﾞﾝﾃﾞﾝ * 4
+                }
+                else if (36 <= bar && bar <= 39)
+                {
+                    // [静かなフレーズ・メロディ]
+                    // ﾝ ﾃﾚﾚｯﾚｯ-
+                    // ﾝ ﾃﾚﾚｯﾚｯ-
+                    // ﾝ ﾃﾚﾚｯﾚｯ-
+                    // ﾚｰﾚｰﾚｰﾚｰ
+                }
+                else if (40 <= bar && bar <= 43)
+                {
+                    // [静かなフレーズ・メロディ(低)]
+                    // ﾝ ﾃﾚﾚｯﾚｯ-
+                    // ﾝ ﾃﾚﾚｯﾚｯ-
+                    // ﾝ ﾃﾚﾚｯﾚｯ-
+                    // ﾚｰﾚｰﾚｰﾚｰ
+                }
+                else if (44 <= bar && bar <= 47)
+                {
+                    // [サビ前の溜め]
+                    // ﾃﾞﾝｯﾃﾞﾚﾚﾚ
+                    // ﾃﾞﾝｯﾃﾞﾚﾚﾚ
+                    // ﾃﾞﾝｯﾃﾞﾃﾞﾝｯﾝﾃﾞ
+                    // ﾃﾞｯﾃﾞｯﾃﾞｯﾃﾞｯ
+                }
+                else if (48 <= bar && bar <= 55)
+                {
+                    // [サビ]
+                    if (bar % 4 != 0)
+                    {
+                        // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ * 3
+                    }
+                    else
+                    {
+                        // ﾃﾞｯﾚﾚﾚﾚﾚ
+                    }
+                }
+                else if (56 <= bar && bar <= 61)
+                {
+                    // [クールダウン]
+                    // ﾃﾞﾝｯﾃﾞﾚﾚﾚ
+                    // ﾃﾞﾝｯﾃﾞﾚﾚﾚ (↑)
+                    // ﾃｯﾃｯﾃｯﾃｯ
+                    // ﾃｯﾃｯﾃｯﾃｯ
+                    // ﾃﾚﾚﾚﾚﾚﾚﾚ
+                    // ﾃﾚﾚﾚﾚﾚﾚﾚ
+                }
+                else if (62 <= bar && bar <= 62)
+                {
+                    // [静かなフレーズ]
+                    // ﾃﾞﾝﾃﾞﾝﾃﾞﾝﾃﾞﾝﾃﾞﾝﾃﾞﾝﾃﾞﾝﾃﾞﾝ * 4
+                }
+                else if (66 <= bar && bar <= 71)
+                {
+                    // [静かなフレーズ・コーラス]
+                    // ﾎｰｵｰｵｰｵｰ
+                    // ｵｰｵｰｵｰｵｰ
+                    // ｵｰｵｰｵｰｵｰ
+                    // ｵｰｵｰｵｰｵｰ
+                    // ｵｰｵｰｵｰｵｰ
+                    // ｵｰｵｰｵｰｵｰ
+                }
+                else if (72 <= bar && bar <= 77)
+                {
+                    // [静かなフレーズ・コーラス(高)]
+                    // (↑)ﾎｰｵｰｵｰｵｰ
+                    // ﾎｰｵｰｵｰｵｰ
+                    // ﾎｰｵｰｵｰｵｰ
+                    // (↑)ｵｰｰｰ
+                    // ----
+                    // ----
+                }
+                else if (78 <= bar && bar <= 81)
+                {
+                    // [サビ前の溜め]
+                    // ﾃﾞﾝｯﾃﾞﾚﾚﾚ
+                    // ﾃﾞﾝｯﾃﾞﾚﾚﾚ
+                    // ﾃﾞﾝｯﾃﾞﾃﾞﾝｯﾝﾃﾞ
+                    // ﾃﾞｯﾃﾞｯﾃﾞｯﾃﾞｯ
+                }
+                else if (82 <= bar && bar <= 88)
+                {
+                    // [サビ]
+                    if (bar % 4 != 0)
+                    {
+                        // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ * 3
+                    }
+                    else
+                    {
+                        // ﾃﾞｯﾚﾚﾚﾚﾚ
+                    }
+                }
+                else if (89 <= bar && bar <= 92)
+                {
+                    // [ラスサビ前の溜め]
+                    // ﾃﾞﾝｯ(ﾚﾚﾚﾚﾚﾚﾚﾚ)
+                    // ﾃﾞﾝｯ(ﾚﾚﾚﾚﾚﾚﾚﾚ)
+                    // ﾃﾞﾝｯ(ﾚﾚﾚﾚ)ﾃﾞﾝｯ(ﾚﾚﾚﾚ)
+                    // ﾃﾞﾝｯ(ﾚﾚ)ﾃﾞﾝｯ(ﾚﾚ)ﾃﾞﾝｯ(ﾚﾚ)ﾃﾞﾝｯ(ﾚﾚ)
+                }
+                else if (93 <= bar && bar <= 102)
+                {
+                    // [ラスサビ]
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ (ﾃﾞｰﾃﾞｰﾃﾞｰﾃﾞｰ↑)
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ (ﾃﾞｰﾃﾞｰﾃﾞｰﾃﾞｰ↑)
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ (ﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞ↑)
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ (ﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞ↑)
+                }
+                else if (103 <= bar && bar <= 110)
+                {
+                    // [ラスト盛り上がり]
+                    // ﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞ
+                    // ﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞ
+                    // ﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞ
+                    // ﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞ
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ (↑↓)
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ (↑↓)
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ (↑↓)
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ (↑↓)
+                }
+                else if (111 <= bar && bar <= 113)
+                {
+                    // [ラスサビ〆]
+                    // ﾃﾞｰｰｰｰｰｰｰｰ
+                    // --------
+                    // ﾃﾞﾝｯ
                 }
                 else
                 {
