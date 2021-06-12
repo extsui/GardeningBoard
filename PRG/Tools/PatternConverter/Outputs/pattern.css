@@ -7,6 +7,14 @@
     background-color: #00FF00;
 }
 
+.Grass_OutsideOn {
+    background-color: #00FF00;
+}
+
+.Grass_Vibration {
+    background-color: #00FF00;
+}
+
 .Grass_LeftToRight1 {
     background-color: #00FF00;
 }
@@ -27,11 +35,7 @@
     background-color: #00FF00;
 }
 
-.Grass_Vibration {
-    background-color: #00FF00;
-}
-
-.Grass_LeftToRightBuffer {
+.Grass_MiddleToBothEdge {
     background-color: #00FF00;
 }
 
@@ -43,11 +47,35 @@
     background-color: #00FF00;
 }
 
-.Grass_LeftToRightVertical {
+.Grass_LeftToRightVertical1 {
     background-color: #00FF00;
 }
 
-.Grass_RightToLeftVertical {
+.Grass_RightToLeftVertical1 {
+    background-color: #00FF00;
+}
+
+.Grass_LeftToRightVertical3 {
+    background-color: #00FF00;
+}
+
+.Grass_RightToLeftVertical3 {
+    background-color: #00FF00;
+}
+
+.Grass_BottomToTop {
+    background-color: #00FF00;
+}
+
+.Grass_TopToBottom {
+    background-color: #00FF00;
+}
+
+.Grass_LeftToRightBlock {
+    background-color: #00FF00;
+}
+
+.Grass_RightToLeftBlock {
     background-color: #00FF00;
 }
 
@@ -56,6 +84,10 @@
 }
 
 .House_AllOff {
+    background-color: #FF0000;
+}
+
+.House_OutsideOn {
     background-color: #FF0000;
 }
 
@@ -152,6 +184,10 @@
 }
 
 .Tree_AllOff {
+    background-color: #0000FF;
+}
+
+.Tree_OutsideOn {
     background-color: #0000FF;
 }
 

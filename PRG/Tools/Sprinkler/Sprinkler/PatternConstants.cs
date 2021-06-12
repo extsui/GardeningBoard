@@ -24,27 +24,35 @@ public static class PatternConstants
     {
         public static Pattern AllOn = new Pattern(0, 1);
         public static Pattern AllOff = new Pattern(1, 1);
-        public static Pattern LeftToRight1 = new Pattern(2, 12);
-        public static Pattern RightToLeft1 = new Pattern(3, 12);
-        public static Pattern LeftToRight3 = new Pattern(4, 14);
-        public static Pattern RightToLeft3 = new Pattern(5, 14);
-        public static Pattern BothEdgeToMiddle = new Pattern(6, 12);
-        public static Pattern Vibration = new Pattern(7, 2);
-        public static Pattern LeftToRightBuffer = new Pattern(8, 134);
-        public static Pattern LeftToRightNeg = new Pattern(9, 14);
-        public static Pattern RightToLeftNeg = new Pattern(10, 14);
-        public static Pattern LeftToRightVertical = new Pattern(11, 8);
-        public static Pattern RightToLeftVertical = new Pattern(12, 8);
+        public static Pattern OutsideOn = new Pattern(2, 1);
+        public static Pattern Vibration = new Pattern(3, 2);
+        public static Pattern LeftToRight1 = new Pattern(4, 12);
+        public static Pattern RightToLeft1 = new Pattern(5, 12);
+        public static Pattern LeftToRight3 = new Pattern(6, 14);
+        public static Pattern RightToLeft3 = new Pattern(7, 14);
+        public static Pattern BothEdgeToMiddle = new Pattern(8, 12);
+        public static Pattern MiddleToBothEdge = new Pattern(9, 12);
+        public static Pattern LeftToRightNeg = new Pattern(10, 14);
+        public static Pattern RightToLeftNeg = new Pattern(11, 14);
+        public static Pattern LeftToRightVertical1 = new Pattern(12, 10);
+        public static Pattern RightToLeftVertical1 = new Pattern(13, 10);
+        public static Pattern LeftToRightVertical3 = new Pattern(14, 12);
+        public static Pattern RightToLeftVertical3 = new Pattern(15, 12);
+        public static Pattern BottomToTop = new Pattern(16, 4);
+        public static Pattern TopToBottom = new Pattern(17, 4);
+        public static Pattern LeftToRightBlock = new Pattern(18, 4);
+        public static Pattern RightToLeftBlock = new Pattern(19, 4);
     }
 
     public static class House
     {
         public static Pattern AllOn = new Pattern(0, 1);
         public static Pattern AllOff = new Pattern(1, 1);
-        public static Pattern OneByOne = new Pattern(2, 28);
-        public static Pattern Stream = new Pattern(3, 54);
-        public static Pattern OpenDoor = new Pattern(4, 11);
-        public static Pattern CloseDoor = new Pattern(5, 11);
+        public static Pattern OutsideOn = new Pattern(2, 1);
+        public static Pattern OneByOne = new Pattern(3, 28);
+        public static Pattern Stream = new Pattern(4, 54);
+        public static Pattern OpenDoor = new Pattern(5, 11);
+        public static Pattern CloseDoor = new Pattern(6, 11);
     }
 
     public static class Tile
@@ -73,16 +81,17 @@ public static class PatternConstants
     {
         public static Pattern AllOn = new Pattern(0, 1);
         public static Pattern AllOff = new Pattern(1, 1);
-        public static Pattern OneByOne = new Pattern(2, 20);
-        public static Pattern TopToBottomHorizontal1 = new Pattern(3, 8);
-        public static Pattern TopToBottomHorizontal3 = new Pattern(4, 10);
-        public static Pattern TopToBottomBuffer = new Pattern(5, 14);
-        public static Pattern UpperLeftToRight = new Pattern(6, 6);
-        public static Pattern UpperRightToLeft = new Pattern(7, 6);
-        public static Pattern LowerLeftToRight = new Pattern(8, 6);
-        public static Pattern LowerRightToLeft = new Pattern(9, 6);
-        public static Pattern Candle = new Pattern(10, 22);
-        public static Pattern BottomToTop = new Pattern(11, 11);
-        public static Pattern Wave = new Pattern(12, 14);
+        public static Pattern OutsideOn = new Pattern(2, 1);
+        public static Pattern OneByOne = new Pattern(3, 20);
+        public static Pattern TopToBottomHorizontal1 = new Pattern(4, 8);
+        public static Pattern TopToBottomHorizontal3 = new Pattern(5, 10);
+        public static Pattern TopToBottomBuffer = new Pattern(6, 14);
+        public static Pattern UpperLeftToRight = new Pattern(7, 6);
+        public static Pattern UpperRightToLeft = new Pattern(8, 6);
+        public static Pattern LowerLeftToRight = new Pattern(9, 6);
+        public static Pattern LowerRightToLeft = new Pattern(10, 6);
+        public static Pattern Candle = new Pattern(11, 22);
+        public static Pattern BottomToTop = new Pattern(12, 11);
+        public static Pattern Wave = new Pattern(13, 14);
     }
 }

@@ -7,6 +7,10 @@ static const unsigned char House_AllOff[1][27] = {
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
 };
 
+static const unsigned char House_OutsideOn[1][27] = {
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, },
+};
+
 static const unsigned char House_OneByOne[28][27] = {
     { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
     { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
@@ -131,6 +135,7 @@ typedef struct {
 static const House_PatternRecord House_PatternTable[] = {
     { House_AllOn, 1 },
     { House_AllOff, 1 },
+    { House_OutsideOn, 1 },
     { House_OneByOne, 28 },
     { House_Stream, 54 },
     { House_OpenDoor, 11 },

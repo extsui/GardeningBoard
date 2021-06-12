@@ -131,14 +131,14 @@ namespace Sprinkler
         ////////////////////////////////////////////////////////////////////////////////
 
         // ファンクション行
-        private void OnKeyF1()            { m_scripter.SampleSequence();          }
-        private void OnKeyF2()            { m_scripter.SampleBrightness();        }
-        private void OnKeyF3()            { m_scripter.SampleStress();            }
-        private void OnKeyF4()            { m_scripter.SampleCircle();            }
-        private void OnKeyF5()            { m_scripter.InternalMultiThreadTest(); }
-        private void OnKeyF6()            { m_scripter.ScenarioShootingStar();    }
-        private void OnKeyF7()            {  }
-        private void OnKeyF8()            {  }
+        private void OnKeyF1()            { m_scripter.SampleSequence();             }
+        private void OnKeyF2()            { m_scripter.SampleBrightness();           }
+        private void OnKeyF3()            { m_scripter.SampleStress();               }
+        private void OnKeyF4()            { m_scripter.SampleCircle();               }
+        private void OnKeyF5()            { m_scripter.InternalMultiThreadTest();    }
+        private void OnKeyF6()            { m_scripter.ScenarioShootingStar();       }
+        private void OnKeyF7()            { m_scripter.TestCommandSequencerSimple(); }
+        private void OnKeyF8()            { m_scripter.TestCommandSequencerAsync();  }
         private void OnKeyF9()            {  }
         private void OnKeyF10()           { m_scripter.PatternTest3(); }
         private void OnKeyF11()           { m_scripter.PatternTest2(); }
@@ -162,42 +162,43 @@ namespace Sprinkler
         private void OnKeyW()             { m_scripter.PatternTestKeyW(); }
         private void OnKeyE()             { m_scripter.PatternTestKeyE(); }
         private void OnKeyR()             { m_scripter.PatternTestKeyR(); }
-        private void OnKeyT()             {  }
-        private void OnKeyY()             {  }
-        private void OnKeyU()             {  }
-        private void OnKeyI()             {  }
-        private void OnKeyO()             {  }
-        private void OnKeyP()             {  }
-        private void OnKeyAt()            {  }
+        private void OnKeyT()             { m_scripter.PatternTestKeyT(); }
+        private void OnKeyY()             { m_scripter.PatternTestKeyY(); }
+        private void OnKeyU()             { m_scripter.PatternTestKeyU(); }
+        private void OnKeyI()             { m_scripter.PatternTestKeyI(); }
+        private void OnKeyO()             { m_scripter.PatternTestKeyO(); }
+        private void OnKeyP()             { m_scripter.PatternTestKeyP(); }
+        private void OnKeyAt()            { m_scripter.PatternTestKeyAt(); }
         private void OnKeyOpenBrackets()  { m_scripter.PatternTestKeyOpenBrackets(); }
         // ASDF 行
-        private void OnKeyA()             {  }
-        private void OnKeyS()             {  }
-        private void OnKeyD()             {  }
-        private void OnKeyF()             {  }
-        private void OnKeyG()             {  }
-        private void OnKeyH()             {  }
-        private void OnKeyJ()             {  }
-        private void OnKeyK()             {  }
-        private void OnKeyL()             {  }
-        private void OnKeySemiColon()     {  }
-        private void OnKeyColon()         {  }
-        private void OnKeyCloseBrackets() {  }
+        private void OnKeyA()             { m_scripter.PatternTestKeyA(); }
+        private void OnKeyS()             { m_scripter.PatternTestKeyS(); }
+        private void OnKeyD()             { m_scripter.PatternTestKeyD(); }
+        private void OnKeyF()             { m_scripter.PatternTestKeyF(); }
+        private void OnKeyG()             { m_scripter.PatternTestKeyG(); }
+        private void OnKeyH()             { m_scripter.PatternTestKeyH(); }
+        private void OnKeyJ()             { m_scripter.PatternTestKeyJ(); }
+        private void OnKeyK()             { m_scripter.PatternTestKeyK(); }
+        private void OnKeyL()             { m_scripter.PatternTestKeyL(); }
+        private void OnKeySemiColon()     { m_scripter.PatternTestKeySemiColon(); }
+        private void OnKeyColon()         { m_scripter.PatternTestKeyColon(); }
+        private void OnKeyCloseBrackets() { m_scripter.PatternTestKeyCloseBrackets(); }
         // ZXCV 行
-        private void OnKeyZ()             {  }
-        private void OnKeyX()             {  }
-        private void OnKeyC()             {  }
-        private void OnKeyV()             {  }
-        private void OnKeyB()             {  }
-        private void OnKeyN()             {  }
-        private void OnKeyM()             {  }
-        private void OnKeyComma()         {  }
-        private void OnKeyPeriod()        {  }
-        private void OnKeyQuestion()      {  }
-        private void OnKeyUnderBar()      {  }
+        private void OnKeyZ()             { m_scripter.PatternTestKeyZ(); }
+        private void OnKeyX()             { m_scripter.PatternTestKeyX(); }
+        private void OnKeyC()             { m_scripter.PatternTestKeyC(); }
+        private void OnKeyV()             { m_scripter.PatternTestKeyV(); }
+        private void OnKeyB()             { m_scripter.PatternTestKeyB(); }
+        private void OnKeyN()             { m_scripter.PatternTestKeyN(); }
+        private void OnKeyM()             { m_scripter.PatternTestKeyM(); }
+        private void OnKeyComma()         { m_scripter.PatternTestKeyComma(); }
+        private void OnKeyPeriod()        { m_scripter.PatternTestKeyPeriod(); }
+        private void OnKeyQuestion()      { m_scripter.PatternTestKeyQuestion(); }
+        private void OnKeyUnderBar()      { m_scripter.PatternTestKeyUnderBar(); }
         // その他
         private void OnKeyDelete()        { m_scripter.CommandTurnOffAll(); }
         private void OnKeyEnter()         { m_scripter.CommandTurnOnAll();  }
+        private void OnKeySpace()         { m_scripter.PlayWizardsInWinter(); }
         // 矢印
         private void OnKeyUp()            { m_scripter.PatternTestBrightnessUp();   }
         private void OnKeyDown()          { m_scripter.PatternTestBrightnessDown(); }
@@ -276,6 +277,7 @@ namespace Sprinkler
 
                 { Keys.Delete,          OnKeyDelete        },  // DEL
                 { Keys.Enter,           OnKeyEnter         },  // Enter
+                { Keys.Space,           OnKeySpace         },  // Space
 
                 { Keys.Up,              OnKeyUp            },  // ↑
                 { Keys.Down,            OnKeyDown          },  // ↓

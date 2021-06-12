@@ -364,6 +364,51 @@ namespace Sprinkler
             });
         }
 
+        // コマンドシーケンサを使用した簡易テスト
+        public async void TestCommandSequencerSimple()
+        {
+            // 手前の草の ON/OFF を繰り返す
+
+            var commandSequencer = new CommandSequencer();
+
+            commandSequencer.SetTimedEvent(0, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(1000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(1500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(2000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(2500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
+
+            // 逆順に登録しても問題ないハズ
+            commandSequencer.SetTimedEvent(5500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(5000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(4500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(4000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(3500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
+            commandSequencer.SetTimedEvent(3000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
+
+            await Task.Run(() =>
+            {
+                commandSequencer.Run();
+            });
+        }
+
+        // コマンドシーケンサを使用した非同期コマンドの簡易テスト
+        public async void TestCommandSequencerAsync()
+        {
+            // 外周をゆっくりワンショットさせている間に手前の草をワンショットさせる
+
+            var commandSequencer = new CommandSequencer();
+
+            commandSequencer.SetTimedEvent(0, () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1000));
+            commandSequencer.SetTimedEvent(500, () => SequentialCommandOneShotSmoothly(Position.Hexagon.Down, OperationTarget.GrassOnly, 50));
+            commandSequencer.SetTimedEvent(1000, () => SequentialCommandOneShotSmoothly(Position.Hexagon.Down, OperationTarget.GrassOnly, 50));
+
+            await Task.Run(() =>
+            {
+                commandSequencer.Run();
+            });
+        }
+
         ////////////////////////////////////////////////////////////////////////////////
         //  輝度操作テスト
         ////////////////////////////////////////////////////////////////////////////////
@@ -486,12 +531,14 @@ namespace Sprinkler
                     PatternConstants.Grass.LeftToRight3,
                     PatternConstants.Grass.RightToLeft3,
                     PatternConstants.Grass.BothEdgeToMiddle,
+                    PatternConstants.Grass.MiddleToBothEdge,
                     PatternConstants.Grass.Vibration,
-                    PatternConstants.Grass.LeftToRightBuffer,
                     PatternConstants.Grass.LeftToRightNeg,
                     PatternConstants.Grass.RightToLeftNeg,
-                    PatternConstants.Grass.LeftToRightVertical,
-                    PatternConstants.Grass.RightToLeftVertical,
+                    PatternConstants.Grass.LeftToRightVertical1,
+                    PatternConstants.Grass.RightToLeftVertical1,
+                    PatternConstants.Grass.LeftToRightVertical3,
+                    PatternConstants.Grass.RightToLeftVertical3,
                 };
 
                 var HousePatternList = new List<PatternConstants.Pattern>()
@@ -877,38 +924,226 @@ namespace Sprinkler
         //  q, w, e, ..., [
         ////////////////////////////////////////////////////////////////////////////////
 
+        private void SetTreePattern(PatternConstants.Pattern pattern)
+        {
+            var StepTimingMilliseconds = TestStepTiming;
+
+            {
+                var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TreeOnly, patternCommandArgs));
+
+                // パターンが終わるまで待つ
+                Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+            }
+        }
+
         public async void PatternTestKeyQ()
         {
-            await Task.Run(() =>
-            {
-                var StepTimingMilliseconds = TestStepTiming;
-
-                {
-                    var pattern = PatternConstants.Tree.BottomToTop;
-                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
-                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TreeOnly, patternCommandArgs));
-
-                    // パターンが終わるまで待つ
-                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
-                }
-            });
+            await Task.Run(() => SetTreePattern(PatternConstants.Tree.BottomToTop));
         }
 
         public async void PatternTestKeyW()
         {
-            await Task.Run(() =>
+            await Task.Run(() => SetTreePattern(PatternConstants.Tree.Wave));
+        }
+
+        public async void PatternTestKeyE()
+        {
+            await Task.Run(() => SetTreePattern(PatternConstants.Tree.LowerLeftToRight));
+        }
+
+        public async void PatternTestKeyR()
+        {
+            await Task.Run(() => SetTreePattern(PatternConstants.Tree.LowerRightToLeft));
+        }
+
+        public async void PatternTestKeyT()
+        {
+            await Task.Run(() => SetTreePattern(PatternConstants.Tree.UpperLeftToRight));
+        }
+
+        public async void PatternTestKeyY()
+        {
+            await Task.Run(() => SetTreePattern(PatternConstants.Tree.UpperRightToLeft));
+        }
+
+        public async void PatternTestKeyU()
+        {
+            await Task.Run(() => SetTreePattern(PatternConstants.Tree.Candle));
+        }
+
+        public async void PatternTestKeyI()
+        {
+            await Task.Run(() => SetTreePattern(PatternConstants.Tree.OneByOne));
+        }
+
+        public async void PatternTestKeyO()
+        {
+            await Task.Run(() => SetTreePattern(PatternConstants.Tree.TopToBottomHorizontal3));
+        }
+
+        public async void PatternTestKeyP()
+        {
+
+        }
+
+        public async void PatternTestKeyAt()
+        {
+
+        }
+
+        public async void PatternTestKeyOpenBrackets()
+        {
+
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////
+        //  a, s, d, ..., ]
+        ////////////////////////////////////////////////////////////////////////////////
+
+        private void SetGrassPattern(PatternConstants.Pattern pattern)
+        {
+            var StepTimingMilliseconds = TestStepTiming;
+
             {
-                var StepTimingMilliseconds = TestStepTiming;
+                var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.GrassOnly, patternCommandArgs));
 
-                {
-                    var pattern = PatternConstants.Tree.Wave;
-                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
-                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TreeOnly, patternCommandArgs));
+                // パターンが終わるまで待つ
+                Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+            }
+        }
 
-                    // パターンが終わるまで待つ
-                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
-                }
-            });
+        public async void PatternTestKeyA()
+        {
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.LeftToRightBlock));
+        }
+
+        public async void PatternTestKeyS()
+        {
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.RightToLeftBlock));
+        }
+
+        public async void PatternTestKeyD()
+        {
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.LeftToRightNeg));
+        }
+
+        public async void PatternTestKeyF()
+        {
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.RightToLeftNeg));
+        }
+
+        public async void PatternTestKeyG()
+        {
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.RightToLeft1));
+        }
+
+        public async void PatternTestKeyH()
+        {
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.RightToLeft3));
+        }
+
+        public async void PatternTestKeyJ()
+        {
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.RightToLeftVertical1));
+        }
+
+        public async void PatternTestKeyK()
+        {
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.LeftToRightVertical1));
+        }
+
+        public async void PatternTestKeyL()
+        {
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.LeftToRightVertical3));
+        }
+
+        public async void PatternTestKeySemiColon()
+        {
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.RightToLeftVertical3));
+        }
+
+        public async void PatternTestKeyColon()
+        {
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.BottomToTop));
+        }
+
+        public async void PatternTestKeyCloseBrackets()
+        {
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.TopToBottom));
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////
+        //  z, x, c, ..., \
+        ////////////////////////////////////////////////////////////////////////////////
+
+        private void SetHousePattern(PatternConstants.Pattern pattern)
+        {
+            var StepTimingMilliseconds = TestStepTiming;
+
+            {
+                var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.HouseOnly, patternCommandArgs));
+
+                // パターンが終わるまで待つ
+                Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+            }
+        }
+
+        public async void PatternTestKeyZ()
+        {
+            await Task.Run(() => SetHousePattern(PatternConstants.House.OutsideOn));
+        }
+
+        public async void PatternTestKeyX()
+        {
+
+        }
+
+        public async void PatternTestKeyC()
+        {
+
+        }
+
+        public async void PatternTestKeyV()
+        {
+
+        }
+
+        public async void PatternTestKeyB()
+        {
+
+        }
+
+        public async void PatternTestKeyN()
+        {
+
+        }
+
+        public async void PatternTestKeyM()
+        {
+
+        }
+
+        public async void PatternTestKeyComma()
+        {
+
+        }
+
+        public async void PatternTestKeyPeriod()
+        {
+
+        }
+
+        public async void PatternTestKeyQuestion()
+        {
+
+        }
+
+        public async void PatternTestKeyUnderBar()
+        {
+
         }
 
         /// <summary>
@@ -971,51 +1206,6 @@ namespace Sprinkler
                     }
                 }
             }
-        }
-
-        // コマンドシーケンサを使用した単純な例
-        public async void PatternTestKeyE()
-        {
-            // 手前の Grass の ON/OFF を繰り返す
-
-            var commandSequencer = new CommandSequencer();
-
-            commandSequencer.SetTimedEvent(0, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
-            commandSequencer.SetTimedEvent(500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
-            commandSequencer.SetTimedEvent(1000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
-            commandSequencer.SetTimedEvent(1500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
-            commandSequencer.SetTimedEvent(2000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
-            commandSequencer.SetTimedEvent(2500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
-
-            // 逆順に登録しても問題ないハズ
-            commandSequencer.SetTimedEvent(5500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
-            commandSequencer.SetTimedEvent(5000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
-            commandSequencer.SetTimedEvent(4500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
-            commandSequencer.SetTimedEvent(4000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
-            commandSequencer.SetTimedEvent(3500, () => CommandTurnOff(Position.Hexagon.Down, OperationTarget.GrassOnly));
-            commandSequencer.SetTimedEvent(3000, () => CommandTurnOn(Position.Hexagon.Down, OperationTarget.GrassOnly));
-
-            await Task.Run(() =>
-            {
-                commandSequencer.Run(Environment.TickCount);
-            });
-        }
-
-        // コマンドシーケンサを使用した非同期コマンドの例
-        public async void PatternTestKeyR()
-        {
-            // 外周をゆっくりワンショットさせている間に手前の Grass をワンショットさせる
-
-            var commandSequencer = new CommandSequencer();
-
-            commandSequencer.SetTimedEvent(0,    () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 1000));
-            commandSequencer.SetTimedEvent(500,  () => SequentialCommandOneShotSmoothly(Position.Hexagon.Down, OperationTarget.GrassOnly, 50));
-            commandSequencer.SetTimedEvent(1000, () => SequentialCommandOneShotSmoothly(Position.Hexagon.Down, OperationTarget.GrassOnly, 50));
-
-            await Task.Run(() =>
-            {
-                commandSequencer.Run(Environment.TickCount);
-            });
         }
 
         /// <summary>
@@ -1100,7 +1290,7 @@ namespace Sprinkler
             }
         }
 
-        public async void PatternTestKeyOpenBrackets()
+        public async void PlayWizardsInWinter()
         {
             var commandSequencer = new CommandSequencer();
 
@@ -1145,7 +1335,7 @@ namespace Sprinkler
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 5), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TreeOnly, new BrickCommandArgs.Pattern(PatternConstants.Tree.BottomToTop.Id, 50, false))));
                     }
                 }
-                else if (9 <= bar && bar <= 16)
+                else if (9 <= bar && bar <= 15)
                 {
                     // [イントロ・伴奏あり]
 
@@ -1155,7 +1345,7 @@ namespace Sprinkler
                         // 8  |1 2 3 4 5 6 7 8 |1 2 3 4 5 6 7 8 |
                         //    |x---------------|--------------> |  Tile
                         //    |x-----> x-----> |x-----> x-----> |  House
-                        if (bar == 9 || bar == 11 || bar == 13 || bar == 15)
+                        if (bar % 2 == 1)
                         {
                             commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, new BrickCommandArgs.Pattern(PatternConstants.Tile.BackToFront.Id, 80, false))));
                         }
@@ -1170,18 +1360,27 @@ namespace Sprinkler
                     {
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 5, false));
                     }
-                    else if (bar == 16)
-                    {
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 5, false));
-                    }
                 }
-                else if (17 <= bar && bar <= 19)
+                else if (16 <= bar && bar <= 19)
                 {
                     // [サビの前の溜め]
                     // ﾃﾞﾝｯﾃﾞﾚﾚﾚ
                     // ﾃﾞﾝｯﾃﾞﾚﾚﾚ
                     // ﾃﾞﾝｯﾃﾞﾃﾞﾝｯﾝﾃﾞ
                     // ﾃﾞｯﾃﾞｯﾃﾞｯﾃﾞｯ
+
+                    if (bar == 16 || bar == 17)
+                    {
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 5, false));
+                    }
+                    else if (bar == 18)
+                    {
+
+                    }
+                    else if (bar == 19)
+                    {
+
+                    }
                 }
                 else if (20 <= bar && bar <= 27)
                 {
@@ -1194,6 +1393,31 @@ namespace Sprinkler
                     {
                         // ﾃﾞｯﾚﾚﾚﾚﾚ
                     }
+
+
+
+
+                    if (bar % 4 != 0)
+                    {
+                        if (bar % 2 == 1)
+                        {
+                            commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, new BrickCommandArgs.Pattern(PatternConstants.Tile.BackToFront.Id, 80, false))));
+                        }
+                        else
+                        {
+                            commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, new BrickCommandArgs.Pattern(PatternConstants.Tile.FrontToBack.Id, 80, false))));
+                        }
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.HouseOnly, new BrickCommandArgs.Pattern(PatternConstants.House.OpenDoor.Id, 50, false))));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 5), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.HouseOnly, new BrickCommandArgs.Pattern(PatternConstants.House.CloseDoor.Id, 50, false))));
+                    }
+                    else if (bar == 12)
+                    {
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 5, false));
+                    }
+
+
+
+
                 }
                 else if (28 <= bar && bar <= 31)
                 {
