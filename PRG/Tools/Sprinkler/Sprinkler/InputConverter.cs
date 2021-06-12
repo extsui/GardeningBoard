@@ -160,8 +160,8 @@ namespace Sprinkler
         // QWER 行
         private void OnKeyQ()             { m_scripter.PatternTestKeyQ(); }
         private void OnKeyW()             { m_scripter.PatternTestKeyW(); }
-        private void OnKeyE()             {  }
-        private void OnKeyR()             {  }
+        private void OnKeyE()             { m_scripter.PatternTestKeyE(); }
+        private void OnKeyR()             { m_scripter.PatternTestKeyR(); }
         private void OnKeyT()             {  }
         private void OnKeyY()             {  }
         private void OnKeyU()             {  }
@@ -169,7 +169,7 @@ namespace Sprinkler
         private void OnKeyO()             {  }
         private void OnKeyP()             {  }
         private void OnKeyAt()            {  }
-        private void OnKeyOpenBrackets()  {  }
+        private void OnKeyOpenBrackets()  { m_scripter.PatternTestKeyOpenBrackets(); }
         // ASDF 行
         private void OnKeyA()             {  }
         private void OnKeyS()             {  }
