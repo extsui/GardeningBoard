@@ -1499,7 +1499,7 @@ namespace Sprinkler
                 }
             }
 
-            var reader = new AudioFileReader("../../Wizards_in_Winter.mp3");
+            var reader = new AudioFileReader("./Music/Wizards_in_Winter.mp3");
             reader.Volume = 0.2f;
 
             var waveOut = new WaveOut();
