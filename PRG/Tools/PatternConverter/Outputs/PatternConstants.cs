@@ -51,8 +51,14 @@ public static class PatternConstants
         public static Pattern OutsideOn = new Pattern(2, 1);
         public static Pattern OneByOne = new Pattern(3, 28);
         public static Pattern Stream = new Pattern(4, 54);
-        public static Pattern OpenDoor = new Pattern(5, 11);
-        public static Pattern CloseDoor = new Pattern(6, 11);
+        public static Pattern OpenDoor = new Pattern(5, 10);
+        public static Pattern CloseDoor = new Pattern(6, 10);
+        public static Pattern BottomToTop = new Pattern(7, 5);
+        public static Pattern TopToBottom = new Pattern(8, 5);
+        public static Pattern SpreadFromBottomPoint = new Pattern(9, 12);
+        public static Pattern ShrinkFromTopPoint = new Pattern(10, 13);
+        public static Pattern ShootingStar = new Pattern(11, 14);
+        public static Pattern Pseudo3dRotation = new Pattern(12, 38);
     }
 
     public static class Tile

@@ -107,6 +107,30 @@
     background-color: #FF0000;
 }
 
+.House_BottomToTop {
+    background-color: #FF0000;
+}
+
+.House_TopToBottom {
+    background-color: #FF0000;
+}
+
+.House_SpreadFromBottomPoint {
+    background-color: #FF0000;
+}
+
+.House_ShrinkFromTopPoint {
+    background-color: #FF0000;
+}
+
+.House_ShootingStar {
+    background-color: #FF0000;
+}
+
+.House_Pseudo3dRotation {
+    background-color: #FF0000;
+}
+
 .Tile_AllOn {
     background-color: #FFBB00;
 }

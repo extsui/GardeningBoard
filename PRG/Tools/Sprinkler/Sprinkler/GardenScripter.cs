@@ -1036,22 +1036,22 @@ namespace Sprinkler
 
         public async void PatternTestKeyG()
         {
-            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.RightToLeft1));
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.RightToLeft3));
         }
 
         public async void PatternTestKeyH()
         {
-            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.RightToLeft3));
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.LeftToRight3));
         }
 
         public async void PatternTestKeyJ()
         {
-            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.RightToLeftVertical1));
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.BothEdgeToMiddle));
         }
 
         public async void PatternTestKeyK()
         {
-            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.LeftToRightVertical1));
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.MiddleToBothEdge));
         }
 
         public async void PatternTestKeyL()
@@ -1078,12 +1078,12 @@ namespace Sprinkler
         //  z, x, c, ..., \
         ////////////////////////////////////////////////////////////////////////////////
 
-        private void SetHousePattern(PatternConstants.Pattern pattern)
+        private void SetHousePattern(PatternConstants.Pattern pattern, bool isRepeat = false)
         {
             var StepTimingMilliseconds = TestStepTiming;
 
             {
-                var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, false);
+                var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, isRepeat);
                 ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.HouseOnly, patternCommandArgs));
 
                 // パターンが終わるまで待つ
@@ -1098,42 +1098,43 @@ namespace Sprinkler
 
         public async void PatternTestKeyX()
         {
-
+            await Task.Run(() => SetHousePattern(PatternConstants.House.OpenDoor));
         }
 
         public async void PatternTestKeyC()
         {
-
+            await Task.Run(() => SetHousePattern(PatternConstants.House.CloseDoor));
         }
 
         public async void PatternTestKeyV()
         {
-
+            await Task.Run(() => SetHousePattern(PatternConstants.House.TopToBottom));
         }
 
         public async void PatternTestKeyB()
         {
-
+            await Task.Run(() => SetHousePattern(PatternConstants.House.BottomToTop));
         }
 
         public async void PatternTestKeyN()
         {
-
+            await Task.Run(() => SetHousePattern(PatternConstants.House.SpreadFromBottomPoint));
         }
 
         public async void PatternTestKeyM()
         {
-
+            await Task.Run(() => SetHousePattern(PatternConstants.House.ShrinkFromTopPoint));
         }
 
         public async void PatternTestKeyComma()
         {
-
+            await Task.Run(() => SetHousePattern(PatternConstants.House.ShootingStar));
         }
 
         public async void PatternTestKeyPeriod()
         {
-
+            // Tile の回転と周期を合わせれば回転灯のように見えなくもない (使いどころがあるのか怪しいが)
+            await Task.Run(() => SetHousePattern(PatternConstants.House.Pseudo3dRotation, isRepeat : true));
         }
 
         public async void PatternTestKeyQuestion()
