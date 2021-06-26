@@ -1133,7 +1133,6 @@ namespace Sprinkler
 
         public async void PatternTestKeyPeriod()
         {
-            // Tile の回転と周期を合わせれば回転灯のように見えなくもない (使いどころがあるのか怪しいが)
             await Task.Run(() => SetHousePattern(PatternConstants.House.Pseudo3dRotation, isRepeat : true));
         }
 
