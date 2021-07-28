@@ -109,6 +109,18 @@ TEST(PumpUtilTest, ParseRawReceiveCommandTest)
         }
         EXPECT_EQ(receiveCount, expectReceiveCount);
     }
+    {
+        // NG：プレフィックスが違う
+        const char *command = "@send 60FF";
+        result = PumpUtil::ParseRawReceiveCommand(command, array, sizeof(array), &receiveCount);
+        EXPECT_EQ(result, -1);
+    }
+    {
+        // NG：受信サイズがない
+        const char *command = "@recv 51AABB";
+        result = PumpUtil::ParseRawReceiveCommand(command, array, sizeof(array), &receiveCount);
+        EXPECT_EQ(result, -2);
+    }
 }
 
 // スクリプト 1 行を読み取って ScriptPiece に変換するテスト
