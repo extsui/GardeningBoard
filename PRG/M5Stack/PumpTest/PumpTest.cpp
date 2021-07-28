@@ -35,7 +35,7 @@ TEST(PumpUtilTest, ToHexTest)
     ToHexTestCaseFailed("0x");
 }
 
-TEST(PumpUtilTest, ParseRawCommandTest)
+TEST(PumpUtilTest, ParseRawSendCommandTest)
 {
     int result = 0;
     uint8_t array[16] = { 0 };
@@ -65,6 +65,49 @@ TEST(PumpUtilTest, ParseRawCommandTest)
         for (int i = 0; i < 3; i++) {
             EXPECT_EQ(array[i], expectArray[i]);
         }
+    }
+}
+
+TEST(PumpUtilTest, ParseRawReceiveCommandTest)
+{
+    int result = 0;
+    uint8_t receiveCount = 0;
+    uint8_t array[16] = { 0 };
+    {
+        // 受信のみ
+        const char *command = "@recv 50 02";
+        uint8_t expectArray[] = { 0x50, };
+        uint8_t expectReceiveCount = 0x02;
+        result = PumpUtil::ParseRawReceiveCommand(command, array, sizeof(array), &receiveCount);
+        EXPECT_EQ(result, sizeof(expectArray));
+        for (int i = 0; i < sizeof(expectArray); i++) {
+            EXPECT_EQ(array[i], expectArray[i]);
+        }
+        EXPECT_EQ(receiveCount, expectReceiveCount);
+    }
+    {
+        // 1バイト送信後受信
+        const char *command = "@recv 5101 03";
+        uint8_t expectArray[] = { 0x51, 0x01, };
+        uint8_t expectReceiveCount = 0x03;
+        result = PumpUtil::ParseRawReceiveCommand(command, array, sizeof(array), &receiveCount);
+        EXPECT_EQ(result, sizeof(expectArray));
+        for (int i = 0; i < sizeof(expectArray); i++) {
+            EXPECT_EQ(array[i], expectArray[i]);
+        }
+        EXPECT_EQ(receiveCount, expectReceiveCount);
+    }
+    {
+        // 2バイト送信後最大受信
+        const char *command = "@recv 51AABB FF";
+        uint8_t expectArray[] = { 0x51, 0xAA, 0xBB, };
+        uint8_t expectReceiveCount = 0xFF;
+        result = PumpUtil::ParseRawReceiveCommand(command, array, sizeof(array), &receiveCount);
+        EXPECT_EQ(result, 3);
+        for (int i = 0; i < 3; i++) {
+            EXPECT_EQ(array[i], expectArray[i]);
+        }
+        EXPECT_EQ(receiveCount, expectReceiveCount);
     }
 }
 

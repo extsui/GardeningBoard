@@ -83,6 +83,66 @@ int PumpUtil::ParseRawSendCommand(const char *command, uint8_t *array, int array
 }
 
 /**
+ * 生データ受信コマンドを解析する。(送信込み)
+ * @param [in] command 入力文字列
+ * @param [out] array 解析結果を格納する配列
+ * @param [in] arrayLength 配列の長さ
+ * @param [out] pOutReceiveCount 受信バイト数
+ * @return 成功: 解釈できたバイト数(受信バイト数は含まない) / 失敗: -1
+ * 
+ * 例: "@recv xxaabb.. hh" (16 進数表記固定、xx はアドレス、送信データは可変長、hh は受信サイズ)
+ * 
+ * <S> <xx|r>[A] <aa>[A] <bb><A> <R> [00]<A> [01]<A>.. [nn]<N> <P>
+ * 
+ * <S>: Start Condition
+ * <R>: Restart Condition
+ * <P>: Stop Condition
+ * [A]: Ack from Slave to Master
+ * [n]: Data from Slave to Master
+ * <A>: Ack from Master to Slave
+ * <N>: Nack from Master to Slave
+ */
+int PumpUtil::ParseRawReceiveCommand(const char *command, uint8_t *array, int arrayLength, uint8_t *pOutReceiveCount)
+{
+    int result = 0;
+    const char *prefix = "@recv ";
+    const int prefixLength = strlen(prefix);
+
+    assert(command != NULL);
+    assert(array != NULL);
+    assert(pOutReceiveCount != NULL);
+    if (strncmp(&command[0], prefix, prefixLength) != 0) {
+        return -1;
+    }
+
+    // arrayLength を越えるか command が最後まで到達したら終了
+    int readPos = prefixLength;
+    int writePos = 0;
+    while ((writePos < arrayLength) && (command[readPos] != '\0') && (command[readPos] != ' ')) {
+        result = ToHex(&array[writePos], command[readPos], command[readPos + 1]);
+        if (result == -1) {
+            return -1;
+        }
+        readPos += 2;
+        writePos++;
+    }
+
+    // スペース
+    if (command[readPos] != ' ') {
+        return -2;
+    }
+    readPos++;
+
+    // 受信バイト数の取得
+    result = ToHex(pOutReceiveCount, command[readPos], command[readPos + 1]);
+    if (result == -1) {
+        return -3;
+    }
+
+    return writePos;
+}
+
+/**
  * 10 進数にした時の文字列長
  */
 int PumpUtil::GetDigitLength(uint8_t value)

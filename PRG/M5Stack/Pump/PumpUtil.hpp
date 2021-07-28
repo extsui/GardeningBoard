@@ -10,6 +10,7 @@ class PumpUtil
 public:
     static int ToHex(uint8_t *outValue, char hi, char lo);
     static int ParseRawSendCommand(const char *command, uint8_t *array, int arrayLength);
+    static int ParseRawReceiveCommand(const char *command, uint8_t *array, int arrayLength, uint8_t *pOutReceiveCount);
     static int GetDigitLength(uint8_t value);
 
 #if CONFIG_M5
