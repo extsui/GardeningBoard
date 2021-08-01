@@ -128,7 +128,7 @@ void PumpScript::Run()
                     static_cast<int>(diff));
                 
                 #if CONFIG_M5
-                    PumpUtil::WireTransaction(piece.commandByte, piece.commandLength);
+                    PumpUtil::WriteTransaction(piece.commandByte, piece.commandLength);
                 #endif
 
                 break;

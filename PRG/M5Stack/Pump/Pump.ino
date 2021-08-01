@@ -40,13 +40,38 @@ int ExecuteCommand(const uint8_t *command)
 {
     if (command[0] == '@') {
         uint8_t array[16] = { 0 };
-        int length = PumpUtil::ParseRawSendCommand((const char*)command, array, sizeof(array));
-        if (length == -1) {
-            LOG("[RawSendCommand] Parse Error!\n");
-            return -1;
+        int length = -1;
+        int result = 0;
+        length = PumpUtil::ParseRawSendCommand((const char*)command, array, sizeof(array));
+        if (length > 0) {
+            result = PumpUtil::WriteTransaction(array, length);
+            if (result != 0) {
+                LOG("[I2C] WriteTransaction() Error! result = %d\n", result);
+                return -1;
+            } else {
+                return 0;
+            }
         }
-        PumpUtil::WireTransaction(array, length);
-        return 0;
+        uint8_t receiveCount = 0;
+        uint8_t receiveData[16];
+        length = PumpUtil::ParseRawReceiveCommand((const char*)command, array, sizeof(array), &receiveCount);
+        if (length > 0) {
+            result = PumpUtil::ReceiveTransaction(array, length, receiveCount, receiveData);
+            if (result != 0) {
+                LOG("[I2C] ReceiveTransaction() Error! result = %d\n", result);
+                return -1;
+            } else {
+                // DEBUG:
+                LOG("[I2C] ReceiveTransaction() Success! (receiveCount = %d)\n", receiveCount);
+                for (int i = 0; i < receiveCount; i++) {
+                    LOG("%02x ", receiveData[i]);
+                }
+                LOG("\n");
+                return 0;
+            }
+        }
+        LOG("[I2C] Parse Error!\n");
+        return -1;
     }
 
     // TODO: コマンド解析

@@ -174,7 +174,7 @@ int PumpUtil::GetDigitLength(uint8_t value)
  * - 3 : データの送信時に受信されたNACK
  * - 4 : その他のエラー
  */
-int PumpUtil::WireTransaction(const uint8_t *data, int length)
+int PumpUtil::WriteTransaction(const uint8_t *data, int length)
 {
     assert(data != NULL);
     Wire.beginTransmission(data[0]);
@@ -182,6 +182,44 @@ int PumpUtil::WireTransaction(const uint8_t *data, int length)
         Wire.write(&data[1], length - 1);
     }
     return Wire.endTransmission();
+}
+
+/**
+ * I2C データ受信トランザクション (送信含む)
+ * 
+ * TEST:
+ * - DHT12 (M5Stack の台座付属) を接続したうえで以下を送信する
+ *   - "@recv 5C00 05"
+ *     (DHT12 から 5 Byte の応答があるハズ)
+ * 
+ * FIXME: 既知の不具合
+ * - 存在しない I2C デバイスに対して投げるとフリーズする
+ * - 送信データ 0 Byte 以降に動作不安定になる (例: "@recv 5C 05")
+ * - 16 Byte 以上の受信を指定する (例: "@recv 5C00 11");
+ */
+int PumpUtil::ReceiveTransaction(const uint8_t *data, int length, uint8_t receiveCount, uint8_t *pOutReceiveData)
+{
+    assert(data != NULL);
+    assert(receiveCount != 0);
+    assert(pOutReceiveData != NULL);
+
+    // 送信フェーズ
+    Wire.beginTransmission(data[0]);
+    if (length >= 1) {
+        Wire.write(&data[1], length - 1);
+    }
+    int result = Wire.endTransmission(false);
+    if (result != 0) {
+        return result;
+    }
+
+    // 受信フェーズ
+    Wire.requestFrom(data[0], receiveCount);
+    while (Wire.available() < receiveCount);
+    for (int i = 0; i < receiveCount; i++) {
+        pOutReceiveData[i] = Wire.read();
+    }
+    return 0;
 }
 
 #endif

@@ -14,7 +14,8 @@ public:
     static int GetDigitLength(uint8_t value);
 
 #if CONFIG_M5
-    static int WireTransaction(const uint8_t *data, int length);
+    static int WriteTransaction(const uint8_t *data, int length);
+    static int ReceiveTransaction(const uint8_t *data, int length, uint8_t receiveCount, uint8_t *pOutReceiveData);
 #endif
 };
 
