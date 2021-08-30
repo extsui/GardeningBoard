@@ -1,4 +1,5 @@
 EESchema Schematic File Version 4
+LIBS:Pillar-cache
 EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
@@ -160,7 +161,7 @@ U 1 1 612D2801
 P 7850 4850
 F 0 "J5" H 7800 5667 50  0000 C CNN
 F 1 "Micro_SD_Card_Det_Hirose_DM3AT" H 7800 5576 50  0000 C CNN
-F 2 "" H 9900 5550 50  0001 C CNN
+F 2 "Connector_Card:microSD_HC_Hirose_DM3AT-SF-PEJM5" H 9900 5550 50  0001 C CNN
 F 3 "https://www.hirose.com/product/en/download_file/key_name/DM3/category/Catalog/doc_file_id/49662/?file_category_id=4&item_id=195&is_series=1" H 7850 4950 50  0001 C CNN
 	1    7850 4850
 	1    0    0    -1  
@@ -171,7 +172,7 @@ U 1 1 612D2B60
 P 4150 4250
 F 0 "J2" H 4200 4250 50  0000 L CNN
 F 1 "OLED_128x64_IIC" H 4177 4135 50  0000 L CNN
-F 2 "" H 4150 4250 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 4150 4250 50  0001 C CNN
 F 3 "~" H 4150 4250 50  0001 C CNN
 	1    4150 4250
 	1    0    0    -1  
@@ -196,7 +197,7 @@ U 1 1 6132AE34
 P 1650 3750
 F 0 "J1" H 1705 4217 50  0000 C CNN
 F 1 "USB_A" H 1705 4126 50  0000 C CNN
-F 2 "" H 1800 3700 50  0001 C CNN
+F 2 "OPL_Connector:USB4+2P-2.0-90D" H 1800 3700 50  0001 C CNN
 F 3 " ~" H 1800 3700 50  0001 C CNN
 	1    1650 3750
 	1    0    0    -1  
@@ -255,7 +256,7 @@ U 1 1 61395BDD
 P 8000 3000
 F 0 "J4" H 7820 3020 50  0000 R CNN
 F 1 "AudioJack2_Ground" H 7820 2929 50  0000 R CNN
-F 2 "" H 8000 3000 50  0001 C CNN
+F 2 "Connector_Audio:Jack_3.5mm_Ledino_KB3SPRS_Horizontal" H 8000 3000 50  0001 C CNN
 F 3 "~" H 8000 3000 50  0001 C CNN
 	1    8000 3000
 	-1   0    0    -1  
@@ -293,7 +294,7 @@ U 1 1 614CB335
 P 7150 2350
 F 0 "J3" H 7250 2200 50  0000 C CNN
 F 1 "Speaker" H 7250 2100 50  0000 C CNN
-F 2 "" H 7150 2350 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 7150 2350 50  0001 C CNN
 F 3 "~" H 7150 2350 50  0001 C CNN
 	1    7150 2350
 	1    0    0    -1  
@@ -321,7 +322,7 @@ U 1 1 614D3EF4
 P 9350 1900
 F 0 "C1" H 9468 1946 50  0000 L CNN
 F 1 "100u" H 9468 1855 50  0000 L CNN
-F 2 "" H 9388 1750 50  0001 C CNN
+F 2 "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm" H 9388 1750 50  0001 C CNN
 F 3 "~" H 9350 1900 50  0001 C CNN
 	1    9350 1900
 	1    0    0    -1  
@@ -735,7 +736,7 @@ U 1 1 612D6439
 P 3400 5650
 F 0 "RV1" H 3400 5400 50  0000 C CNN
 F 1 "BRIGHTNESS" H 3400 5300 50  0000 C CNN
-F 2 "" H 3650 5575 50  0001 C CNN
+F 2 "Potentiometer_THT:Potentiometer_Alps_RK097_Dual_Horizontal" H 3650 5575 50  0001 C CNN
 F 3 "~" H 3650 5575 50  0001 C CNN
 	1    3400 5650
 	1    0    0    -1  
@@ -746,7 +747,7 @@ U 1 1 612D661F
 P 4750 5650
 F 0 "RV2" H 4750 5400 50  0000 C CNN
 F 1 "MP3_VOLUME" H 4750 5300 50  0000 C CNN
-F 2 "" H 5000 5575 50  0001 C CNN
+F 2 "Potentiometer_THT:Potentiometer_Alps_RK097_Dual_Horizontal" H 5000 5575 50  0001 C CNN
 F 3 "~" H 5000 5575 50  0001 C CNN
 	1    4750 5650
 	1    0    0    -1  
@@ -759,7 +760,7 @@ U 1 1 61387757
 P 3700 3150
 F 0 "SW1" H 3700 3435 50  0000 C CNN
 F 1 "MODE" H 3700 3344 50  0000 C CNN
-F 2 "" H 3700 3350 50  0001 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm_H8mm" H 3700 3350 50  0001 C CNN
 F 3 "" H 3700 3350 50  0001 C CNN
 	1    3700 3150
 	1    0    0    -1  
