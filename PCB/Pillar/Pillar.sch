@@ -208,7 +208,7 @@ U 1 1 61333D2B
 P 1650 5500
 F 0 "CN1" H 1600 5850 50  0000 L CNN
 F 1 "GROVE_IIC_5V" H 1550 5750 50  0000 L CNN
-F 2 "OPL_Connector:HW4-2.0-90D" H 1650 5500 50  0001 C CNN
+F 2 "Connector:NS-Tech_Grove_1x04_P2mm_Vertical" H 1650 5500 50  0001 C CNN
 F 3 "~" H 1650 5500 50  0001 C CNN
 	1    1650 5500
 	-1   0    0    -1  
@@ -233,7 +233,7 @@ U 1 1 6135A67F
 P 1650 6450
 F 0 "CN2" H 1600 6800 50  0000 L CNN
 F 1 "GROVE_IIC_5V" H 1550 6700 50  0000 L CNN
-F 2 "OPL_Connector:HW4-2.0-90D" H 1650 6450 50  0001 C CNN
+F 2 "Connector:NS-Tech_Grove_1x04_P2mm_Vertical" H 1650 6450 50  0001 C CNN
 F 3 "~" H 1650 6450 50  0001 C CNN
 	1    1650 6450
 	-1   0    0    -1  
@@ -250,17 +250,6 @@ Wire Wire Line
 	1850 6550 1950 6550
 Text GLabel 1950 6550 2    50   Input ~ 0
 5V
-$Comp
-L Connector:AudioJack2_Ground J4
-U 1 1 61395BDD
-P 8000 3000
-F 0 "J4" H 7820 3020 50  0000 R CNN
-F 1 "AudioJack2_Ground" H 7820 2929 50  0000 R CNN
-F 2 "Connector_Audio:Jack_3.5mm_Ledino_KB3SPRS_Horizontal" H 8000 3000 50  0001 C CNN
-F 3 "~" H 8000 3000 50  0001 C CNN
-	1    8000 3000
-	-1   0    0    -1  
-$EndComp
 $Comp
 L power:PWR_FLAG #FLG0101
 U 1 1 6143FFBC
@@ -460,17 +449,6 @@ Wire Wire Line
 	3300 2550 3000 2550
 Connection ~ 3300 2550
 Connection ~ 3150 2450
-$Comp
-L power:GND #PWR0105
-U 1 1 61591E5A
-P 8000 3200
-F 0 "#PWR0105" H 8000 2950 50  0001 C CNN
-F 1 "GND" H 8005 3027 50  0000 C CNN
-F 2 "" H 8000 3200 50  0001 C CNN
-F 3 "" H 8000 3200 50  0001 C CNN
-	1    8000 3200
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	7350 2250 8000 2250
 Wire Wire Line
@@ -478,15 +456,7 @@ Wire Wire Line
 Wire Wire Line
 	8000 2050 7600 2050
 Wire Wire Line
-	7600 2050 7600 2900
-Wire Wire Line
-	7600 2900 7800 2900
-Wire Wire Line
 	8000 2150 7700 2150
-Wire Wire Line
-	7700 2150 7700 3000
-Wire Wire Line
-	7700 3000 7800 3000
 Wire Wire Line
 	7350 2250 7350 2350
 Wire Wire Line
@@ -752,36 +722,15 @@ F 3 "~" H 5000 5575 50  0001 C CNN
 	1    4750 5650
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	3500 2350 3500 3150
-$Comp
-L Switch:SW_Push_Dual SW1
-U 1 1 61387757
-P 3700 3150
-F 0 "SW1" H 3700 3435 50  0000 C CNN
-F 1 "MODE" H 3700 3344 50  0000 C CNN
-F 2 "Button_Switch_THT:SW_PUSH_6mm_H8mm" H 3700 3350 50  0001 C CNN
-F 3 "" H 3700 3350 50  0001 C CNN
-	1    3700 3150
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	3500 3150 3500 3350
-Connection ~ 3500 3150
-Wire Wire Line
-	3900 3350 3900 3150
-Wire Wire Line
-	3900 3350 3900 3500
-Connection ~ 3900 3350
 $Comp
 L power:GND #PWR0113
 U 1 1 612EFE67
-P 3900 3500
-F 0 "#PWR0113" H 3900 3250 50  0001 C CNN
-F 1 "GND" H 3905 3327 50  0000 C CNN
-F 2 "" H 3900 3500 50  0001 C CNN
-F 3 "" H 3900 3500 50  0001 C CNN
-	1    3900 3500
+P 3900 3300
+F 0 "#PWR0113" H 3900 3050 50  0001 C CNN
+F 1 "GND" H 3905 3127 50  0000 C CNN
+F 2 "" H 3900 3300 50  0001 C CNN
+F 3 "" H 3900 3300 50  0001 C CNN
+	1    3900 3300
 	1    0    0    -1  
 $EndComp
 Text Notes 2750 3200 0    50   ~ 0
@@ -861,4 +810,59 @@ F 3 "" H 4750 2450 50  0001 C CNN
 	1    4800 2350
 	1    0    0    -1  
 $EndComp
+$Comp
+L Switch:SW_Push SW1
+U 1 1 612D291C
+P 3700 3200
+F 0 "SW1" H 3700 3485 50  0000 C CNN
+F 1 "MDOE" H 3700 3394 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm_H8.5mm" H 3700 3400 50  0001 C CNN
+F 3 "" H 3700 3400 50  0001 C CNN
+	1    3700 3200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3500 2350 3500 3200
+Wire Wire Line
+	3900 3200 3900 3300
+$Comp
+L Connector:AudioJack3_SwitchTR J4
+U 1 1 612DF209
+P 8200 3000
+F 0 "J4" H 7920 2925 50  0000 R CNN
+F 1 "AudioJack3_SwitchTR" H 7920 2834 50  0000 R CNN
+F 2 "Connector_Audio:Jack_3.5mm_Ledino_KB3SPRS_Horizontal" H 8200 3000 50  0001 C CNN
+F 3 "~" H 8200 3000 50  0001 C CNN
+	1    8200 3000
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	8000 2900 7900 2900
+Wire Wire Line
+	7900 2900 7900 3300
+$Comp
+L power:GND #PWR0105
+U 1 1 612E83DD
+P 7900 3300
+F 0 "#PWR0105" H 7900 3050 50  0001 C CNN
+F 1 "GND" H 7905 3127 50  0000 C CNN
+F 2 "" H 7900 3300 50  0001 C CNN
+F 3 "" H 7900 3300 50  0001 C CNN
+	1    7900 3300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8000 3100 8000 3000
+Wire Wire Line
+	8000 3200 8000 3300
+Wire Wire Line
+	8000 3000 7600 3000
+Wire Wire Line
+	7600 2050 7600 3000
+Connection ~ 8000 3000
+Wire Wire Line
+	7700 3200 8000 3200
+Wire Wire Line
+	7700 2150 7700 3200
+Connection ~ 8000 3200
 $EndSCHEMATC
