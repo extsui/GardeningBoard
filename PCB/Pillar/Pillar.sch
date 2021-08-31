@@ -156,10 +156,10 @@ F 3 "" H 8550 2100 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Connector:Micro_SD_Card_Det_Hirose_DM3AT J5
+L Connector:Micro_SD_Card_Det_Hirose_DM3AT CN5
 U 1 1 612D2801
 P 7850 4850
-F 0 "J5" H 7800 5667 50  0000 C CNN
+F 0 "CN5" H 7800 5667 50  0000 C CNN
 F 1 "Micro_SD_Card_Det_Hirose_DM3AT" H 7800 5576 50  0000 C CNN
 F 2 "Connector_Card:microSD_HC_Hirose_DM3AT-SF-PEJM5" H 9900 5550 50  0001 C CNN
 F 3 "https://www.hirose.com/product/en/download_file/key_name/DM3/category/Catalog/doc_file_id/49662/?file_category_id=4&item_id=195&is_series=1" H 7850 4950 50  0001 C CNN
@@ -167,12 +167,12 @@ F 3 "https://www.hirose.com/product/en/download_file/key_name/DM3/category/Catal
 	1    0    0    -1  
 $EndComp
 $Comp
-L Connector:Conn_01x04_Female J2
+L Connector:Conn_01x04_Female U3
 U 1 1 612D2B60
 P 4150 4250
-F 0 "J2" H 4200 4250 50  0000 L CNN
+F 0 "U3" H 4200 4250 50  0000 L CNN
 F 1 "OLED_128x64_IIC" H 4177 4135 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 4150 4250 50  0001 C CNN
+F 2 "extsui:OLED_128x64_0.96inch" H 4150 4250 50  0001 C CNN
 F 3 "~" H 4150 4250 50  0001 C CNN
 	1    4150 4250
 	1    0    0    -1  
@@ -192,10 +192,10 @@ SCL
 Text GLabel 3850 4450 0    50   Input ~ 0
 SDA
 $Comp
-L Connector:USB_A J1
+L Connector:USB_A CN3
 U 1 1 6132AE34
 P 1650 3750
-F 0 "J1" H 1705 4217 50  0000 C CNN
+F 0 "CN3" H 1705 4217 50  0000 C CNN
 F 1 "USB_A" H 1705 4126 50  0000 C CNN
 F 2 "OPL_Connector:USB4+2P-2.0-90D" H 1800 3700 50  0001 C CNN
 F 3 " ~" H 1800 3700 50  0001 C CNN
@@ -278,10 +278,10 @@ NoConn ~ 9100 1950
 NoConn ~ 9100 2050
 NoConn ~ 9100 2150
 $Comp
-L Connector:Conn_01x02_Male J3
+L Connector:Conn_01x02_Male J1
 U 1 1 614CB335
 P 7150 2350
-F 0 "J3" H 7250 2200 50  0000 C CNN
+F 0 "J1" H 7250 2200 50  0000 C CNN
 F 1 "Speaker" H 7250 2100 50  0000 C CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 7150 2350 50  0001 C CNN
 F 3 "~" H 7150 2350 50  0001 C CNN
@@ -703,23 +703,23 @@ NoConn ~ 1950 3850
 $Comp
 L Device:R_POT_Dual RV1
 U 1 1 612D6439
-P 3400 5650
-F 0 "RV1" H 3400 5400 50  0000 C CNN
-F 1 "BRIGHTNESS" H 3400 5300 50  0000 C CNN
-F 2 "Potentiometer_THT:Potentiometer_Alps_RK097_Dual_Horizontal" H 3650 5575 50  0001 C CNN
-F 3 "~" H 3650 5575 50  0001 C CNN
-	1    3400 5650
+P 3250 5650
+F 0 "RV1" H 3250 6050 50  0000 C CNN
+F 1 "BRIGHTNESS" H 3250 6150 50  0000 C CNN
+F 2 "Potentiometer_THT:Potentiometer_Alps_RK097_Dual_Horizontal" H 3500 5575 50  0001 C CNN
+F 3 "~" H 3500 5575 50  0001 C CNN
+	1    3250 5650
 	1    0    0    -1  
 $EndComp
 $Comp
 L Device:R_POT_Dual RV2
 U 1 1 612D661F
-P 4750 5650
-F 0 "RV2" H 4750 5400 50  0000 C CNN
-F 1 "MP3_VOLUME" H 4750 5300 50  0000 C CNN
-F 2 "Potentiometer_THT:Potentiometer_Alps_RK097_Dual_Horizontal" H 5000 5575 50  0001 C CNN
-F 3 "~" H 5000 5575 50  0001 C CNN
-	1    4750 5650
+P 4350 5650
+F 0 "RV2" H 4350 6050 50  0000 C CNN
+F 1 "VOLUME" H 4350 6150 50  0000 C CNN
+F 2 "Potentiometer_THT:Potentiometer_Alps_RK097_Dual_Horizontal" H 4600 5575 50  0001 C CNN
+F 3 "~" H 4600 5575 50  0001 C CNN
+	1    4350 5650
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -738,31 +738,31 @@ Require internal\n  input-pullup.
 $Comp
 L power:GND #PWR0114
 U 1 1 612FA899
-P 2950 5800
-F 0 "#PWR0114" H 2950 5550 50  0001 C CNN
-F 1 "GND" H 2955 5627 50  0000 C CNN
-F 2 "" H 2950 5800 50  0001 C CNN
-F 3 "" H 2950 5800 50  0001 C CNN
-	1    2950 5800
+P 3300 5800
+F 0 "#PWR0114" H 3300 5550 50  0001 C CNN
+F 1 "GND" H 3305 5627 50  0000 C CNN
+F 2 "" H 3300 5800 50  0001 C CNN
+F 3 "" H 3300 5800 50  0001 C CNN
+	1    3300 5800
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2950 5750 3000 5750
+	3300 5750 3350 5750
 $Comp
 L power:GND #PWR0115
 U 1 1 61307FF9
-P 4300 5800
-F 0 "#PWR0115" H 4300 5550 50  0001 C CNN
-F 1 "GND" H 4305 5627 50  0000 C CNN
-F 2 "" H 4300 5800 50  0001 C CNN
-F 3 "" H 4300 5800 50  0001 C CNN
-	1    4300 5800
+P 4400 5800
+F 0 "#PWR0115" H 4400 5550 50  0001 C CNN
+F 1 "GND" H 4405 5627 50  0000 C CNN
+F 2 "" H 4400 5800 50  0001 C CNN
+F 3 "" H 4400 5800 50  0001 C CNN
+	1    4400 5800
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4300 5800 4300 5750
+	4400 5800 4400 5750
 Wire Wire Line
-	4300 5750 4350 5750
+	4400 5750 4450 5750
 Text GLabel 3750 2050 0    50   Input ~ 0
 RV_B
 Text GLabel 3750 2150 0    50   Input ~ 0
@@ -771,33 +771,33 @@ Wire Wire Line
 	3750 2050 3900 2050
 Wire Wire Line
 	3750 2150 3900 2150
-Text GLabel 3150 5450 1    50   Input ~ 0
+Text GLabel 3500 5450 1    50   Input ~ 0
 RV_B
-Text GLabel 4500 5450 1    50   Input ~ 0
+Text GLabel 4600 5450 1    50   Input ~ 0
 RV_V
 Wire Wire Line
-	2950 5750 2950 5800
-NoConn ~ 3500 5750
-NoConn ~ 3800 5750
-NoConn ~ 3650 5550
-NoConn ~ 5000 5550
-NoConn ~ 4850 5750
-NoConn ~ 5150 5750
+	3300 5750 3300 5800
+NoConn ~ 2850 5750
+NoConn ~ 3150 5750
+NoConn ~ 3000 5550
+NoConn ~ 4100 5550
+NoConn ~ 3950 5750
+NoConn ~ 4250 5750
 Wire Wire Line
-	4500 5450 4500 5550
+	4600 5450 4600 5550
 Wire Wire Line
-	3150 5550 3150 5450
+	3500 5550 3500 5450
 Wire Wire Line
-	3350 5450 3350 5750
-Text GLabel 3350 5450 1    50   Input ~ 0
+	3700 5450 3700 5750
+Text GLabel 3700 5450 1    50   Input ~ 0
 3V3
 Wire Wire Line
-	3300 5750 3350 5750
+	3650 5750 3700 5750
 Wire Wire Line
-	4650 5750 4700 5750
+	4750 5750 4800 5750
 Wire Wire Line
-	4700 5750 4700 5450
-Text GLabel 4700 5450 1    50   Input ~ 0
+	4800 5750 4800 5450
+Text GLabel 4800 5450 1    50   Input ~ 0
 3V3
 $Comp
 L extsui:SeeeduinoXIAO U1
@@ -826,10 +826,10 @@ Wire Wire Line
 Wire Wire Line
 	3900 3200 3900 3300
 $Comp
-L Connector:AudioJack3_SwitchTR J4
+L Connector:AudioJack3_SwitchTR CN4
 U 1 1 612DF209
 P 8200 3000
-F 0 "J4" H 7920 2925 50  0000 R CNN
+F 0 "CN4" H 7920 2925 50  0000 R CNN
 F 1 "AudioJack3_SwitchTR" H 7920 2834 50  0000 R CNN
 F 2 "Connector_Audio:Jack_3.5mm_Ledino_KB3SPRS_Horizontal" H 8200 3000 50  0001 C CNN
 F 3 "~" H 8200 3000 50  0001 C CNN
@@ -865,4 +865,6 @@ Wire Wire Line
 Wire Wire Line
 	7700 2150 7700 3200
 Connection ~ 8000 3200
+Text Notes 3200 6300 0    50   ~ 0
+Use not pin-1,2,3 but pin-4,5,6,\nbecause these pins are placed inner. 
 $EndSCHEMATC
