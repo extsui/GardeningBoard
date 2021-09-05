@@ -288,32 +288,30 @@ F 3 "~" H 7150 2350 50  0001 C CNN
 	1    7150 2350
 	1    0    0    -1  
 $EndComp
-NoConn ~ 9100 2250
-NoConn ~ 9100 2450
 Wire Wire Line
 	9100 2350 9200 2350
 Wire Wire Line
-	9200 2350 9200 2450
+	9200 2350 9200 2600
 $Comp
 L power:GND #PWR0102
 U 1 1 614D1CAB
-P 9200 2450
-F 0 "#PWR0102" H 9200 2200 50  0001 C CNN
-F 1 "GND" H 9205 2277 50  0000 C CNN
-F 2 "" H 9200 2450 50  0001 C CNN
-F 3 "" H 9200 2450 50  0001 C CNN
-	1    9200 2450
+P 9200 2600
+F 0 "#PWR0102" H 9200 2350 50  0001 C CNN
+F 1 "GND" H 9205 2427 50  0000 C CNN
+F 2 "" H 9200 2600 50  0001 C CNN
+F 3 "" H 9200 2600 50  0001 C CNN
+	1    9200 2600
 	1    0    0    -1  
 $EndComp
 $Comp
 L Device:CP C1
 U 1 1 614D3EF4
-P 9350 1900
-F 0 "C1" H 9468 1946 50  0000 L CNN
-F 1 "100u" H 9468 1855 50  0000 L CNN
-F 2 "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm" H 9388 1750 50  0001 C CNN
-F 3 "~" H 9350 1900 50  0001 C CNN
-	1    9350 1900
+P 2200 3800
+F 0 "C1" H 2318 3846 50  0000 L CNN
+F 1 "100u" H 2318 3755 50  0000 L CNN
+F 2 "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm" H 2238 3650 50  0001 C CNN
+F 3 "~" H 2200 3800 50  0001 C CNN
+	1    2200 3800
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -362,28 +360,26 @@ F 3 "~" H 7500 1950 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	5850 1900 5850 2050
+	6150 2050 5700 2050
 Wire Wire Line
-	5850 2050 5700 2050
+	5850 1950 5850 2250
 Wire Wire Line
-	6100 1950 6100 2250
-Wire Wire Line
-	6100 2250 5700 2250
+	5850 2250 5700 2250
 $Comp
 L power:GND #PWR0104
 U 1 1 6152DD53
-P 6450 2350
-F 0 "#PWR0104" H 6450 2100 50  0001 C CNN
-F 1 "GND" H 6455 2177 50  0000 C CNN
-F 2 "" H 6450 2350 50  0001 C CNN
-F 3 "" H 6450 2350 50  0001 C CNN
-	1    6450 2350
+P 6150 2350
+F 0 "#PWR0104" H 6150 2100 50  0001 C CNN
+F 1 "GND" H 6155 2177 50  0000 C CNN
+F 2 "" H 6150 2350 50  0001 C CNN
+F 3 "" H 6150 2350 50  0001 C CNN
+	1    6150 2350
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5700 2150 6450 2150
+	5700 2150 6150 2150
 Wire Wire Line
-	6450 2150 6450 2350
+	6150 2150 6150 2350
 Text GLabel 7200 1850 0    50   Input ~ 0
 TXD
 Text GLabel 7200 1950 0    50   Input ~ 0
@@ -459,11 +455,6 @@ Wire Wire Line
 	8000 2150 7700 2150
 Wire Wire Line
 	7350 2250 7350 2350
-Wire Wire Line
-	9350 2050 9350 2350
-Wire Wire Line
-	9350 2350 9200 2350
-Connection ~ 9200 2350
 NoConn ~ 6950 4450
 NoConn ~ 6950 5350
 NoConn ~ 6950 5250
@@ -542,7 +533,7 @@ F 3 "~" H 6350 4100 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6200 3750 6200 3850
+	5750 3750 5750 3850
 Wire Wire Line
 	6200 3850 6350 3850
 Wire Wire Line
@@ -600,19 +591,15 @@ Wire Wire Line
 	950  2300 950  2150
 Wire Wire Line
 	1250 2150 1250 2300
-Text GLabel 5850 1900 1    50   Input ~ 0
+Text GLabel 6150 1650 1    50   Input ~ 0
 5V
 Text GLabel 3150 1600 1    50   Input ~ 0
 3V3
-Text GLabel 6100 1950 1    50   Input ~ 0
+Text GLabel 5850 1950 1    50   Input ~ 0
 3V3
 Text GLabel 7900 1550 1    50   Input ~ 0
 5V
-Text GLabel 9350 1550 1    50   Input ~ 0
-5V
-Wire Wire Line
-	9350 1550 9350 1750
-Text GLabel 6200 3750 1    50   Input ~ 0
+Text GLabel 5750 3750 1    50   Input ~ 0
 3V3
 Wire Wire Line
 	6750 4750 6750 3850
@@ -635,7 +622,7 @@ Wire Wire Line
 	3750 2250 3900 2250
 Text GLabel 5950 4550 0    50   Input ~ 0
 CS
-Text GLabel 2050 3550 2    50   Input ~ 0
+Text GLabel 2300 3550 2    50   Input ~ 0
 5V
 $Comp
 L power:GND #PWR0109
@@ -695,7 +682,7 @@ Connection ~ 1650 4250
 Wire Wire Line
 	1650 4250 1650 4350
 Wire Wire Line
-	1950 3550 2050 3550
+	1950 3550 2200 3550
 NoConn ~ 1950 3750
 NoConn ~ 1950 3850
 $Comp
@@ -871,4 +858,92 @@ Text Notes 3500 1450 0    50   ~ 0
 Volume (A0) and Switch (D1) pin numbers are\ncompatible with the XIAO expansion board.\n
 Wire Notes Line
 	3700 1500 3700 1950
+$Comp
+L Switch:SW_Push SW2
+U 1 1 61348A0B
+P 9650 2250
+F 0 "SW2" H 9650 2535 50  0000 C CNN
+F 1 "NEXT/VOL+" H 9650 2444 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm_H8.5mm" H 9650 2450 50  0001 C CNN
+F 3 "" H 9650 2450 50  0001 C CNN
+	1    9650 2250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Switch:SW_Push SW3
+U 1 1 6134BF31
+P 9650 2750
+F 0 "SW3" H 9650 3035 50  0000 C CNN
+F 1 "PREV/VOL-" H 9650 2944 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm_H8.5mm" H 9650 2950 50  0001 C CNN
+F 3 "" H 9650 2950 50  0001 C CNN
+	1    9650 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0116
+U 1 1 61355D1A
+P 9950 2850
+F 0 "#PWR0116" H 9950 2600 50  0001 C CNN
+F 1 "GND" H 9955 2677 50  0000 C CNN
+F 2 "" H 9950 2850 50  0001 C CNN
+F 3 "" H 9950 2850 50  0001 C CNN
+	1    9950 2850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9850 2250 9950 2250
+Wire Wire Line
+	9950 2250 9950 2750
+Wire Wire Line
+	9850 2750 9950 2750
+Connection ~ 9950 2750
+Wire Wire Line
+	9950 2750 9950 2850
+Wire Wire Line
+	9100 2250 9450 2250
+Wire Wire Line
+	9100 2450 9350 2450
+Wire Wire Line
+	9350 2450 9350 2750
+Wire Wire Line
+	9350 2750 9450 2750
+$Comp
+L Device:CP C2
+U 1 1 6137F3EE
+P 5750 4100
+F 0 "C2" H 5868 4146 50  0000 L CNN
+F 1 "100u" H 5868 4055 50  0000 L CNN
+F 2 "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm" H 5788 3950 50  0001 C CNN
+F 3 "~" H 5750 4100 50  0001 C CNN
+	1    5750 4100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6200 3850 5750 3850
+$Comp
+L power:GND #PWR0117
+U 1 1 61389E5F
+P 5750 4250
+F 0 "#PWR0117" H 5750 4000 50  0001 C CNN
+F 1 "GND" H 5755 4077 50  0000 C CNN
+F 2 "" H 5750 4250 50  0001 C CNN
+F 3 "" H 5750 4250 50  0001 C CNN
+	1    5750 4250
+	1    0    0    -1  
+$EndComp
+Connection ~ 5750 3850
+Wire Wire Line
+	6150 1650 6150 2050
+Wire Wire Line
+	2200 3550 2200 3650
+Connection ~ 2200 3550
+Wire Wire Line
+	2200 3550 2300 3550
+Wire Wire Line
+	2200 3950 2200 4250
+Wire Wire Line
+	2200 4250 1650 4250
+Wire Wire Line
+	5750 3850 5750 3950
 $EndSCHEMATC
