@@ -71,78 +71,78 @@ $EndComp
 $Comp
 L Mechanical:MountingHole H1
 U 1 1 5E8E347E
-P 9700 3900
-F 0 "H1" H 9800 3946 50  0000 L CNN
-F 1 "MountingHole" H 9800 3855 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3" H 9700 3900 50  0001 C CNN
-F 3 "~" H 9700 3900 50  0001 C CNN
-	1    9700 3900
+P 9700 4200
+F 0 "H1" H 9800 4246 50  0000 L CNN
+F 1 "MountingHole" H 9800 4155 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 9700 4200 50  0001 C CNN
+F 3 "~" H 9700 4200 50  0001 C CNN
+	1    9700 4200
 	1    0    0    -1  
 $EndComp
 $Comp
 L Mechanical:MountingHole H2
 U 1 1 5E8E3566
-P 9700 4150
-F 0 "H2" H 9800 4196 50  0000 L CNN
-F 1 "MountingHole" H 9800 4105 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3" H 9700 4150 50  0001 C CNN
-F 3 "~" H 9700 4150 50  0001 C CNN
-	1    9700 4150
+P 9700 4450
+F 0 "H2" H 9800 4496 50  0000 L CNN
+F 1 "MountingHole" H 9800 4405 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 9700 4450 50  0001 C CNN
+F 3 "~" H 9700 4450 50  0001 C CNN
+	1    9700 4450
 	1    0    0    -1  
 $EndComp
 $Comp
 L Mechanical:MountingHole H3
 U 1 1 5E8E35F4
-P 9700 4400
-F 0 "H3" H 9800 4446 50  0000 L CNN
-F 1 "MountingHole" H 9800 4355 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3" H 9700 4400 50  0001 C CNN
-F 3 "~" H 9700 4400 50  0001 C CNN
-	1    9700 4400
+P 9700 4700
+F 0 "H3" H 9800 4746 50  0000 L CNN
+F 1 "MountingHole" H 9800 4655 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 9700 4700 50  0001 C CNN
+F 3 "~" H 9700 4700 50  0001 C CNN
+	1    9700 4700
 	1    0    0    -1  
 $EndComp
 $Comp
 L Mechanical:MountingHole H4
 U 1 1 5E8E3892
-P 9700 4650
-F 0 "H4" H 9800 4696 50  0000 L CNN
-F 1 "MountingHole" H 9800 4605 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3" H 9700 4650 50  0001 C CNN
-F 3 "~" H 9700 4650 50  0001 C CNN
-	1    9700 4650
+P 9700 4950
+F 0 "H4" H 9800 4996 50  0000 L CNN
+F 1 "MountingHole" H 9800 4905 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 9700 4950 50  0001 C CNN
+F 3 "~" H 9700 4950 50  0001 C CNN
+	1    9700 4950
 	1    0    0    -1  
 $EndComp
 $Comp
 L Mechanical:MountingHole H5
 U 1 1 5E8E3899
-P 9700 4900
-F 0 "H5" H 9800 4946 50  0000 L CNN
-F 1 "MountingHole" H 9800 4855 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3" H 9700 4900 50  0001 C CNN
-F 3 "~" H 9700 4900 50  0001 C CNN
-	1    9700 4900
+P 9700 5200
+F 0 "H5" H 9800 5246 50  0000 L CNN
+F 1 "MountingHole" H 9800 5155 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 9700 5200 50  0001 C CNN
+F 3 "~" H 9700 5200 50  0001 C CNN
+	1    9700 5200
 	1    0    0    -1  
 $EndComp
 $Comp
 L Mechanical:MountingHole H6
 U 1 1 5E8E38A0
-P 9700 5150
-F 0 "H6" H 9800 5196 50  0000 L CNN
-F 1 "MountingHole" H 9800 5105 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3" H 9700 5150 50  0001 C CNN
-F 3 "~" H 9700 5150 50  0001 C CNN
-	1    9700 5150
+P 9700 5450
+F 0 "H6" H 9800 5496 50  0000 L CNN
+F 1 "MountingHole" H 9800 5405 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 9700 5450 50  0001 C CNN
+F 3 "~" H 9700 5450 50  0001 C CNN
+	1    9700 5450
 	1    0    0    -1  
 $EndComp
 Wire Notes Line
-	9500 3750 9500 5350
+	9500 4050 9500 5650
 Wire Notes Line
-	9500 5350 10500 5350
+	9500 5650 10500 5650
 Wire Notes Line
-	10500 5350 10500 3750
+	10500 5650 10500 4050
 Wire Notes Line
-	10500 3750 9500 3750
-Text Notes 9500 3700 0    50   ~ 0
+	10500 4050 9500 4050
+Text Notes 9500 4000 0    50   ~ 0
 Spacers for Tile board
 $Comp
 L extsui:DFPlayerMini U2
@@ -345,7 +345,7 @@ U 1 1 614FC897
 P 7500 1850
 F 0 "R6" V 7400 1800 50  0000 L CNN
 F 1 "1k" V 7500 1800 50  0000 L CNN
-F 2 "extsui:C_1608_HandSolderingCustom" V 7430 1850 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 7430 1850 50  0001 C CNN
 F 3 "~" H 7500 1850 50  0001 C CNN
 	1    7500 1850
 	0    1    1    0   
@@ -356,7 +356,7 @@ U 1 1 615013D5
 P 7500 1950
 F 0 "R7" V 7600 1900 50  0000 L CNN
 F 1 "1k" V 7500 1900 50  0000 L CNN
-F 2 "extsui:C_1608_HandSolderingCustom" V 7430 1950 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 7430 1950 50  0001 C CNN
 F 3 "~" H 7500 1950 50  0001 C CNN
 	1    7500 1950
 	0    1    1    0   
@@ -406,7 +406,7 @@ U 1 1 615667FD
 P 3150 2000
 F 0 "R1" V 3100 1800 50  0000 C CNN
 F 1 "4.7k" V 3150 2000 50  0000 C CNN
-F 2 "extsui:C_1608_HandSolderingCustom" V 3080 2000 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 3080 2000 50  0001 C CNN
 F 3 "~" H 3150 2000 50  0001 C CNN
 	1    3150 2000
 	1    0    0    -1  
@@ -417,7 +417,7 @@ U 1 1 61566804
 P 3300 2000
 F 0 "R2" V 3250 1800 50  0000 C CNN
 F 1 "4.7k" V 3300 2000 50  0000 C CNN
-F 2 "extsui:C_1608_HandSolderingCustom" V 3230 2000 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 3230 2000 50  0001 C CNN
 F 3 "~" H 3300 2000 50  0001 C CNN
 	1    3300 2000
 	1    0    0    -1  
@@ -497,7 +497,7 @@ U 1 1 61694FDA
 P 6500 4100
 F 0 "R5" V 6450 3900 50  0000 C CNN
 F 1 "4.7k" V 6500 4100 50  0000 C CNN
-F 2 "extsui:C_1608_HandSolderingCustom" V 6430 4100 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 6430 4100 50  0001 C CNN
 F 3 "~" H 6500 4100 50  0001 C CNN
 	1    6500 4100
 	1    0    0    -1  
@@ -525,7 +525,7 @@ U 1 1 616E51A2
 P 6200 4100
 F 0 "R3" V 6150 3900 50  0000 C CNN
 F 1 "4.7k" V 6200 4100 50  0000 C CNN
-F 2 "extsui:C_1608_HandSolderingCustom" V 6130 4100 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 6130 4100 50  0001 C CNN
 F 3 "~" H 6200 4100 50  0001 C CNN
 	1    6200 4100
 	1    0    0    -1  
@@ -536,7 +536,7 @@ U 1 1 616E99B5
 P 6350 4100
 F 0 "R4" V 6300 3900 50  0000 C CNN
 F 1 "4.7k" V 6350 4100 50  0000 C CNN
-F 2 "extsui:C_1608_HandSolderingCustom" V 6280 4100 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 6280 4100 50  0001 C CNN
 F 3 "~" H 6350 4100 50  0001 C CNN
 	1    6350 4100
 	1    0    0    -1  
@@ -635,8 +635,6 @@ Wire Wire Line
 	3750 2250 3900 2250
 Text GLabel 5950 4550 0    50   Input ~ 0
 CS
-Wire Wire Line
-	3500 2350 3900 2350
 Text GLabel 2050 3550 2    50   Input ~ 0
 5V
 $Comp
@@ -725,12 +723,12 @@ $EndComp
 $Comp
 L power:GND #PWR0113
 U 1 1 612EFE67
-P 3900 3300
-F 0 "#PWR0113" H 3900 3050 50  0001 C CNN
-F 1 "GND" H 3905 3127 50  0000 C CNN
-F 2 "" H 3900 3300 50  0001 C CNN
-F 3 "" H 3900 3300 50  0001 C CNN
-	1    3900 3300
+P 3850 3300
+F 0 "#PWR0113" H 3850 3050 50  0001 C CNN
+F 1 "GND" H 3855 3127 50  0000 C CNN
+F 2 "" H 3850 3300 50  0001 C CNN
+F 3 "" H 3850 3300 50  0001 C CNN
+	1    3850 3300
 	1    0    0    -1  
 $EndComp
 Text Notes 2750 3200 0    50   ~ 0
@@ -763,14 +761,14 @@ Wire Wire Line
 	4400 5800 4400 5750
 Wire Wire Line
 	4400 5750 4450 5750
-Text GLabel 3750 2050 0    50   Input ~ 0
+Text GLabel 3750 2350 0    50   Input ~ 0
 RV_B
-Text GLabel 3750 2150 0    50   Input ~ 0
+Text GLabel 3750 2050 0    50   Input ~ 0
 RV_V
 Wire Wire Line
 	3750 2050 3900 2050
 Wire Wire Line
-	3750 2150 3900 2150
+	3450 2150 3900 2150
 Text GLabel 3500 5450 1    50   Input ~ 0
 RV_B
 Text GLabel 4600 5450 1    50   Input ~ 0
@@ -813,18 +811,18 @@ $EndComp
 $Comp
 L Switch:SW_Push SW1
 U 1 1 612D291C
-P 3700 3200
-F 0 "SW1" H 3700 3485 50  0000 C CNN
-F 1 "MDOE" H 3700 3394 50  0000 C CNN
-F 2 "Button_Switch_THT:SW_PUSH_6mm_H8.5mm" H 3700 3400 50  0001 C CNN
-F 3 "" H 3700 3400 50  0001 C CNN
-	1    3700 3200
+P 3650 3200
+F 0 "SW1" H 3650 3485 50  0000 C CNN
+F 1 "MDOE" H 3650 3394 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm_H8.5mm" H 3650 3400 50  0001 C CNN
+F 3 "" H 3650 3400 50  0001 C CNN
+	1    3650 3200
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3500 2350 3500 3200
+	3450 2150 3450 3200
 Wire Wire Line
-	3900 3200 3900 3300
+	3850 3200 3850 3300
 $Comp
 L Connector:AudioJack3_SwitchTR CN4
 U 1 1 612DF209
@@ -867,4 +865,10 @@ Wire Wire Line
 Connection ~ 8000 3200
 Text Notes 3200 6300 0    50   ~ 0
 Use not pin-1,2,3 but pin-4,5,6,\nbecause these pins are placed inner. 
+Wire Wire Line
+	3750 2350 3900 2350
+Text Notes 3500 1450 0    50   ~ 0
+Volume (A0) and Switch (D1) pin numbers are\ncompatible with the XIAO expansion board.\n
+Wire Notes Line
+	3700 1500 3700 1950
 $EndSCHEMATC
