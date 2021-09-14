@@ -165,7 +165,7 @@ def main():
     # パス設定を環境に合わせて再設定すること!!!
     INPUT_DIR_PATH  = 'E:/Project/7SegMatrixMovieCutter/Scene/bin/'
     OUTPUT_DIR_PATH = './Output/BadApple/'
-    OUTPUT_PATH     = './Output/BadApple128x64.xbm.bin'
+    OUTPUT_PATH     = './Output/BadApple.xbm'
 
     print('Confirm Input and Output path.')
     print('- INPUT_DIR_PATH  = %s' % INPUT_DIR_PATH)
