@@ -5,25 +5,8 @@
 #include <SPI.h>
 #include <SD.h>
 
-////////////////////////////////////////////////////////////////////////////////
-//  ユーティリティマクロ系
-////////////////////////////////////////////////////////////////////////////////
-#define LOG(...) Serial.printf(__VA_ARGS__)
-
-static inline void ABORT_NO_MESSAGE() { while (1); }
-
-#define ABORT() \
-    LOG("Abort: file %s, line %d\n", __FILE__, __LINE__); \
-    ABORT_NO_MESSAGE()
-
-#define __ASSERT(expr, file, line)                  \
-	LOG("Assertion failed: %s, file %s, line %d\n", \
-		expr, file, line),                          \
-	ABORT_NO_MESSAGE()
-
-#define ASSERT(expr)                              \
-    ((expr) ? ((void)0) :                         \
-    (void)(__ASSERT(#expr, __FILE__, __LINE__)))
+#include "Utils.h"
+#include "Button.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //  ローカル系
@@ -45,6 +28,8 @@ static PillarMode g_Mode = PillarMode::Idle;
 ////////////////////////////////////////////////////////////////////////////////
 // XIAO 拡張ボードのユーザスイッチ (負論理)
 constexpr int PinNumberUserSwitch = 1;
+
+static Button g_UserButton;
 
 ////////////////////////////////////////////////////////////////////////////////
 //  グラフィック関連
@@ -71,8 +56,7 @@ constexpr int BadAppleSceneCount = 2191;
 
 static PillarMode DoIdle(void)
 {
-    // TODO: チャタリング考慮
-    if (digitalRead(PinNumberUserSwitch) == LOW) {
+    if (g_UserButton.WasPressed()) {
         g_SceneIndex = 0;
         g_XbmFile = SD.open("BadApple.xbm", FILE_READ);
         // file が見つからない場合は想定外
@@ -97,9 +81,7 @@ static PillarMode DoBadApple(void)
     //   - SPI 転送  : 約 4ms (4MHz)
     //   - FAT & GFX : その他
 
-    // TODO: チャタリング考慮
-    // TODO: 関数化
-    if ((digitalRead(PinNumberUserSwitch) == LOW) ||
+    if ((g_UserButton.WasPressed()) ||
         (g_SceneIndex >= BadAppleSceneCount)) {
         LOG("Scene Finished.\n");
         g_XbmFile.close();
@@ -140,12 +122,14 @@ void setup(void)
     g_U8g2.sendBuffer();
     LOG("u8g2 Initialized.\n");
 
-    pinMode(PinNumberUserSwitch, INPUT_PULLUP);
-    LOG("pin Initialized.\n");
+    g_UserButton.SetPin(PinNumberUserSwitch, false, true);
+    LOG("Button Initialized.\n");
 }
 
 void loop(void)
 {
+    g_UserButton.Update();
+
     auto nextState = g_Mode;
     switch (g_Mode) {
     case PillarMode::Idle:
