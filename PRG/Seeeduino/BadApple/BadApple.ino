@@ -69,11 +69,14 @@ static uint8_t g_XbmBinary[1024];
 static File g_XbmFile;
 
 constexpr int BadAppleSceneCount = 2191;
+constexpr int BadAppleSceneIntervalMilliSeconds = 100;
+static uint32_t g_BadAppleNextSceneTime = 0;
 
 static PillarMode DoIdle(void)
 {
     if (g_UserButton.WasPressed()) {
         g_SceneIndex = 0;
+        g_BadAppleNextSceneTime = millis() + BadAppleSceneIntervalMilliSeconds;
         g_XbmFile = SD.open("BadApple.xbm", FILE_READ);
         // file が見つからない場合は想定外
         ASSERT(g_XbmFile != 0);
@@ -103,11 +106,15 @@ static PillarMode DoBadApple(void)
         g_XbmFile.close();
         return PillarMode::Idle;
     } else {
-        g_XbmFile.read(g_XbmBinary, sizeof(g_XbmBinary));
-        g_U8g2.drawXBM(0, 0, OledWidth, OledHeight, g_XbmBinary);
-        g_U8g2.sendBuffer();
-        g_SceneIndex++;
-        LOG("%d,%d\n", g_SceneIndex, millis());
+        uint32_t now = millis();
+        if (now >= g_BadAppleNextSceneTime) {
+            g_XbmFile.read(g_XbmBinary, sizeof(g_XbmBinary));
+            g_U8g2.drawXBM(0, 0, OledWidth, OledHeight, g_XbmBinary);
+            g_U8g2.sendBuffer();
+            g_SceneIndex++;
+            g_BadAppleNextSceneTime += BadAppleSceneIntervalMilliSeconds;
+            LOG("%d,%d,%d\n", g_SceneIndex, now, g_BadAppleNextSceneTime);
+        }
         return PillarMode::BadApple;
     }
 }
