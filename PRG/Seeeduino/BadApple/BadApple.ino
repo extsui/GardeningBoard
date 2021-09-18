@@ -1,9 +1,10 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include <U8g2lib.h>
-
 #include <SPI.h>
 #include <SD.h>
+
+#include <U8g2lib.h>
+#include <DFRobotDFPlayerMini.h>
 
 #include "Utils.h"
 #include "Button.h"
@@ -48,6 +49,11 @@ static RcFilter g_AudioVolumeFilter(LowPassFilterRate);
 constexpr uint32_t AudioVolumeLevel = 31;
 
 ////////////////////////////////////////////////////////////////////////////////
+//  mp3 再生関連
+////////////////////////////////////////////////////////////////////////////////
+static DFRobotDFPlayerMini g_DfPlayer;
+
+////////////////////////////////////////////////////////////////////////////////
 //  グラフィック関連
 ////////////////////////////////////////////////////////////////////////////////
 constexpr int OledWidth = 128;
@@ -76,8 +82,9 @@ static PillarMode DoIdle(void)
 {
     if (g_UserButton.WasPressed()) {
         g_SceneIndex = 0;
-        g_BadAppleNextSceneTime = millis() + BadAppleSceneIntervalMilliSeconds;
+        g_BadAppleNextSceneTime = millis();
         g_XbmFile = SD.open("BadApple.xbm", FILE_READ);
+        g_DfPlayer.playMp3Folder(4);
         // file が見つからない場合は想定外
         ASSERT(g_XbmFile != 0);
         return PillarMode::BadApple;
@@ -102,18 +109,24 @@ static PillarMode DoBadApple(void)
 
     if ((g_UserButton.WasPressed()) ||
         (g_SceneIndex >= BadAppleSceneCount)) {
-        LOG("Scene Finished.\n");
         g_XbmFile.close();
+        // TODO: 一旦真っ黒画面にしているが最終的には Idle 用画面を表示するべき
+        g_U8g2.clearDisplay();
+        g_DfPlayer.stop();
+        LOG("BadApple Canceled.\n");
         return PillarMode::Idle;
+
     } else {
         uint32_t now = millis();
         if (now >= g_BadAppleNextSceneTime) {
             g_XbmFile.read(g_XbmBinary, sizeof(g_XbmBinary));
             g_U8g2.drawXBM(0, 0, OledWidth, OledHeight, g_XbmBinary);
             g_U8g2.sendBuffer();
+            int volumeLevel = g_AudioVolume.GetLevel();
+            g_DfPlayer.volume(volumeLevel);
             g_SceneIndex++;
             g_BadAppleNextSceneTime += BadAppleSceneIntervalMilliSeconds;
-            LOG("%d,%d,%d\n", g_SceneIndex, now, g_BadAppleNextSceneTime);
+            LOG("%d,%d,%d\n", g_SceneIndex, now, volumeLevel);
         }
         return PillarMode::BadApple;
     }
@@ -150,6 +163,17 @@ void setup(void)
 
     g_AudioVolume.Initialize(PinNumberAudioVolume, &g_AudioVolumeFilter, AudioVolumeLevel);
     LOG("Volume Initialized.\n");
+
+    auto& groveUart = Serial1;
+    groveUart.begin(9600, SERIAL_8N1);
+    bool ack = g_DfPlayer.begin(groveUart, true, true);
+    if (ack) {
+        LOG("DFPlayerMini Initialized.\n");
+    } else {
+        LOG("DFPlayerMini Failed.\n");
+    }
+
+    LOG("Setup Done.\n");
 }
 
 void loop(void)

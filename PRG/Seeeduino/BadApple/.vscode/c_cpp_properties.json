@@ -37,6 +37,7 @@
                 "C:\\Users\\ext\\AppData\\Local\\Arduino15\\packages\\Seeeduino\\hardware\\samd\\1.8.2\\libraries\\SPI",
                 "C:\\Users\\ext\\AppData\\Local\\Arduino15\\packages\\Seeeduino\\hardware\\samd\\1.8.2\\libraries\\Adafruit_ZeroDMA",
                 "C:\\Program Files (x86)\\Arduino\\libraries\\SD\\src",
+                "C:\\Users\\ext\\Documents\\Arduino\\libraries\\DFRobotDFPlayerMini",
                 "c:\\users\\ext\\appdata\\local\\arduino15\\packages\\seeeduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\arm-none-eabi\\include\\c++\\7.2.1",
                 "c:\\users\\ext\\appdata\\local\\arduino15\\packages\\seeeduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\arm-none-eabi\\include\\c++\\7.2.1\\arm-none-eabi",
                 "c:\\users\\ext\\appdata\\local\\arduino15\\packages\\seeeduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\arm-none-eabi\\include\\c++\\7.2.1\\backward",
