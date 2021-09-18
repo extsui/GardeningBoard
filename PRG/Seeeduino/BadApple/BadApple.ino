@@ -7,6 +7,7 @@
 
 #include "Utils.h"
 #include "Button.h"
+#include "Volume.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //  ローカル系
@@ -30,6 +31,21 @@ static PillarMode g_Mode = PillarMode::Idle;
 constexpr int PinNumberUserSwitch = 1;
 
 static Button g_UserButton;
+
+////////////////////////////////////////////////////////////////////////////////
+//  ボリューム関連
+////////////////////////////////////////////////////////////////////////////////
+// XIAO 拡張ボードの GROVE A0 互換
+constexpr int PinNumberAudioVolume = 0;
+
+static Volume g_AudioVolume;
+
+// RC フィルタ比率 (1~99)
+constexpr const int LowPassFilterRate = 80;
+static RcFilter g_AudioVolumeFilter(LowPassFilterRate);
+
+// DFPlayerMini の音量の値域数 (0~30)
+constexpr uint32_t AudioVolumeLevel = 31;
 
 ////////////////////////////////////////////////////////////////////////////////
 //  グラフィック関連
@@ -124,11 +140,15 @@ void setup(void)
 
     g_UserButton.SetPin(PinNumberUserSwitch, false, true);
     LOG("Button Initialized.\n");
+
+    g_AudioVolume.Initialize(PinNumberAudioVolume, &g_AudioVolumeFilter, AudioVolumeLevel);
+    LOG("Volume Initialized.\n");
 }
 
 void loop(void)
 {
     g_UserButton.Update();
+    g_AudioVolume.Update();
 
     auto nextState = g_Mode;
     switch (g_Mode) {
