@@ -63,10 +63,9 @@ void Volume::Update()
     if (now <= m_NextSampleTime) {
         return;
     }
+    m_NextSampleTime += SamplingIntervalMilliSeconds;
 
     // SeeeduinoXIAO の analogRead() は約 16us かかる
     uint32_t currentInput = analogRead(m_PinNumber);
     m_CurrentOutput = m_pFilter->Generate(currentInput);
-
-    m_NextSampleTime += SamplingIntervalMilliSeconds;
 }

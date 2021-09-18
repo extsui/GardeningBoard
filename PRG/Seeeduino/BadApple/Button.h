@@ -10,7 +10,7 @@
 class Button {
 public:
     Button();
-    void SetPin(int pinNumber, bool isPositive, bool isPullUp);
+    void Initialize(int pinNumber, bool isPositive, bool isPullUp);
     // 今押されているか
     bool IsPressed();
     // 過去に押されたか

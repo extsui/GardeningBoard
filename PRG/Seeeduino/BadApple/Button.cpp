@@ -18,7 +18,7 @@ Button::Button()
 {
 }
 
-void Button::SetPin(int pinNumber, bool isPositive, bool isPullUp)
+void Button::Initialize(int pinNumber, bool isPositive, bool isPullUp)
 {
     ASSERT(!m_IsInitialized);
 
@@ -65,12 +65,11 @@ void Button::Update()
     if (now <= m_NextSampleTime) {
         return;
     }
+    m_NextSampleTime += SamplingIntervalMilliSeconds;
 
     bool currentIsPressed = IsPressed();
     if ((m_PreviousWasPressed == true) && (currentIsPressed == false)) {
         m_HasPressEvent = true;
     }
-
     m_PreviousWasPressed = currentIsPressed;
-    m_NextSampleTime += SamplingIntervalMilliSeconds;
 }

@@ -138,7 +138,7 @@ void setup(void)
     g_U8g2.sendBuffer();
     LOG("u8g2 Initialized.\n");
 
-    g_UserButton.SetPin(PinNumberUserSwitch, false, true);
+    g_UserButton.Initialize(PinNumberUserSwitch, false, true);
     LOG("Button Initialized.\n");
 
     g_AudioVolume.Initialize(PinNumberAudioVolume, &g_AudioVolumeFilter, AudioVolumeLevel);
