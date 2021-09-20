@@ -44,8 +44,10 @@ class Volume {
 public:
     Volume();
     void Initialize(int pinNumber, RcFilter *pFilter, uint32_t levelRange);
-    int GetValue();
-    int GetLevel();
+    uint32_t GetValue();
+    uint32_t GetLevel();
+    uint32_t GetValueCorrectedCurveAtoB();
+    uint32_t GetLevelCorrectedCurveAtoB();
     void Update();
 
 private:

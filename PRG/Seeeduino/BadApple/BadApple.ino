@@ -122,7 +122,7 @@ static PillarMode DoBadApple(void)
             g_XbmFile.read(g_XbmBinary, sizeof(g_XbmBinary));
             g_U8g2.drawXBM(0, 0, OledWidth, OledHeight, g_XbmBinary);
             g_U8g2.sendBuffer();
-            int volumeLevel = g_AudioVolume.GetLevel();
+            uint8_t volumeLevel = static_cast<uint8_t>(g_AudioVolume.GetLevelCorrectedCurveAtoB());
             g_DfPlayer.volume(volumeLevel);
             g_SceneIndex++;
             g_BadAppleNextSceneTime += BadAppleSceneIntervalMilliSeconds;
