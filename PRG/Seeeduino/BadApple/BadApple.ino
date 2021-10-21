@@ -139,12 +139,18 @@ static PillarMode DoBadApple(void)
 ////////////////////////////////////////////////////////////////////////////////
 void setup(void)
 {
+    // USB ポートが開くまで一定時間待機
+    // 開けない場合でもそのまま進む
     Serial.begin(115200);
-    // USB ポートが開くまで待機
+    constexpr const uint32_t UsbSerialTimeoutMilliSeconds = 500;
+    uint32_t start = millis();
     // USB-CDC 非搭載のものは常に true
-    while (!Serial);
-    LOG("Hello Serial over USB-CDC.\n");
-
+    while (!Serial) {
+        if (start + UsbSerialTimeoutMilliSeconds >= millis()) {
+            break;
+        }
+    }
+    LOG("USB-CDC Initialized.\n");
     if (!SD.begin(2)) {
         LOG("SD Failed.\n");
         ABORT();
