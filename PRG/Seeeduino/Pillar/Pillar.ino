@@ -25,6 +25,14 @@ enum class PillarMode {
 
 static PillarMode g_Mode = PillarMode::Idle;
 
+class IPillarState
+{
+public:
+    virtual void OnEnter() = 0;
+    virtual PillarMode OnExecute() = 0;
+    virtual void OnExit() = 0;
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 //  ピン関連
 ////////////////////////////////////////////////////////////////////////////////
@@ -78,21 +86,53 @@ constexpr int BadAppleSceneCount = 2191;
 constexpr int BadAppleSceneIntervalMilliSeconds = 100;
 static uint32_t g_BadAppleNextSceneTime = 0;
 
-static PillarMode DoIdle(void)
+class IdleState : public IPillarState
+{
+public:
+    IdleState() {};
+    void OnEnter() override;
+    PillarMode OnExecute() override;
+    void OnExit() override;
+};
+
+void IdleState::OnEnter()
+{
+    g_U8g2.clearBuffer();
+}
+
+PillarMode IdleState::OnExecute()
 {
     if (g_UserButton.WasPressed()) {
-        g_SceneIndex = 0;
-        g_BadAppleNextSceneTime = millis();
-        g_XbmFile = SD.open("BadApple.xbm", FILE_READ);
-        g_DfPlayer.playMp3Folder(4);
-        // file が見つからない場合は想定外
-        ASSERT(g_XbmFile != 0);
         return PillarMode::BadApple;
     }
     return PillarMode::Idle;
 }
 
-static PillarMode DoBadApple(void)
+void IdleState::OnExit()
+{
+    // NOP
+}
+
+class BadAppleState : public IPillarState
+{
+public:
+    BadAppleState() {};
+    void OnEnter() override;
+    PillarMode OnExecute() override;
+    void OnExit() override;
+};
+
+void BadAppleState::OnEnter()
+{
+    g_SceneIndex = 0;
+    g_BadAppleNextSceneTime = millis();
+    g_XbmFile = SD.open("BadApple.xbm", FILE_READ);
+    g_DfPlayer.playMp3Folder(4);
+    // file が見つからない場合は想定外
+    ASSERT(g_XbmFile != 0);
+}
+
+PillarMode BadAppleState::OnExecute()
 {
     // 性能関連メモ
     //
@@ -109,13 +149,7 @@ static PillarMode DoBadApple(void)
 
     if ((g_UserButton.WasPressed()) ||
         (g_SceneIndex >= BadAppleSceneCount)) {
-        g_XbmFile.close();
-        // TODO: 一旦真っ黒画面にしているが最終的には Idle 用画面を表示するべき
-        g_U8g2.clearDisplay();
-        g_DfPlayer.stop();
-        LOG("BadApple Canceled.\n");
         return PillarMode::Idle;
-
     } else {
         uint32_t now = millis();
         if (now >= g_BadAppleNextSceneTime) {
@@ -130,6 +164,15 @@ static PillarMode DoBadApple(void)
         }
         return PillarMode::BadApple;
     }
+}
+
+void BadAppleState::OnExit()
+{
+    g_XbmFile.close();
+    // TODO: 一旦真っ黒画面にしているが最終的には Idle 用画面を表示するべき
+    g_U8g2.clearDisplay();
+    g_DfPlayer.stop();
+    LOG("BadApple Finished or Canceled.\n");
 }
 
 } // namespace
@@ -197,25 +240,27 @@ void setup(void)
     LOG("Setup Done.\n");
 }
 
+namespace {
+    static IdleState g_IdleState;
+    static BadAppleState g_BadAppleState;
+
+    static IPillarState *g_pState[] = {
+        &g_IdleState,
+        &g_BadAppleState,
+    };
+}
+
 void loop(void)
 {
     g_UserButton.Update();
     g_AudioVolume.Update();
 
-    auto nextState = g_Mode;
-    switch (g_Mode) {
-    case PillarMode::Idle:
-        nextState = DoIdle();
-        break;
-    case PillarMode::BadApple:
-        nextState = DoBadApple();
-        break;
-    default:
-        ABORT();
-    }
-
-    if (g_Mode != nextState) {
+    auto currentState = g_Mode;
+    auto nextState = g_pState[static_cast<int>(currentState)]->OnExecute();
+    if (currentState != nextState) {
+        g_pState[static_cast<int>(currentState)]->OnExit();
         LOG("Mode %d -> %d\n", g_Mode, nextState);
+        g_pState[static_cast<int>(nextState)]->OnEnter();
     }
     g_Mode = nextState;
 }
