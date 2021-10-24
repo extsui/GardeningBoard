@@ -139,30 +139,43 @@ static PillarMode DoBadApple(void)
 ////////////////////////////////////////////////////////////////////////////////
 void setup(void)
 {
-    // USB ポートが開くまで一定時間待機
-    // 開けない場合でもそのまま進む
     Serial.begin(115200);
+
+    // OLED, USB 以外の要因でエラーになった場合に
+    // OLED にエラーを表示させられるように優先して初期化
+    g_U8g2.begin();
+    g_U8g2.setDrawColor(1);
+    g_U8g2.clearBuffer();
+    g_U8g2.setBitmapMode(false);
+
+    // フォント設定をする
+    // 7x14B だと 4行17文字程度までしか表示できないことに注意。
+    // m : 不透過
+    // f : ASCII 全部
+    constexpr size_t FontHeight = 14;
+    g_U8g2.setFont(u8g2_font_7x14B_mf);
+    // 描画の Y 座標は文字の左上ではなく左下基準であることに注意。
+    g_U8g2.drawStr(0, FontHeight * 1, "== Pillar Start ==");
+    g_U8g2.sendBuffer();
+
+    // USB ポートが開くまで一定時間待機
+    // USB-CDC 非搭載のものは常に true
     constexpr const uint32_t UsbSerialTimeoutMilliSeconds = 500;
     uint32_t start = millis();
-    // USB-CDC 非搭載のものは常に true
     while (!Serial) {
         if (start + UsbSerialTimeoutMilliSeconds >= millis()) {
             break;
         }
     }
     LOG("USB-CDC Initialized.\n");
-    if (!SD.begin(2)) {
-        LOG("SD Failed.\n");
-        ABORT();
-    }
-    LOG("SD Initialized.\n");
 
-    g_U8g2.begin();
-    g_U8g2.clearBuffer();
-    g_U8g2.setBitmapMode(false);
-    g_U8g2.setDrawColor(1);
-    g_U8g2.sendBuffer();
-    LOG("u8g2 Initialized.\n");
+    if (SD.begin(2)) {
+        LOG("SD Initialized.\n");
+    } else {
+        LOG("[ERR] SD Failed.\n");
+        g_U8g2.drawStr(0, FontHeight * 2, "[ERR] SD Failed.");
+        g_U8g2.sendBuffer();
+    }
 
     g_UserButton.Initialize(PinNumberUserSwitch, false, true);
     LOG("Button Initialized.\n");
@@ -177,6 +190,8 @@ void setup(void)
         LOG("DFPlayerMini Initialized.\n");
     } else {
         LOG("DFPlayerMini Failed.\n");
+        g_U8g2.drawStr(0, FontHeight * 3, "[ERR] DFP Failed.");
+        g_U8g2.sendBuffer();
     }
 
     LOG("Setup Done.\n");
