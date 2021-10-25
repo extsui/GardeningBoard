@@ -6,6 +6,10 @@
 #include <U8g2lib.h>
 #include <DFRobotDFPlayerMini.h>
 
+#include "IPillarState.h"
+#include "Idle.h"
+#include "BadApple.h"
+
 #include "Utils.h"
 #include "Button.h"
 #include "Volume.h"
@@ -14,24 +18,6 @@
 //  ローカル系
 ////////////////////////////////////////////////////////////////////////////////
 namespace {
-
-////////////////////////////////////////////////////////////////////////////////
-//  全体の状態制御関連
-////////////////////////////////////////////////////////////////////////////////
-enum class PillarMode {
-    Idle = 0,   // 待機中
-    BadApple,   // BadApple 再生中
-};
-
-static PillarMode g_Mode = PillarMode::Idle;
-
-class IPillarState
-{
-public:
-    virtual void OnEnter() = 0;
-    virtual PillarMode OnExecute() = 0;
-    virtual void OnExit() = 0;
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 //  ピン関連
@@ -74,106 +60,6 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C g_U8g2(
     SDA,            // data
     U8X8_PIN_NONE   // reset
 );
-
-////////////////////////////////////////////////////////////////////////////////
-//  BadApple 関連
-////////////////////////////////////////////////////////////////////////////////
-static int g_SceneIndex = 0;
-static uint8_t g_XbmBinary[1024];
-static File g_XbmFile;
-
-constexpr int BadAppleSceneCount = 2191;
-constexpr int BadAppleSceneIntervalMilliSeconds = 100;
-static uint32_t g_BadAppleNextSceneTime = 0;
-
-class IdleState : public IPillarState
-{
-public:
-    IdleState() {};
-    void OnEnter() override;
-    PillarMode OnExecute() override;
-    void OnExit() override;
-};
-
-void IdleState::OnEnter()
-{
-    g_U8g2.clearBuffer();
-}
-
-PillarMode IdleState::OnExecute()
-{
-    if (g_UserButton.WasPressed()) {
-        return PillarMode::BadApple;
-    }
-    return PillarMode::Idle;
-}
-
-void IdleState::OnExit()
-{
-    // NOP
-}
-
-class BadAppleState : public IPillarState
-{
-public:
-    BadAppleState() {};
-    void OnEnter() override;
-    PillarMode OnExecute() override;
-    void OnExit() override;
-};
-
-void BadAppleState::OnEnter()
-{
-    g_SceneIndex = 0;
-    g_BadAppleNextSceneTime = millis();
-    g_XbmFile = SD.open("BadApple.xbm", FILE_READ);
-    g_DfPlayer.playMp3Folder(4);
-    // file が見つからない場合は想定外
-    ASSERT(g_XbmFile != 0);
-}
-
-PillarMode BadAppleState::OnExecute()
-{
-    // 性能関連メモ
-    //
-    // # ファイル分割方式
-    // - FAT のエントリ探索時間が線形で伸びていくので 10fps すら間に合わない。
-    // - 後半のシーンに行くほど処理時間が伸びていく。
-    // 
-    // # ファイル結合方式
-    // - ギリギリ 10fps に間に合いそう。(約 90+ ms / scene)
-    // - 性能内訳
-    //   - I2C 転送  : 約 33ms (400kHz)
-    //   - SPI 転送  : 約 4ms (4MHz)
-    //   - FAT & GFX : その他
-
-    if ((g_UserButton.WasPressed()) ||
-        (g_SceneIndex >= BadAppleSceneCount)) {
-        return PillarMode::Idle;
-    } else {
-        uint32_t now = millis();
-        if (now >= g_BadAppleNextSceneTime) {
-            g_XbmFile.read(g_XbmBinary, sizeof(g_XbmBinary));
-            g_U8g2.drawXBM(0, 0, OledWidth, OledHeight, g_XbmBinary);
-            g_U8g2.sendBuffer();
-            uint8_t volumeLevel = static_cast<uint8_t>(g_AudioVolume.GetLevelCorrectedCurveAtoB());
-            g_DfPlayer.volume(volumeLevel);
-            g_SceneIndex++;
-            g_BadAppleNextSceneTime += BadAppleSceneIntervalMilliSeconds;
-            LOG("%d,%d,%d\n", g_SceneIndex, now, volumeLevel);
-        }
-        return PillarMode::BadApple;
-    }
-}
-
-void BadAppleState::OnExit()
-{
-    g_XbmFile.close();
-    // TODO: 一旦真っ黒画面にしているが最終的には Idle 用画面を表示するべき
-    g_U8g2.clearDisplay();
-    g_DfPlayer.stop();
-    LOG("BadApple Finished or Canceled.\n");
-}
 
 } // namespace
 
@@ -241,6 +127,9 @@ void setup(void)
 }
 
 namespace {
+    
+    static PillarMode g_Mode = PillarMode::Idle;
+    
     static IdleState g_IdleState;
     static BadAppleState g_BadAppleState;
 
