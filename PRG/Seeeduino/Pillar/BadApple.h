@@ -7,9 +7,9 @@ class BadAppleState : public IPillarState
 {
 public:
     BadAppleState() {};
-    void OnEnter() override;
-    PillarMode OnExecute() override;
-    void OnExit() override;
+    void OnEnter(PillarInput *pInput, PillarOutput *pOutput) override;
+    PillarMode OnExecute(PillarInput *pInput, PillarOutput *pOutput) override;
+    void OnExit(PillarInput *pInput, PillarOutput *pOutput) override;
 };
 
 #endif /* BAD_APPLE_H */

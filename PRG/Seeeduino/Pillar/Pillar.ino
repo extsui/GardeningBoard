@@ -10,13 +10,13 @@
 #include "Idle.h"
 #include "BadApple.h"
 
+#include "PillarInput.h"
+#include "PillarOutput.h"
+
 #include "Utils.h"
 #include "Button.h"
 #include "Volume.h"
 
-////////////////////////////////////////////////////////////////////////////////
-//  ローカル系
-////////////////////////////////////////////////////////////////////////////////
 namespace {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -24,20 +24,18 @@ namespace {
 ////////////////////////////////////////////////////////////////////////////////
 // XIAO 拡張ボードのユーザスイッチ (負論理)
 constexpr int PinNumberUserSwitch = 1;
-
-static Button g_UserButton;
+Button g_UserButton;
 
 ////////////////////////////////////////////////////////////////////////////////
 //  ボリューム関連
 ////////////////////////////////////////////////////////////////////////////////
 // XIAO 拡張ボードの GROVE A0 互換
 constexpr int PinNumberAudioVolume = 0;
-
-static Volume g_AudioVolume;
+Volume g_AudioVolume;
 
 // RC フィルタ比率 (1~99)
-constexpr const int LowPassFilterRate = 80;
-static RcFilter g_AudioVolumeFilter(LowPassFilterRate);
+constexpr int LowPassFilterRate = 80;
+RcFilter g_AudioVolumeFilter(LowPassFilterRate);
 
 // DFPlayerMini の音量の値域数 (0~30)
 constexpr uint32_t AudioVolumeLevel = 31;
@@ -50,8 +48,6 @@ static DFRobotDFPlayerMini g_DfPlayer;
 ////////////////////////////////////////////////////////////////////////////////
 //  グラフィック関連
 ////////////////////////////////////////////////////////////////////////////////
-constexpr int OledWidth = 128;
-constexpr int OledHeight = 64;
 
 // _SW_I2C ではなく _HW_I2C を使用すれば 400kHz 駆動になる
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C g_U8g2(
@@ -61,7 +57,14 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C g_U8g2(
     U8X8_PIN_NONE   // reset
 );
 
-} // namespace
+}
+
+namespace {
+
+static PillarInput *g_pInput;
+static PillarOutput *g_pOutput;
+
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Arduino エントリポイント系
@@ -123,33 +126,40 @@ void setup(void)
         g_U8g2.sendBuffer();
     }
 
+    static PillarInput input(&g_UserButton, &g_AudioVolume);
+    static PillarOutput output(&g_DfPlayer, &g_U8g2);
+
+    g_pInput = &input;
+    g_pOutput = &output;
+
     LOG("Setup Done.\n");
 }
 
 namespace {
-    
-    static PillarMode g_Mode = PillarMode::Idle;
-    
-    static IdleState g_IdleState;
-    static BadAppleState g_BadAppleState;
 
-    static IPillarState *g_pState[] = {
-        &g_IdleState,
-        &g_BadAppleState,
-    };
+static PillarMode g_Mode = PillarMode::Idle;
+
+static IdleState g_IdleState;
+static BadAppleState g_BadAppleState;
+
+static IPillarState *g_pState[] = {
+    &g_IdleState,
+    &g_BadAppleState,
+};
+
 }
 
 void loop(void)
 {
-    g_UserButton.Update();
-    g_AudioVolume.Update();
+    g_pInput->pUserButton->Update();
+    g_pInput->pAudioVolume->Update();
 
     auto currentState = g_Mode;
-    auto nextState = g_pState[static_cast<int>(currentState)]->OnExecute();
+    auto nextState = g_pState[static_cast<int>(currentState)]->OnExecute(g_pInput, g_pOutput);
     if (currentState != nextState) {
-        g_pState[static_cast<int>(currentState)]->OnExit();
+        g_pState[static_cast<int>(currentState)]->OnExit(g_pInput, g_pOutput);
         LOG("Mode %d -> %d\n", g_Mode, nextState);
-        g_pState[static_cast<int>(nextState)]->OnEnter();
+        g_pState[static_cast<int>(nextState)]->OnEnter(g_pInput, g_pOutput);
     }
     g_Mode = nextState;
 }

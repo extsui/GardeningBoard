@@ -14,17 +14,19 @@ static uint32_t g_BadAppleNextSceneTime = 0;
 
 }
 
-void BadAppleState::OnEnter()
+void BadAppleState::OnEnter(PillarInput *pInput, PillarOutput *pOutput)
 {
+    UNUSED(pInput);
+
     g_SceneIndex = 0;
     g_BadAppleNextSceneTime = millis();
     g_XbmFile = SD.open("BadApple.xbm", FILE_READ);
-    g_DfPlayer.playMp3Folder(4);
+    pOutput->pDfplayer->playMp3Folder(4);
     // file が見つからない場合は想定外
     ASSERT(g_XbmFile != 0);
 }
 
-PillarMode BadAppleState::OnExecute()
+PillarMode BadAppleState::OnExecute(PillarInput *pInput, PillarOutput *pOutput)
 {
     // 性能関連メモ
     //
@@ -39,17 +41,17 @@ PillarMode BadAppleState::OnExecute()
     //   - SPI 転送  : 約 4ms (4MHz)
     //   - FAT & GFX : その他
 
-    if ((g_UserButton.WasPressed()) ||
+    if ((pInput->pUserButton->WasPressed()) ||
         (g_SceneIndex >= BadAppleSceneCount)) {
         return PillarMode::Idle;
     } else {
         uint32_t now = millis();
         if (now >= g_BadAppleNextSceneTime) {
             g_XbmFile.read(g_XbmBinary, sizeof(g_XbmBinary));
-            g_U8g2.drawXBM(0, 0, OledWidth, OledHeight, g_XbmBinary);
-            g_U8g2.sendBuffer();
-            uint8_t volumeLevel = static_cast<uint8_t>(g_AudioVolume.GetLevelCorrectedCurveAtoB());
-            g_DfPlayer.volume(volumeLevel);
+            pOutput->pU8g2->drawXBM(0, 0, PillarOutput::OledWidth, PillarOutput::OledHeight, g_XbmBinary);
+            pOutput->pU8g2->sendBuffer();
+            uint8_t volumeLevel = static_cast<uint8_t>(pInput->pAudioVolume->GetLevelCorrectedCurveAtoB());
+            pOutput->pDfplayer->volume(volumeLevel);
             g_SceneIndex++;
             g_BadAppleNextSceneTime += BadAppleSceneIntervalMilliSeconds;
             LOG("%d,%d,%d\n", g_SceneIndex, now, volumeLevel);
@@ -58,11 +60,13 @@ PillarMode BadAppleState::OnExecute()
     }
 }
 
-void BadAppleState::OnExit()
+void BadAppleState::OnExit(PillarInput *pInput, PillarOutput *pOutput)
 {
+    UNUSED(pInput);
+    
     g_XbmFile.close();
     // TODO: 一旦真っ黒画面にしているが最終的には Idle 用画面を表示するべき
-    g_U8g2.clearDisplay();
-    g_DfPlayer.stop();
+    pOutput->pU8g2->clearDisplay();
+    pOutput->pDfplayer->stop();
     LOG("BadApple Finished or Canceled.\n");
 }

@@ -7,9 +7,9 @@ class IdleState : public IPillarState
 {
 public:
     IdleState() {};
-    void OnEnter() override;
-    PillarMode OnExecute() override;
-    void OnExit() override;
+    void OnEnter(PillarInput *pInput, PillarOutput *pOutput) override;
+    PillarMode OnExecute(PillarInput *pInput, PillarOutput *pOutput) override;
+    void OnExit(PillarInput *pInput, PillarOutput *pOutput) override;
 };
 
 #endif /* IDLE_H */

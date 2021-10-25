@@ -2,20 +2,25 @@
 #include "Utils.h"
 #include "Idle.h"
 
-void IdleState::OnEnter()
+void IdleState::OnEnter(PillarInput *pInput, PillarOutput *pOutput)
 {
-    g_U8g2.clearBuffer();
+    UNUSED(pInput);
+
+    pOutput->pU8g2->clearBuffer();
 }
 
-PillarMode IdleState::OnExecute()
+PillarMode IdleState::OnExecute(PillarInput *pInput, PillarOutput *pOutput)
 {
-    if (g_UserButton.WasPressed()) {
+    UNUSED(pOutput);
+
+    if (pInput->pUserButton->WasPressed()) {
         return PillarMode::BadApple;
     }
     return PillarMode::Idle;
 }
 
-void IdleState::OnExit()
+void IdleState::OnExit(PillarInput *pInput, PillarOutput *pOutput)
 {
-    // NOP
+    UNUSED(pInput);
+    UNUSED(pOutput);
 }

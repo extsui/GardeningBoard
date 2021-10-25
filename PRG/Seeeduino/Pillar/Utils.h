@@ -20,4 +20,8 @@ static inline void ABORT_NO_MESSAGE() { while (1); }
     ((expr) ? ((void)0) :                         \
     (void)(__ASSERT(#expr, __FILE__, __LINE__)))
 
+// [[maybe_unused]] 属性 (C++17) を使えるようだが
+// 非常に見辛くなるのでマクロで代用する
+#define UNUSED(var) ((void)var)
+
 #endif /* UTILS_H */
