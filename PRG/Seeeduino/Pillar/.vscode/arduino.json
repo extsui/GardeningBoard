@@ -1,0 +1,5 @@
+{
+    "board": "Seeeduino:samd:seeed_XIAO_m0",
+    "port": "COM12",
+    "sketch": "Pillar.ino"
+}
