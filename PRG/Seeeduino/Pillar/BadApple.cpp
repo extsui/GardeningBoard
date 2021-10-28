@@ -41,7 +41,7 @@ PillarMode BadAppleState::OnExecute(PillarInput *pInput, PillarOutput *pOutput)
     //   - SPI 転送  : 約 4ms (4MHz)
     //   - FAT & GFX : その他
 
-    if ((pInput->pUserButton->WasPressed()) ||
+    if ((pInput->pUserButton->WasSingleClicked()) ||
         (g_SceneIndex >= BadAppleSceneCount)) {
         return PillarMode::Idle;
     } else {

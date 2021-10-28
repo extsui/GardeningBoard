@@ -13,8 +13,20 @@ PillarMode IdleState::OnExecute(PillarInput *pInput, PillarOutput *pOutput)
 {
     UNUSED(pOutput);
 
+    /*
     if (pInput->pUserButton->WasPressed()) {
         return PillarMode::BadApple;
+    }
+    return PillarMode::Idle;
+    */
+
+    // DEBUG:
+    if (pInput->pUserButton->WasSingleClicked()) {
+        LOG("Single Click\n");
+    } else if (pInput->pUserButton->WasLongClicked()) {
+        LOG("Long Click\n");
+    } else if (pInput->pUserButton->WasDoubleClicked()) {
+        LOG("Double Click\n");
     }
     return PillarMode::Idle;
 }
