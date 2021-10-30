@@ -1,5 +1,5 @@
-#ifndef IDLE_H
-#define IDLE_H
+#ifndef IDLE_STATE_H
+#define IDLE_STATE_H
 
 #include "IPillarState.h"
 
@@ -12,4 +12,4 @@ public:
     void OnExit(PillarInput *pInput, PillarOutput *pOutput) override;
 };
 
-#endif /* IDLE_H */
+#endif /* IDLE_STATE_H */

@@ -9,8 +9,8 @@
 #include <TimerTC3.h>
 
 #include "IPillarState.h"
-#include "Idle.h"
-#include "BadApple.h"
+#include "IdleState.h"
+#include "BadAppleState.h"
 
 #include "PillarInput.h"
 #include "PillarOutput.h"
