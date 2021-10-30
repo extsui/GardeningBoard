@@ -10,6 +10,7 @@
 enum class PillarMode {
     Idle = 0,   // 待機中
     BadApple,   // BadApple 再生中
+    Script,     // スクリプト実行中
 };
 
 class IPillarState

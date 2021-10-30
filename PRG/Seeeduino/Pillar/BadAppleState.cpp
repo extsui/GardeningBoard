@@ -43,7 +43,7 @@ PillarMode BadAppleState::OnExecute(PillarInput *pInput, PillarOutput *pOutput)
 
     if ((pInput->pUserButton->WasDoubleClicked()) ||
         (g_SceneIndex >= BadAppleSceneCount)) {
-        return PillarMode::Idle;
+        return PillarMode::Script;
     } else {
         uint32_t now = millis();
         if (now >= g_BadAppleNextSceneTime) {

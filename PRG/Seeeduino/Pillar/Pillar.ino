@@ -11,6 +11,7 @@
 #include "IPillarState.h"
 #include "IdleState.h"
 #include "BadAppleState.h"
+#include "ScriptState.h"
 
 #include "PillarInput.h"
 #include "PillarOutput.h"
@@ -152,10 +153,12 @@ static PillarMode g_Mode = PillarMode::Idle;
 
 static IdleState g_IdleState;
 static BadAppleState g_BadAppleState;
+static ScriptState g_ScriptState;
 
 static IPillarState *g_pState[] = {
     &g_IdleState,
     &g_BadAppleState,
+    &g_ScriptState,
 };
 
 }
