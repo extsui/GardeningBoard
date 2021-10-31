@@ -20,7 +20,7 @@ static constexpr uint32_t DoubleClickThreshold = 300;
 
 // 長クリック判定時間 [ms]
 // 押下開始から離しまでの時間
-static constexpr uint32_t LongClickThreshold = 1000;
+static constexpr uint32_t LongClickThreshold = 500;
 
 // - 引数 value が false なら false を返す
 // - 引数 value が true なら false にして true を返す

@@ -8,10 +8,12 @@ struct PillarInput
 {
     Button *pUserButton;
     Volume *pAudioVolume;
+    Volume *pBrightnessVolume;
 
-    PillarInput(Button *_pUserButton, Volume *_pAudioVolume)
+    PillarInput(Button *_pUserButton, Volume *_pAudioVolume, Volume *_pBrightnessVolume)
         : pUserButton(_pUserButton)
         , pAudioVolume(_pAudioVolume)
+        , pBrightnessVolume(_pBrightnessVolume)
     {}
 };
 
