@@ -6,10 +6,8 @@
     // PC 環境 (単体テスト用)
     #define LOG(...) printf(__VA_ARGS__)
 #else
-    // M5Stack 環境
-    #define CONFIG_M5       (1)
-    #define LOG(...)        Serial.printf(__VA_ARGS__)
-    #define LCD_LOG(...)    M5.Lcd.printf(__VA_ARGS__)
+    // Seeeduino XIAO 環境
+    #define CONFIG_XIAO    (1)
 #endif
 
 #endif /* PUMP_CONFIG_H */

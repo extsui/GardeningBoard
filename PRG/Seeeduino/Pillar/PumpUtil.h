@@ -12,7 +12,7 @@ public:
     static int ParseRawSendCommand(const char *command, uint8_t *array, int arrayLength);
     static int GetDigitLength(uint8_t value);
 
-#if CONFIG_M5
+#if CONFIG_XIAO
     static int WireTransaction(const uint8_t *data, int length);
 #endif
 };

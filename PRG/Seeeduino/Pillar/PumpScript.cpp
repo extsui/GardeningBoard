@@ -14,10 +14,10 @@
 #include <thread>
 #include <chrono>
 
-#if CONFIG_M5
+#if CONFIG_XIAO
 #include <stdlib.h>
-#include <M5Stack.h>
 #include <SD.h>
+#include "Utils.h"
 #endif
 
 void PumpScript::ParseLine(ScriptPiece *pOutPiece, const char *line)
@@ -35,7 +35,7 @@ void PumpScript::ParseLine(ScriptPiece *pOutPiece, const char *line)
 
     pOutPiece->timingMilliSecond = ::atoi(timingMilliSecondString.c_str());
 
-    size_t length = commandByteString.length();
+    int length = static_cast<int>(commandByteString.length());
     const char *command = commandByteString.c_str();
     for (int i = 0; i < length; i += 2)
     {
@@ -50,17 +50,18 @@ int PumpScript::Load(const char *path)
 {
     assert(m_isRunnable == false);
 
-#if CONFIG_M5
+#if CONFIG_XIAO
     File file = SD.open(path);
     if (!file) {
         return -1;
     }
 
-    size_t fileSize = file.size();
+    int fileSize = static_cast<int>(file.size());
 
     // 1 行バッファサイズは適当
     char line[80];
     int index = 0;
+    int lineCount = 0;
 
     for (int i = 0; i < fileSize; i++) {
         int c = file.read();
@@ -68,12 +69,13 @@ int PumpScript::Load(const char *path)
             line[index] = c;
             index++;
         } else {
+            lineCount++;
             line[index] = '\0';
             // CRLF 対策
             if (line[index - 1] == '\r') {
                 line[index - 1] = '\0';
             }
-            LOG("line = [%s]\n", line);
+            LOG("%03d: %s\n", lineCount, line);
 
             PumpScript::ScriptPiece piece;
             PumpScript::ParseLine(&piece, line);
@@ -127,13 +129,13 @@ void PumpScript::Run()
                     static_cast<int>(real),
                     static_cast<int>(diff));
                 
-                #if CONFIG_M5
+                #if CONFIG_XIAO
                     PumpUtil::WireTransaction(piece.commandByte, piece.commandLength);
                 #endif
 
                 break;
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            // TODO: ここで yield したい
         }
     }
 }

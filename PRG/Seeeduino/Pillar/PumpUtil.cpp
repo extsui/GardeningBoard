@@ -4,8 +4,8 @@
 #include <cstddef>
 #include <string.h>
 
-#if CONFIG_M5
-#include <M5Stack.h>
+#if CONFIG_XIAO
+#include <Wire.h>
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -97,10 +97,10 @@ int PumpUtil::GetDigitLength(uint8_t value)
 }
 
 //////////////////////////////////////////////////////////////////////
-//  M5Stack 依存
+//  XAIO 依存
 //////////////////////////////////////////////////////////////////////
 
-#if CONFIG_M5
+#if CONFIG_XIAO
 /**
  * I2C データ送信トランザクション
  * @param [in] data データ列
