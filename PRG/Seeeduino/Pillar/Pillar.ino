@@ -184,6 +184,9 @@ void loop(void)
         g_pState[static_cast<int>(currentState)]->OnExit(g_pInput, g_pOutput);
         LOG("Mode %d -> %d\n", g_Mode, nextState);
         g_pState[static_cast<int>(nextState)]->OnEnter(g_pInput, g_pOutput);
+
+        // OnExecute() 内で確認されていないイベントは残ったままになるので消す
+        g_pInput->pUserButton->ClearEvents();
     }
     g_Mode = nextState;
 }
