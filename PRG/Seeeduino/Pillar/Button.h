@@ -1,6 +1,10 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
+// 割り込みを使用する場合に有効にすること
+// WasXxx() 系の関数が割り込み排他で呼び出されるようになる
+#define BUTTON_CONFIG_USE_INTERRUPT (1)
+
 /**
  * Arudino 用ボタン管理クラス
  * 

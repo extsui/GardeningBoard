@@ -1,6 +1,14 @@
 #include "Utils.h"
 #include "Button.h"
 
+#if BUTTON_CONFIG_USE_INTERRUPT
+    #define BUTTON_NO_INTERRUPT()   noInterrupts()
+    #define BUTTON_INTERRUPT()      interrupts()
+#else
+    #define BUTTON_NO_INTERRUPT()
+    #define BUTTON_INTERRUPT()
+#endif
+
 namespace {
 
 // サンプリング周期 [ms]
@@ -20,11 +28,14 @@ static constexpr uint32_t LongClickThreshold = 1000;
 // BUTTON_CONFIG_USE_INTERRUPT が無効の場合は排他されないため注意。
 static bool TestAndReset(bool &value)
 {
+    BUTTON_NO_INTERRUPT();
+    bool retval = false;
     if (value) {
         value = false;
-        return true;
+        retval = true;
     }
-    return false;
+    BUTTON_INTERRUPT();
+    return retval;
 }
 
 }

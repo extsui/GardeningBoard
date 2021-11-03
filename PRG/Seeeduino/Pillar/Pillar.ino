@@ -6,6 +6,8 @@
 #include <U8g2lib.h>
 #include <DFRobotDFPlayerMini.h>
 
+#include <TimerTC3.h>
+
 #include "IPillarState.h"
 #include "Idle.h"
 #include "BadApple.h"
@@ -133,6 +135,15 @@ void setup(void)
     g_pOutput = &output;
 
     LOG("Setup Done.\n");
+
+    // 重い処理実行中 (具体的には BadApple) だとメインループでの Update() 呼び出しが
+    // 間に合わずダブルクリックを正しく認識できなくなるのでタイマ割り込みを使用する
+    auto CyclicHandler = []() 
+    {
+        g_pInput->pUserButton->Update();
+    };
+    TimerTc3.initialize(10 * 1000); // 10ms
+    TimerTc3.attachInterrupt(CyclicHandler);
 }
 
 namespace {
@@ -151,7 +162,6 @@ static IPillarState *g_pState[] = {
 
 void loop(void)
 {
-    g_pInput->pUserButton->Update();
     g_pInput->pAudioVolume->Update();
 
     auto currentState = g_Mode;

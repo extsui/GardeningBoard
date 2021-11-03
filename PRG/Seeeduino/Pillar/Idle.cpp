@@ -27,6 +27,7 @@ PillarMode IdleState::OnExecute(PillarInput *pInput, PillarOutput *pOutput)
         LOG("Long Click\n");
     } else if (pInput->pUserButton->WasDoubleClicked()) {
         LOG("Double Click\n");
+        return PillarMode::BadApple;
     }
     return PillarMode::Idle;
 }
