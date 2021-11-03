@@ -1,6 +1,6 @@
 #include <SD.h>
 #include "Utils.h"
-#include "BadApple.h"
+#include "BadAppleState.h"
 
 namespace {
 
@@ -41,9 +41,9 @@ PillarMode BadAppleState::OnExecute(PillarInput *pInput, PillarOutput *pOutput)
     //   - SPI 転送  : 約 4ms (4MHz)
     //   - FAT & GFX : その他
 
-    if ((pInput->pUserButton->WasPressed()) ||
+    if ((pInput->pUserButton->WasDoubleClicked()) ||
         (g_SceneIndex >= BadAppleSceneCount)) {
-        return PillarMode::Idle;
+        return PillarMode::Script;
     } else {
         uint32_t now = millis();
         if (now >= g_BadAppleNextSceneTime) {

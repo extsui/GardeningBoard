@@ -8,6 +8,7 @@ struct PillarOutput
 {
     static constexpr int OledWidth = 128;
     static constexpr int OledHeight = 64;
+    static constexpr int FontHeight = 14;
 
     DFRobotDFPlayerMini *pDfplayer;
     U8G2_SSD1306_128X64_NONAME_F_HW_I2C *pU8g2;

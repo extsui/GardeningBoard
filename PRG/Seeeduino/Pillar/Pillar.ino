@@ -6,9 +6,12 @@
 #include <U8g2lib.h>
 #include <DFRobotDFPlayerMini.h>
 
+#include <TimerTC3.h>
+
 #include "IPillarState.h"
-#include "Idle.h"
-#include "BadApple.h"
+#include "IdleState.h"
+#include "BadAppleState.h"
+#include "ScriptState.h"
 
 #include "PillarInput.h"
 #include "PillarOutput.h"
@@ -29,16 +32,20 @@ Button g_UserButton;
 ////////////////////////////////////////////////////////////////////////////////
 //  ボリューム関連
 ////////////////////////////////////////////////////////////////////////////////
-// XIAO 拡張ボードの GROVE A0 互換
-constexpr int PinNumberAudioVolume = 0;
+constexpr int PinNumberAudioVolume = 0; // XIAO 拡張ボードの GROVE A0 互換
+constexpr int PinNumberBrightnessVolume = 3;
 Volume g_AudioVolume;
+Volume g_BrightnessVolume;
 
 // RC フィルタ比率 (1~99)
 constexpr int LowPassFilterRate = 80;
 RcFilter g_AudioVolumeFilter(LowPassFilterRate);
+RcFilter g_BrightnessVolumeFilter(LowPassFilterRate);
 
-// DFPlayerMini の音量の値域数 (0~30)
+// DFPlayerMini の音量の値域 (0~30)
 constexpr uint32_t AudioVolumeLevel = 31;
+// GardeningBoard の輝度の値域 (0~15)
+constexpr uint32_t BrightnessVolumeLevel = 16;
 
 ////////////////////////////////////////////////////////////////////////////////
 //  mp3 再生関連
@@ -48,6 +55,8 @@ static DFRobotDFPlayerMini g_DfPlayer;
 ////////////////////////////////////////////////////////////////////////////////
 //  グラフィック関連
 ////////////////////////////////////////////////////////////////////////////////
+
+// TODO: OLED 関連のラッパーを用意する
 
 // _SW_I2C ではなく _HW_I2C を使用すれば 400kHz 駆動になる
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C g_U8g2(
@@ -60,6 +69,18 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C g_U8g2(
 }
 
 namespace {
+
+static PillarMode g_Mode = PillarMode::Idle;
+
+static IdleState g_IdleState;
+static BadAppleState g_BadAppleState;
+static ScriptState g_ScriptState;
+
+static IPillarState *g_pState[] = {
+    &g_IdleState,
+    &g_BadAppleState,
+    &g_ScriptState,
+};
 
 static PillarInput *g_pInput;
 static PillarOutput *g_pOutput;
@@ -84,10 +105,9 @@ void setup(void)
     // 7x14B だと 4行17文字程度までしか表示できないことに注意。
     // m : 不透過
     // f : ASCII 全部
-    constexpr size_t FontHeight = 14;
     g_U8g2.setFont(u8g2_font_7x14B_mf);
     // 描画の Y 座標は文字の左上ではなく左下基準であることに注意。
-    g_U8g2.drawStr(0, FontHeight * 1, "== Pillar Start ==");
+    g_U8g2.drawStr(0, PillarOutput::FontHeight * 1, "== Pillar Start ==");
     g_U8g2.sendBuffer();
 
     // USB ポートが開くまで一定時間待機
@@ -99,13 +119,14 @@ void setup(void)
             break;
         }
     }
+    LOG("Build: %s %s\n", __DATE__, __TIME__);
     LOG("USB-CDC Initialized.\n");
 
     if (SD.begin(2)) {
         LOG("SD Initialized.\n");
     } else {
         LOG("[ERR] SD Failed.\n");
-        g_U8g2.drawStr(0, FontHeight * 2, "[ERR] SD Failed.");
+        g_U8g2.drawStr(0, PillarOutput::FontHeight * 2, "[ERR] SD Failed.");
         g_U8g2.sendBuffer();
     }
 
@@ -113,7 +134,10 @@ void setup(void)
     LOG("Button Initialized.\n");
 
     g_AudioVolume.Initialize(PinNumberAudioVolume, &g_AudioVolumeFilter, AudioVolumeLevel);
-    LOG("Volume Initialized.\n");
+    LOG("Audio Volume Initialized.\n");
+
+    g_BrightnessVolume.Initialize(PinNumberBrightnessVolume, &g_BrightnessVolumeFilter, BrightnessVolumeLevel);
+    LOG("Brightness Volume Initialized.\n");
 
     auto& groveUart = Serial1;
     groveUart.begin(9600, SERIAL_8N1);
@@ -122,37 +146,37 @@ void setup(void)
         LOG("DFPlayerMini Initialized.\n");
     } else {
         LOG("DFPlayerMini Failed.\n");
-        g_U8g2.drawStr(0, FontHeight * 3, "[ERR] DFP Failed.");
+        g_U8g2.drawStr(0, PillarOutput::FontHeight * 3, "[ERR] DFP Failed.");
         g_U8g2.sendBuffer();
     }
 
-    static PillarInput input(&g_UserButton, &g_AudioVolume);
+    static PillarInput input(&g_UserButton, &g_AudioVolume, &g_BrightnessVolume);
     static PillarOutput output(&g_DfPlayer, &g_U8g2);
 
     g_pInput = &input;
     g_pOutput = &output;
 
     LOG("Setup Done.\n");
-}
 
-namespace {
+    // TODO: 何かしらエラーが発生した場合は確認用にここで少しの間待ちを入れたい
 
-static PillarMode g_Mode = PillarMode::Idle;
+    // 重い処理実行中 (具体的には BadApple) だとメインループでの Update() 呼び出しが
+    // 間に合わずダブルクリックを正しく認識できなくなるのでタイマ割り込みを使用する
+    auto CyclicHandler = []()
+    {
+        g_pInput->pUserButton->Update();
+    };
+    TimerTc3.initialize(10 * 1000); // 10ms
+    TimerTc3.attachInterrupt(CyclicHandler);
 
-static IdleState g_IdleState;
-static BadAppleState g_BadAppleState;
-
-static IPillarState *g_pState[] = {
-    &g_IdleState,
-    &g_BadAppleState,
-};
-
+    // 初期状態だけはここで呼び出す必要がある
+    g_pState[static_cast<int>(g_Mode)]->OnEnter(g_pInput, g_pOutput);
 }
 
 void loop(void)
 {
-    g_pInput->pUserButton->Update();
     g_pInput->pAudioVolume->Update();
+    g_pInput->pBrightnessVolume->Update();
 
     auto currentState = g_Mode;
     auto nextState = g_pState[static_cast<int>(currentState)]->OnExecute(g_pInput, g_pOutput);

@@ -1,5 +1,5 @@
-#ifndef BAD_APPLE_H
-#define BAD_APPLE_H
+#ifndef BAD_APPLE_STATE_H
+#define BAD_APPLE_STATE_H
 
 #include "IPillarState.h"
 
@@ -12,4 +12,4 @@ public:
     void OnExit(PillarInput *pInput, PillarOutput *pOutput) override;
 };
 
-#endif /* BAD_APPLE_H */
+#endif /* BAD_APPLE_STATE_H */

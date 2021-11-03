@@ -3,5 +3,6 @@
     "board": "Seeeduino:samd:seeed_XIAO_m0",
     "programmer": "Seeeduino:adafruit_jlink",
     "port": "COM11",
+    "output": "../Build/BadApple",
     "sketch": "BadApple.ino"
 }
