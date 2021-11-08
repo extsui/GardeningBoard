@@ -106,6 +106,8 @@ void setup(void)
     // m : 不透過
     // f : ASCII 全部
     g_U8g2.setFont(u8g2_font_7x14B_mf);
+    //g_U8g2.setFont(u8g2_font_8x13B_mf); // 参考
+
     // 描画の Y 座標は文字の左上ではなく左下基準であることに注意。
     g_U8g2.drawStr(0, PillarOutput::FontHeight * 1, "== Pillar Start ==");
     g_U8g2.sendBuffer();
@@ -184,6 +186,9 @@ void loop(void)
         g_pState[static_cast<int>(currentState)]->OnExit(g_pInput, g_pOutput);
         LOG("Mode %d -> %d\n", g_Mode, nextState);
         g_pState[static_cast<int>(nextState)]->OnEnter(g_pInput, g_pOutput);
+
+        // OnExecute() 内で確認されていないイベントは残ったままになるので消す
+        g_pInput->pUserButton->ClearEvents();
     }
     g_Mode = nextState;
 }

@@ -107,6 +107,16 @@ bool Button::WasDoubleClicked()
     return TestAndReset(m_WasDoubleClicked);
 }
 
+void Button::ClearEvents()
+{
+    ASSERT(m_IsInitialized);
+    BUTTON_NO_INTERRUPT();
+    m_WasSingleClicked = false;
+    m_WasLongClicked = false;
+    m_WasDoubleClicked = false;
+    BUTTON_INTERRUPT();
+}
+
 void Button::Update()
 {
     ASSERT(m_IsInitialized);

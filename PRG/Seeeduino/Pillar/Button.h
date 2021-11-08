@@ -42,6 +42,9 @@ public:
     bool WasLongClicked();
     bool WasDoubleClicked();
 
+    // 全イベントのクリア
+    void ClearEvents();
+
     // 状態更新
     void Update();
 

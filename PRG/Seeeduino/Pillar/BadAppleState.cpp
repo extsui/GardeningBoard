@@ -1,6 +1,7 @@
 #include <SD.h>
 #include "Utils.h"
 #include "BadAppleState.h"
+#include "PillarSettings.h"
 
 namespace {
 
@@ -20,8 +21,8 @@ void BadAppleState::OnEnter(PillarInput *pInput, PillarOutput *pOutput)
 
     g_SceneIndex = 0;
     g_BadAppleNextSceneTime = millis();
-    g_XbmFile = SD.open("BadApple.xbm", FILE_READ);
-    pOutput->pDfplayer->playMp3Folder(4);
+    g_XbmFile = SD.open(PillarSettings::BadApplePath, FILE_READ);
+    pOutput->pDfplayer->playMp3Folder(PillarSettings::BadAppleMp3);
     // file が見つからない場合は想定外
     ASSERT(g_XbmFile != 0);
 }
