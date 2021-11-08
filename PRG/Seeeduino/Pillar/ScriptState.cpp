@@ -1,11 +1,11 @@
 #include <Wire.h>
 #include "Utils.h"
 #include "ScriptState.h"
-
-#include "PumpConfig.h"
+#include "PillarSettings.h"
 
 #include <ctype.h>
 #include "PumpUtil.h"
+#include "PumpConfig.h"
 #include "PumpScript.h"
 
 namespace {
@@ -193,6 +193,11 @@ PillarMode ScriptState::OnExecute(PillarInput *pInput, PillarOutput *pOutput)
         return PillarMode::Idle;
     }
 
+    // DEBUG: お試し用。後で消す
+    if (pInput->pUserButton->WasLongClicked()) {
+        pOutput->pDfplayer->playMp3Folder(PillarSettings::WizardsInWinterMp3);
+    }
+
     if (Serial.available()) {
         // シリアル経由コマンド実行
         uint8_t data = Serial.read();
@@ -201,7 +206,7 @@ PillarMode ScriptState::OnExecute(PillarInput *pInput, PillarOutput *pOutput)
 
     if (pInput->pUserButton->WasSingleClicked()) {
         // スクリプト実行
-        const char *path = "/Scripts/Test.gbs";
+        const char *path = PillarSettings::TestScriptPath;
         int result = ExecutePumpScript(path);
         if (result == -1) {
             LOG("%s: File not found.\n", path);
