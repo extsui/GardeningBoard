@@ -1702,13 +1702,47 @@ namespace Sprinkler
                     // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ (ﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞ↑)
                     // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ (ﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞ↑)
                 }
-                else if (103 <= bar && bar <= 110)
+                else if (103 <= bar && bar <= 106)
                 {
                     // [ラスト盛り上がり]
                     // ﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞ
                     // ﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞ
                     // ﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞ
                     // ﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞﾃﾞ
+
+                    // Tile は全て LED 周回点灯
+                    // 家以外の挿入部品は 4 ビートに合わせて ON/OFF 繰り返し
+                    // 家は 4 ビートに合わせて Open/Close の繰り返し
+
+                    if (bar == 103)
+                    {
+                        var stepTiming = (ushort)music.GetNoteLengthTime(16, 1);
+                        var patternCommandArgs = new BrickCommandArgs.Pattern(PatternConstants.Tile.Circle_Led2Point6.Id, stepTiming, true);
+                        var timing = music.GetNoteTime(bar, 8, 1);
+                        commandSequencer.SetTimedEvent(timing, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs)));
+                    }
+
+                    var onTime = music.GetNoteLengthTime(16, 1) / 4;
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.Surroundings, OperationTarget.InsertedOnly, onTime, true));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.Surroundings, OperationTarget.InsertedOnly, onTime, true));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 3), () => SequentialCommandOneShotSmoothly(Position.Hexagon.Surroundings, OperationTarget.InsertedOnly, onTime, true));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 4), () => SequentialCommandOneShotSmoothly(Position.Hexagon.Surroundings, OperationTarget.InsertedOnly, onTime, true));
+
+                    const int HousePatternStepTime = 35;
+                    var openDoor = new BrickCommandArgs.Pattern(PatternConstants.House.OpenDoor.Id, HousePatternStepTime, false);
+                    var closeDoor = new BrickCommandArgs.Pattern(PatternConstants.House.CloseDoor.Id, HousePatternStepTime, false);
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 1), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Center, OperationTarget.HouseOnly, openDoor)));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 2), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Center, OperationTarget.HouseOnly, closeDoor)));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 3), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Center, OperationTarget.HouseOnly, openDoor)));
+                    commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 4), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Center, OperationTarget.HouseOnly, closeDoor)));
+
+                    if (bar == 106)
+                    {
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 8, 8), () => CommandTurnOff(Position.Hexagon.All, OperationTarget.TileOnly));
+                    }
+                }
+                else if (107 <= bar && bar <= 110)
+                {
                     // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ (↑↓)
                     // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ (↑↓)
                     // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ (↑↓)
@@ -1775,7 +1809,8 @@ namespace Sprinkler
                 //int timing = music.GetNoteTime(9, 8, 1);        // イントロ・伴奏あり
                 //int timing = music.GetNoteTime(32, 8, 1);        // 静かなフレーズ
                 //int timing = music.GetNoteTime(66, 8, 1);     // 静かなフレーズ・コーラス
-                int timing = music.GetNoteTime(111 - 1, 4, 2);     // ラスサビ直前から
+                int timing = music.GetNoteTime(103 - 1, 4, 2);     // ラスサビ直前から
+                //int timing = music.GetNoteTime(111 - 1, 4, 2);     // ラスサビ〆直前から
 
                 reader.CurrentTime = TimeSpan.FromMilliseconds(timing);
                 waveOut.Play();
