@@ -1242,6 +1242,7 @@ namespace Sprinkler
             // 4  |1   2   3   4   |
             // 8  |1 2 3 4 5 6 7 8 |
             // 16 |123456789.......|
+            private int AllNoteTiming       => (int)((60 / Tempo * 4) * 1000);
             private int HalfNoteTiming      => (int)((60 / Tempo * 2) * 1000);
             private int QuarterNoteTiming   => (int)((60 / Tempo)     * 1000);
             private int EightNoteTiming     => (int)((60 / Tempo / 2) * 1000);
@@ -1259,13 +1260,14 @@ namespace Sprinkler
             public int GetNoteTime(int barNumber, int beat, int noteNumber)
             {
                 Trace.Assert(noteNumber >= 1);
-                Trace.Assert(noteNumber <= beat);
 
                 // 小節開始時刻
                 int barTiming = (int)(GetBarTime(barNumber) * 1000 + PlayStartOffsetMilliSeconds);
 
                 switch (beat)
                 {
+                    case 1:
+                        return barTiming + AllNoteTiming * (noteNumber - 1);
                     case 2:
                         return barTiming + HalfNoteTiming * (noteNumber - 1);
                     case 4:
@@ -1277,6 +1279,12 @@ namespace Sprinkler
                     default:
                         throw new NotSupportedException("");
                 }
+            }
+
+            // 小節開始時間
+            public int GetNoteTime(int barNumber)
+            {
+                return GetNoteTime(barNumber, 1, 1);
             }
 
             // 1音の長さの取得 (ミリ秒)
@@ -1712,6 +1720,38 @@ namespace Sprinkler
                     // ﾃﾞｰｰｰｰｰｰｰｰ
                     // --------
                     // ﾃﾞﾝｯ
+
+                    // ランダムに全部品の ON/OFF を行う
+                    // 最後のﾃﾞﾝｯで全点灯で〆
+
+                    if (bar == 111)
+                    {
+                        // 調整パラメータ
+                        const int OnOffCount = 250;
+                        const byte LastBrightness = 7;  // 0~15
+                        const int OneShotTime = 100;
+
+                        var rand = new Random(0);
+
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar), () => ExecuteCommand(m_garden.MakeBrightnessCommand(Position.Hexagon.All, OperationTarget.Both, new BrickCommandArgs.Brightness(LastBrightness))));
+
+                        for (int i = 0; i < OnOffCount; i++)
+                        {
+                            var position = Position.Hexagon.Random(rand);
+                            var target = (rand.Next(0, 2) == 0) ? OperationTarget.TileOnly : OperationTarget.InsertedOnly;
+                            // 最後の 8 分は何も表示しない休符を仕込む
+                            var timing = (int)music.GetNoteTime(bar) + rand.Next(0, music.GetNoteLengthTime(8, 15));
+                            
+                            commandSequencer.SetTimedEvent(timing, () => SequentialCommandOneShot(position, target, OneShotTime));
+
+                            // (不採用) OneShotSmoothly の場合柔らかくなりすぎてよろしくない。さらに処理が間に合わなくなりやすい。
+                            //commandSequencer.SetTimedEvent(timing, () => SequentialCommandOneShotSmoothly(position, target, 30, true));
+                        }
+                    }
+                    if (bar == 113)
+                    {
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.Both, 10, true));
+                    }
                 }
                 else
                 {
@@ -1733,8 +1773,9 @@ namespace Sprinkler
             {
                 //int timing = music.GetNoteTime(1, 8, 1);      // イントロ (最初)
                 //int timing = music.GetNoteTime(9, 8, 1);        // イントロ・伴奏あり
-                int timing = music.GetNoteTime(32, 8, 1);        // 静かなフレーズ
+                //int timing = music.GetNoteTime(32, 8, 1);        // 静かなフレーズ
                 //int timing = music.GetNoteTime(66, 8, 1);     // 静かなフレーズ・コーラス
+                int timing = music.GetNoteTime(111 - 1, 4, 2);     // ラスサビ直前から
 
                 reader.CurrentTime = TimeSpan.FromMilliseconds(timing);
                 waveOut.Play();
