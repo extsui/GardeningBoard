@@ -19,6 +19,12 @@ uint8_t g_receiveBuffer[ReceiveBufferSize];
 // シリアル受信バッファ現在位置
 int g_receiveBufferIndex = 0;
 
+// コマンド実行回数
+int g_ExecuteCommandCount = 0;
+
+// 画面系
+bool g_IsUpdateDisplay = false;
+
 int ExecuteCommand(const uint8_t *command);
 
 // シリアル 1Byte 受信処理
@@ -33,6 +39,9 @@ void OnSerialReceiveByte(uint8_t data)
         int result = ExecuteCommand(g_receiveBuffer);
         if (result == -1) {
             LOG("Error! [%s]\n", g_receiveBuffer);
+        } else {
+            g_ExecuteCommandCount++;
+            g_IsUpdateDisplay = true;
         }
         memset(g_receiveBuffer, 0, sizeof(g_receiveBuffer));
         g_receiveBufferIndex = 0;
@@ -181,6 +190,7 @@ void ScriptState::OnEnter(PillarInput *pInput, PillarOutput *pOutput)
 {
     UNUSED(pInput);
 
+    pOutput->pU8g2->clearDisplay();
     pOutput->pU8g2->drawStr(0, PillarOutput::FontHeight * 1, "== Script Mode ==");
     pOutput->pU8g2->sendBuffer();
 }
@@ -211,6 +221,19 @@ PillarMode ScriptState::OnExecute(PillarInput *pInput, PillarOutput *pOutput)
         if (result == -1) {
             LOG("%s: File not found.\n", path);
         }
+    }
+
+    // 必要があれば画面更新
+    if (g_IsUpdateDisplay) {
+        g_IsUpdateDisplay = false;
+
+        // 実行の度に画面更新すると処理が全く間に合わなかったので以下は没
+        //static char buffer[16];
+        //sprintf(buffer, "EXEC: %lu", g_ExecuteCommandCount);
+        //pOutput->pU8g2->drawStr(0, PillarOutput::FontHeight * 2, buffer);
+        //pOutput->pU8g2->sendBuffer();
+
+        LOG("%d\n", g_ExecuteCommandCount);
     }
 
     return PillarMode::Script;
