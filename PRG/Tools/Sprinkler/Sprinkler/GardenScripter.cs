@@ -1747,6 +1747,71 @@ namespace Sprinkler
                     // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ (↑↓)
                     // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ (↑↓)
                     // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ (↑↓)
+
+                    // 演出タイミングとして 8 周期あるのでそれを活かす
+                    // Tile は波状に 8 回発生させる
+                    // Grass と Tree は波が着たタイミングで光らせる感じ
+
+                    if (bar == 107)
+                    {
+                        var bottomToTop = new BrickCommandArgs.Pattern(PatternConstants.Tree.BottomToTop.Id, 50, false);
+                        var bothEdgeToMiddle = new BrickCommandArgs.Pattern(PatternConstants.Grass.BothEdgeToMiddle.Id, 50, false);
+                        var middleToBothEdge = new BrickCommandArgs.Pattern(PatternConstants.Grass.MiddleToBothEdge.Id, 50, false);
+
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar + 0, 8, 2), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TreeOnly, bottomToTop)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar + 0, 8, 6), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TreeOnly, bottomToTop)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar + 1, 8, 2), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TreeOnly, bottomToTop)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar + 1, 8, 6), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TreeOnly, bottomToTop)));
+
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar + 0, 8, 4), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.GrassOnly, bothEdgeToMiddle)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar + 0, 8, 8), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.GrassOnly, bothEdgeToMiddle)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar + 1, 8, 4), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.GrassOnly, bothEdgeToMiddle)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar + 1, 8, 8), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.GrassOnly, bothEdgeToMiddle)));
+
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar + 2, 8, 2), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.GrassOnly, middleToBothEdge)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar + 2, 8, 6), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.GrassOnly, middleToBothEdge)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar + 3, 8, 2), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.GrassOnly, middleToBothEdge)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar + 3, 8, 6), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.GrassOnly, middleToBothEdge)));
+
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar + 2, 8, 4), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TreeOnly, bottomToTop)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar + 2, 8, 8), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TreeOnly, bottomToTop)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar + 3, 8, 4), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TreeOnly, bottomToTop)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar + 3, 8, 8), () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TreeOnly, bottomToTop)));
+
+                        Action<int, int, int, ushort> TileWaveBackToFront = (int _bar, int _beat, int _noteNumber, ushort _stepTiming) =>
+                        {
+                            var _backToFront = new BrickCommandArgs.Pattern(PatternConstants.Tile.BackToFront.Id, _stepTiming, false);
+                            commandSequencer.SetTimedEvent(music.GetNoteTime(_bar, _beat, _noteNumber) + _stepTiming *  0, () => ExecuteCommand(m_garden.MakePatternCommand(new List<uint> { Position.Hexagon.Up }, OperationTarget.TileOnly, _backToFront)));
+                            commandSequencer.SetTimedEvent(music.GetNoteTime(_bar, _beat, _noteNumber) + _stepTiming *  5, () => ExecuteCommand(m_garden.MakePatternCommand(new List<uint> { Position.Hexagon.LeftUp, Position.Hexagon.RightUp }, OperationTarget.TileOnly, _backToFront)));
+                            commandSequencer.SetTimedEvent(music.GetNoteTime(_bar, _beat, _noteNumber) + _stepTiming * 10, () => ExecuteCommand(m_garden.MakePatternCommand(new List<uint> { Position.Hexagon.Center }, OperationTarget.TileOnly, _backToFront)));
+                            commandSequencer.SetTimedEvent(music.GetNoteTime(_bar, _beat, _noteNumber) + _stepTiming * 15, () => ExecuteCommand(m_garden.MakePatternCommand(new List<uint> { Position.Hexagon.LeftDown, Position.Hexagon.RightDown }, OperationTarget.TileOnly, _backToFront)));
+                            commandSequencer.SetTimedEvent(music.GetNoteTime(_bar, _beat, _noteNumber) + _stepTiming * 20, () => ExecuteCommand(m_garden.MakePatternCommand(new List<uint> { Position.Hexagon.Down }, OperationTarget.TileOnly, _backToFront)));
+                        };
+
+                        Action<int, int, int, ushort> TileWaveFrontToBack = (int _bar, int _beat, int _noteNumber, ushort _stepTiming) =>
+                        {
+                            var _frontToBack = new BrickCommandArgs.Pattern(PatternConstants.Tile.FrontToBack.Id, _stepTiming, false);
+                            commandSequencer.SetTimedEvent(music.GetNoteTime(_bar, _beat, _noteNumber) + _stepTiming * 0,  () => ExecuteCommand(m_garden.MakePatternCommand(new List<uint> { Position.Hexagon.Down }, OperationTarget.TileOnly, _frontToBack)));
+                            commandSequencer.SetTimedEvent(music.GetNoteTime(_bar, _beat, _noteNumber) + _stepTiming * 5,  () => ExecuteCommand(m_garden.MakePatternCommand(new List<uint> { Position.Hexagon.LeftDown, Position.Hexagon.RightDown }, OperationTarget.TileOnly, _frontToBack)));
+                            commandSequencer.SetTimedEvent(music.GetNoteTime(_bar, _beat, _noteNumber) + _stepTiming * 10, () => ExecuteCommand(m_garden.MakePatternCommand(new List<uint> { Position.Hexagon.Center }, OperationTarget.TileOnly, _frontToBack)));
+                            commandSequencer.SetTimedEvent(music.GetNoteTime(_bar, _beat, _noteNumber) + _stepTiming * 15, () => ExecuteCommand(m_garden.MakePatternCommand(new List<uint> { Position.Hexagon.LeftUp, Position.Hexagon.RightUp }, OperationTarget.TileOnly, _frontToBack)));
+                            commandSequencer.SetTimedEvent(music.GetNoteTime(_bar, _beat, _noteNumber) + _stepTiming * 20, () => ExecuteCommand(m_garden.MakePatternCommand(new List<uint> { Position.Hexagon.Up }, OperationTarget.TileOnly, _frontToBack)));
+                        };
+
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar), () => ExecuteCommand(m_garden.MakeBrightnessCommand(Position.Hexagon.All, OperationTarget.Both, new BrickCommandArgs.Brightness(3))));
+
+                        ushort stepTiming = 30;
+
+                        TileWaveBackToFront(bar + 0, 2, 1, stepTiming);
+                        TileWaveBackToFront(bar + 0, 2, 2, stepTiming);
+                        TileWaveBackToFront(bar + 1, 2, 1, stepTiming);
+                        TileWaveBackToFront(bar + 1, 2, 2, stepTiming);
+
+                        TileWaveFrontToBack(bar + 2, 2, 1, stepTiming);
+                        TileWaveFrontToBack(bar + 2, 2, 2, stepTiming);
+                        TileWaveFrontToBack(bar + 3, 2, 1, stepTiming);
+                        TileWaveFrontToBack(bar + 3, 2, 2, stepTiming);
+                    }
                 }
                 else if (111 <= bar && bar <= 113)
                 {
