@@ -8,7 +8,7 @@ static const unsigned char House_AllOff[1][27] = {
 };
 
 static const unsigned char House_OutsideOn[1][27] = {
-    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, },
 };
 
 static const unsigned char House_OneByOne[28][27] = {

@@ -974,7 +974,7 @@ namespace Sprinkler
 
         public async void PatternTestKeyI()
         {
-            await Task.Run(() => SetTreePattern(PatternConstants.Tree.OneByOne));
+            await Task.Run(() => SetTreePattern(PatternConstants.Tree.OutsideOn));
         }
 
         public async void PatternTestKeyO()
@@ -984,17 +984,17 @@ namespace Sprinkler
 
         public async void PatternTestKeyP()
         {
-
+            await Task.Run(() => SetTreePattern(PatternConstants.Tree.MiddleToBothEdge));
         }
 
         public async void PatternTestKeyAt()
         {
-
+            await Task.Run(() => SetTreePattern(PatternConstants.Tree.LeftToRight));
         }
 
         public async void PatternTestKeyOpenBrackets()
         {
-
+            await Task.Run(() => SetTreePattern(PatternConstants.Tree.RightToLeft));
         }
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -1016,12 +1016,12 @@ namespace Sprinkler
 
         public async void PatternTestKeyA()
         {
-            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.LeftToRightBlock));
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.AllOn));
         }
 
         public async void PatternTestKeyS()
         {
-            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.RightToLeftBlock));
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.OutsideOn));
         }
 
         public async void PatternTestKeyD()
@@ -1874,8 +1874,11 @@ namespace Sprinkler
                 //int timing = music.GetNoteTime(9, 8, 1);        // イントロ・伴奏あり
                 //int timing = music.GetNoteTime(32, 8, 1);        // 静かなフレーズ
                 //int timing = music.GetNoteTime(66, 8, 1);     // 静かなフレーズ・コーラス
-                int timing = music.GetNoteTime(103 - 1, 4, 2);     // ラスサビ直前から
-                //int timing = music.GetNoteTime(111 - 1, 4, 2);     // ラスサビ〆直前から
+                //int timing = music.GetNoteTime(103 - 1, 4, 2);     // ラスサビ直前から
+                int timing = music.GetNoteTime(111 - 1, 4, 2);     // ラスサビ〆直前から
+
+                int a = 0;
+                Console.WriteLine(a);
 
                 reader.CurrentTime = TimeSpan.FromMilliseconds(timing);
                 waveOut.Play();

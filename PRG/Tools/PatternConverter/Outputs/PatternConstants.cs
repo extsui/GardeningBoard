@@ -92,12 +92,15 @@ public static class PatternConstants
         public static Pattern TopToBottomHorizontal1 = new Pattern(4, 8);
         public static Pattern TopToBottomHorizontal3 = new Pattern(5, 10);
         public static Pattern TopToBottomBuffer = new Pattern(6, 14);
-        public static Pattern UpperLeftToRight = new Pattern(7, 6);
-        public static Pattern UpperRightToLeft = new Pattern(8, 6);
-        public static Pattern LowerLeftToRight = new Pattern(9, 6);
-        public static Pattern LowerRightToLeft = new Pattern(10, 6);
-        public static Pattern Candle = new Pattern(11, 22);
-        public static Pattern BottomToTop = new Pattern(12, 11);
-        public static Pattern Wave = new Pattern(13, 14);
+        public static Pattern UpperLeftToRight = new Pattern(7, 8);
+        public static Pattern UpperRightToLeft = new Pattern(8, 8);
+        public static Pattern LowerLeftToRight = new Pattern(9, 8);
+        public static Pattern LowerRightToLeft = new Pattern(10, 8);
+        public static Pattern LeftToRight = new Pattern(11, 12);
+        public static Pattern RightToLeft = new Pattern(12, 12);
+        public static Pattern MiddleToBothEdge = new Pattern(13, 8);
+        public static Pattern Candle = new Pattern(14, 22);
+        public static Pattern BottomToTop = new Pattern(15, 11);
+        public static Pattern Wave = new Pattern(16, 14);
     }
 }

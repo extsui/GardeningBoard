@@ -247,6 +247,18 @@
     background-color: #0000FF;
 }
 
+.Tree_LeftToRight {
+    background-color: #0000FF;
+}
+
+.Tree_RightToLeft {
+    background-color: #0000FF;
+}
+
+.Tree_MiddleToBothEdge {
+    background-color: #0000FF;
+}
+
 .Tree_Candle {
     background-color: #0000FF;
 }
