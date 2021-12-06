@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -1731,13 +1731,38 @@ namespace Sprinkler
                 else if (82 <= bar && bar <= 88)
                 {
                     // [サビ]
-                    if (bar % 4 != 0)
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ
+                    // →       ←
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ
+                    // →       ←
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ
+                    // →   ←  →  ←
+                    // ﾃﾞｯﾚﾚﾚﾚﾚ
+                    // TODO: (4拍目は未定なので作る)
+
+                    // 矢印の方向に木の点灯方向を動かす
+                    if (bar == 82)
                     {
-                        // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ * 3
-                    }
-                    else
-                    {
-                        // ﾃﾞｯﾚﾚﾚﾚﾚ
+                        var stepTiming = (ushort)music.GetNoteLengthTime(16, 1) / 2;
+                        var leftToRight = new BrickCommandArgs.Pattern(PatternConstants.Tree.LeftToRight.Id, (ushort)stepTiming, false);
+                        var rightToLeft = new BrickCommandArgs.Pattern(PatternConstants.Tree.RightToLeft.Id, (ushort)stepTiming, false);
+
+                        var timingAndPatternList = new List<(int timing, BrickCommandArgs.Pattern pattern)>
+                        {
+                            (music.GetNoteTime(bar + 0, 2, 1), leftToRight),
+                            (music.GetNoteTime(bar + 0, 2, 2), rightToLeft),
+                            (music.GetNoteTime(bar + 1, 2, 1), leftToRight),
+                            (music.GetNoteTime(bar + 1, 2, 2), rightToLeft),
+                            (music.GetNoteTime(bar + 2, 4, 1), leftToRight),
+                            (music.GetNoteTime(bar + 2, 4, 2), rightToLeft),
+                            (music.GetNoteTime(bar + 2, 4, 3), leftToRight),
+                            (music.GetNoteTime(bar + 2, 4, 4), rightToLeft),
+                        };
+
+                        foreach (var timingAndPattern in timingAndPatternList)
+                        {
+                            commandSequencer.SetTimedEvent(timingAndPattern.timing, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TreeOnly, timingAndPattern.pattern)));
+                        }
                     }
                 }
                 else if (89 <= bar && bar <= 92)
