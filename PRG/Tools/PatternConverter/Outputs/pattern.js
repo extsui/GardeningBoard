@@ -72,4 +72,6 @@ var patternList = {
     "14": { text: "Tree_Candle", stepCount: 22, stepTiming: 10, isRepeat: false },
     "15": { text: "Tree_BottomToTop", stepCount: 11, stepTiming: 10, isRepeat: false },
     "16": { text: "Tree_Wave", stepCount: 14, stepTiming: 10, isRepeat: false },
+    "17": { text: "Tree_Explosion", stepCount: 10, stepTiming: 10, isRepeat: false },
+    "18": { text: "Tree_Implosion", stepCount: 10, stepTiming: 10, isRepeat: false },
 };

@@ -102,5 +102,7 @@ public static class PatternConstants
         public static Pattern Candle = new Pattern(14, 22);
         public static Pattern BottomToTop = new Pattern(15, 11);
         public static Pattern Wave = new Pattern(16, 14);
+        public static Pattern Explosion = new Pattern(17, 10);
+        public static Pattern Implosion = new Pattern(18, 10);
     }
 }
