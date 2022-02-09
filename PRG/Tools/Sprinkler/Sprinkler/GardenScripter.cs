@@ -15,7 +15,10 @@ namespace Sprinkler
         // 安全な Form 操作呼び出し
         private Action<string> m_serialSendAsync;
         private Action m_setScriptStartTick;
-        
+
+        // 曲再生を中断可能にするためのトークン
+        private CancellationTokenSource m_PlayCancelToken;
+
         public GardenScripter(Action<string> serialSendAsync, Action setScriptStartTick)
         {
             m_garden = new Garden("../../GardenConfig.yml");
@@ -388,7 +391,15 @@ namespace Sprinkler
 
             await Task.Run(() =>
             {
-                commandSequencer.Run();
+                commandSequencer.FixTimedEvents();
+                foreach (var isFinished in commandSequencer.RunAndWait())
+                {
+                    if (isFinished)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(1);
+                }
             });
         }
 
@@ -405,7 +416,15 @@ namespace Sprinkler
 
             await Task.Run(() =>
             {
-                commandSequencer.Run();
+                commandSequencer.FixTimedEvents();
+                foreach (var isFinished in commandSequencer.RunAndWait())
+                {
+                    if (isFinished)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(1);
+                }
             });
         }
 
@@ -1154,6 +1173,10 @@ namespace Sprinkler
             // 本来は非公開で良いがデバッグ用のために公開
             public List<(int timing, Action command)> TimedEventList { get; private set; }
 
+            // 登録されたイベントの開始時刻
+            // これより以前の時刻のイベントは再生対象にならない
+            private int? m_StartTime;
+
             public CommandSequencer()
             {
                 TimedEventList = new List<(int, Action)>();
@@ -1161,36 +1184,48 @@ namespace Sprinkler
 
             public void SetTimedEvent(int timing, Action command)
             {
+                Trace.Assert(!m_StartTime.HasValue);
                 TimedEventList.Add((timing, command));
             }
 
-            public void Run()
+            public void FixTimedEvents()
             {
-                // 最初から再生
-                Run(0);
+                FixTimedEvents(0);
             }
 
-            // 開始タイミング指定版
-            public void Run(int startTiming)
+            public void FixTimedEvents(int startTiming)
             {
+                Trace.Assert(!m_StartTime.HasValue);
+                m_StartTime = startTiming;
+
                 // 昇順に並び替え
                 TimedEventList.Sort((a, b) => (a.timing - b.timing));
+            }
 
+            private int GetStartIndex()
+            {
                 // 開始タイミング以前のイベントはスキップ
                 int startIndex = 0;
                 foreach (var timedEvent in TimedEventList)
                 {
                     // startTiming で指定したタイミングのコマンドも実行されることを
                     // 想定しているので必要なので < ではなく <= とする必要がある
-                    if (startTiming <= timedEvent.timing)
+                    if (m_StartTime.Value <= timedEvent.timing)
                     {
                         break;
                     }
                     startIndex++;
                 }
+                return startIndex;
+            }
 
-                int nowTime = Environment.TickCount - startTiming;
-                for (int i = startIndex; i < TimedEventList.Count; i++)
+            // 実行が完了したら true、途中の場合は false が返る
+            public IEnumerable<bool> RunAndWait()
+            {
+                Trace.Assert(m_StartTime.HasValue);
+
+                int nowTime = Environment.TickCount - m_StartTime.Value;
+                for (int i = GetStartIndex(); i < TimedEventList.Count; i++)
                 {
                     var timedEvent = TimedEventList[i];
                     while (true)
@@ -1202,9 +1237,10 @@ namespace Sprinkler
                             Task.Run(() => timedEvent.command());
                             break;
                         }
-                        Thread.Sleep(1);
+                        yield return false;
                     }
                 }
+                yield return true;
             }
         }
 
@@ -1297,6 +1333,8 @@ namespace Sprinkler
                 return end - begin;
             }
         }
+
+        private Task m_Task;
 
         public async void PlayWizardsInWinter()
         {
@@ -1953,7 +1991,7 @@ namespace Sprinkler
             var waveOut = new WaveOut();
             waveOut.Init(reader);
 
-            await Task.Run(() =>
+            Action action = () =>
             {
                 //int timing = music.GetNoteTime(1, 8, 1);      // イントロ (最初)
                 //int timing = music.GetNoteTime(9, 8, 1);        // イントロ・伴奏あり
@@ -1969,9 +2007,32 @@ namespace Sprinkler
 
                 reader.CurrentTime = TimeSpan.FromMilliseconds(timing);
                 waveOut.Play();
-                
-                commandSequencer.Run(timing);
-            });
+
+                commandSequencer.FixTimedEvents(timing);
+
+                foreach (bool isFinished in commandSequencer.RunAndWait())
+                {
+                    if (isFinished || m_PlayCancelToken.IsCancellationRequested)
+                    {
+                        waveOut.Stop();
+                        break;
+                    }
+                    Thread.Sleep(1);
+                }
+            };
+
+            if (m_PlayCancelToken == null)
+            {
+                m_PlayCancelToken = new CancellationTokenSource();
+                m_Task = Task.Run(action, m_PlayCancelToken.Token);
+                await m_Task;
+            }
+            else
+            {
+                m_PlayCancelToken.Cancel();
+                m_Task.Wait();
+                m_PlayCancelToken = null;
+            }
         }
     }
 }
