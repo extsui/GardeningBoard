@@ -1157,12 +1157,66 @@ namespace Sprinkler
 
         public async void PatternTestKeyQuestion()
         {
-
+            await Task.Run(() => { });
         }
 
         public async void PatternTestKeyUnderBar()
         {
+            await Task.Run(() => { });
+        }
 
+        ////////////////////////////////////////////////////////////////////////////////
+        //  テンキー 0, 1, 2, .., 9
+        ////////////////////////////////////////////////////////////////////////////////
+
+        public async void PatternTestKeyNumPad0()
+        {
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.Explosion));
+        }
+
+        public async void PatternTestKeyNumPad1()
+        {
+            await Task.Run(() => SetGrassPattern(PatternConstants.Grass.Implosion));
+        }
+
+        public async void PatternTestKeyNumPad2()
+        {
+            await Task.Run(() => SetTreePattern(PatternConstants.Tree.Explosion));
+        }
+
+        public async void PatternTestKeyNumPad3()
+        {
+            await Task.Run(() => SetTreePattern(PatternConstants.Tree.Implosion));
+        }
+
+        public async void PatternTestKeyNumPad4()
+        {
+            await Task.Run(() => SetHousePattern(PatternConstants.House.Explosion));
+        }
+
+        public async void PatternTestKeyNumPad5()
+        {
+            await Task.Run(() => SetHousePattern(PatternConstants.House.Implosion));
+        }
+
+        public async void PatternTestKeyNumPad6()
+        {
+            await Task.Run(() => { });
+        }
+
+        public async void PatternTestKeyNumPad7()
+        {
+            await Task.Run(() => { });
+        }
+
+        public async void PatternTestKeyNumPad8()
+        {
+            await Task.Run(() => { });
+        }
+
+        public async void PatternTestKeyNumPad9()
+        {
+            await Task.Run(() => { });
         }
 
         /// <summary>

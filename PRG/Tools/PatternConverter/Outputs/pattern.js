@@ -37,6 +37,8 @@ var patternList = {
     "10": { text: "House_ShrinkFromTopPoint", stepCount: 13, stepTiming: 10, isRepeat: false },
     "11": { text: "House_ShootingStar", stepCount: 14, stepTiming: 10, isRepeat: false },
     "12": { text: "House_Pseudo3dRotation", stepCount: 68, stepTiming: 10, isRepeat: false },
+    "13": { text: "House_Explosion", stepCount: 8, stepTiming: 10, isRepeat: false },
+    "14": { text: "House_Implosion", stepCount: 8, stepTiming: 10, isRepeat: false },
     // Tile
     "00": { text: "Tile_AllOn", stepCount: 1, stepTiming: 10, isRepeat: false },
     "01": { text: "Tile_AllOff", stepCount: 1, stepTiming: 10, isRepeat: false },

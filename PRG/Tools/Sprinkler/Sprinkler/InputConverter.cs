@@ -16,7 +16,7 @@ namespace Sprinkler
 
         // TODO: Velocity を保持するためのリストが必要な気がする。
         //       NoteOff の時に輝度の降下率を NoteOn と合わせるために。
-        private InputDevice m_inputDevice;
+        //private InputDevice m_inputDevice;
 
         public InputConverter(GardenScripter scripter, string midiInputDeviceName)
         {
@@ -131,14 +131,14 @@ namespace Sprinkler
         ////////////////////////////////////////////////////////////////////////////////
 
         // ファンクション行
-        private void OnKeyF1()            { m_scripter.SampleSequence();             }
-        private void OnKeyF2()            { m_scripter.SampleBrightness();           }
-        private void OnKeyF3()            { m_scripter.SampleStress();               }
-        private void OnKeyF4()            { m_scripter.SampleCircle();               }
-        private void OnKeyF5()            { m_scripter.InternalMultiThreadTest();    }
-        private void OnKeyF6()            { m_scripter.ScenarioShootingStar();       }
+        private void OnKeyF1()            { m_scripter.SampleSequence(); }
+        private void OnKeyF2()            { m_scripter.SampleBrightness(); }
+        private void OnKeyF3()            { m_scripter.SampleStress(); }
+        private void OnKeyF4()            { m_scripter.SampleCircle(); }
+        private void OnKeyF5()            { m_scripter.InternalMultiThreadTest(); }
+        private void OnKeyF6()            { m_scripter.ScenarioShootingStar(); }
         private void OnKeyF7()            { m_scripter.TestCommandSequencerSimple(); }
-        private void OnKeyF8()            { m_scripter.TestCommandSequencerAsync();  }
+        private void OnKeyF8()            { m_scripter.TestCommandSequencerAsync(); }
         private void OnKeyF9()            {  }
         private void OnKeyF10()           { m_scripter.PatternTest3(); }
         private void OnKeyF11()           { m_scripter.PatternTest2(); }
@@ -197,14 +197,24 @@ namespace Sprinkler
         private void OnKeyUnderBar()      { m_scripter.PatternTestKeyUnderBar(); }
         // その他
         private void OnKeyDelete()        { m_scripter.CommandTurnOffAll(); }
-        private void OnKeyEnter()         { m_scripter.CommandTurnOnAll();  }
+        private void OnKeyEnter()         { m_scripter.CommandTurnOnAll(); }
         private void OnKeySpace()         { m_scripter.PlayWizardsInWinter(); }
         // 矢印
-        private void OnKeyUp()            { m_scripter.PatternTestBrightnessUp();   }
+        private void OnKeyUp()            { m_scripter.PatternTestBrightnessUp(); }
         private void OnKeyDown()          { m_scripter.PatternTestBrightnessDown(); }
         private void OnKeyLeft()          { m_scripter.PatternTestStepTimingToLong(); }
         private void OnKeyRight()         { m_scripter.PatternTestStepTimingToShort(); }
 
+        private void OnKeyNumPad0()       { m_scripter.PatternTestKeyNumPad0(); }
+        private void OnKeyNumPad1()       { m_scripter.PatternTestKeyNumPad1(); }
+        private void OnKeyNumPad2()       { m_scripter.PatternTestKeyNumPad2(); }
+        private void OnKeyNumPad3()       { m_scripter.PatternTestKeyNumPad3(); }
+        private void OnKeyNumPad4()       { m_scripter.PatternTestKeyNumPad4(); }
+        private void OnKeyNumPad5()       { m_scripter.PatternTestKeyNumPad5(); }
+        private void OnKeyNumPad6()       { m_scripter.PatternTestKeyNumPad6(); }
+        private void OnKeyNumPad7()       { m_scripter.PatternTestKeyNumPad7(); }
+        private void OnKeyNumPad8()       { m_scripter.PatternTestKeyNumPad8(); }
+        private void OnKeyNumPad9()       { m_scripter.PatternTestKeyNumPad9(); }
 
         public void OnKeyboardEvent(Keys keyCode)
         {
@@ -283,6 +293,17 @@ namespace Sprinkler
                 { Keys.Down,            OnKeyDown          },  // ↓
                 { Keys.Left,            OnKeyLeft          },  // ←
                 { Keys.Right,           OnKeyRight         },  // →
+
+                { Keys.NumPad0,         OnKeyNumPad0       },  // テンキー0
+                { Keys.NumPad1,         OnKeyNumPad1       },  // テンキー1
+                { Keys.NumPad2,         OnKeyNumPad2       },  // テンキー2
+                { Keys.NumPad3,         OnKeyNumPad3       },  // テンキー3
+                { Keys.NumPad4,         OnKeyNumPad4       },  // テンキー4
+                { Keys.NumPad5,         OnKeyNumPad5       },  // テンキー5
+                { Keys.NumPad6,         OnKeyNumPad6       },  // テンキー6
+                { Keys.NumPad7,         OnKeyNumPad7       },  // テンキー7
+                { Keys.NumPad8,         OnKeyNumPad8       },  // テンキー8
+                { Keys.NumPad9,         OnKeyNumPad9       },  // テンキー9
             };
 
             if (table.ContainsKey(keyCode))

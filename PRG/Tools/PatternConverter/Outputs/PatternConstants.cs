@@ -61,6 +61,8 @@ public static class PatternConstants
         public static Pattern ShrinkFromTopPoint = new Pattern(10, 13);
         public static Pattern ShootingStar = new Pattern(11, 14);
         public static Pattern Pseudo3dRotation = new Pattern(12, 68);
+        public static Pattern Explosion = new Pattern(13, 8);
+        public static Pattern Implosion = new Pattern(14, 8);
     }
 
     public static class Tile
