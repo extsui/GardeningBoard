@@ -214,6 +214,24 @@ static const unsigned char Grass_TopToBottom[4][11] = {
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
 };
 
+static const unsigned char Grass_Explosion[6][11] = {
+    { 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, },
+    { 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, },
+    { 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+};
+
+static const unsigned char Grass_Implosion[6][11] = {
+    { 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, },
+    { 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, },
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
+    { 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, },
+    { 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+};
+
 static const unsigned char Grass_LeftToRightBlock[4][11] = {
     { 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, },
     { 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, },
@@ -252,6 +270,8 @@ static const Grass_PatternRecord Grass_PatternTable[] = {
     { Grass_RightToLeftVertical3, 12 },
     { Grass_BottomToTop, 4 },
     { Grass_TopToBottom, 4 },
+    { Grass_Explosion, 6 },
+    { Grass_Implosion, 6 },
     { Grass_LeftToRightBlock, 4 },
     { Grass_RightToLeftBlock, 4 },
 };

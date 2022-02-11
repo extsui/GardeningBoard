@@ -40,8 +40,10 @@ public static class PatternConstants
         public static Pattern RightToLeftVertical3 = new Pattern(15, 12);
         public static Pattern BottomToTop = new Pattern(16, 4);
         public static Pattern TopToBottom = new Pattern(17, 4);
-        public static Pattern LeftToRightBlock = new Pattern(18, 4);
-        public static Pattern RightToLeftBlock = new Pattern(19, 4);
+        public static Pattern Explosion = new Pattern(18, 6);
+        public static Pattern Implosion = new Pattern(19, 6);
+        public static Pattern LeftToRightBlock = new Pattern(20, 4);
+        public static Pattern RightToLeftBlock = new Pattern(21, 4);
     }
 
     public static class House

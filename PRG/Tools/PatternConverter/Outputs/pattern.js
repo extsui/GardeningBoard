@@ -19,8 +19,10 @@ var patternList = {
     "15": { text: "Grass_RightToLeftVertical3", stepCount: 12, stepTiming: 10, isRepeat: false },
     "16": { text: "Grass_BottomToTop", stepCount: 4, stepTiming: 10, isRepeat: false },
     "17": { text: "Grass_TopToBottom", stepCount: 4, stepTiming: 10, isRepeat: false },
-    "18": { text: "Grass_LeftToRightBlock", stepCount: 4, stepTiming: 10, isRepeat: false },
-    "19": { text: "Grass_RightToLeftBlock", stepCount: 4, stepTiming: 10, isRepeat: false },
+    "18": { text: "Grass_Explosion", stepCount: 6, stepTiming: 10, isRepeat: false },
+    "19": { text: "Grass_Implosion", stepCount: 6, stepTiming: 10, isRepeat: false },
+    "20": { text: "Grass_LeftToRightBlock", stepCount: 4, stepTiming: 10, isRepeat: false },
+    "21": { text: "Grass_RightToLeftBlock", stepCount: 4, stepTiming: 10, isRepeat: false },
     // House
     "00": { text: "House_AllOn", stepCount: 1, stepTiming: 10, isRepeat: false },
     "01": { text: "House_AllOff", stepCount: 1, stepTiming: 10, isRepeat: false },
