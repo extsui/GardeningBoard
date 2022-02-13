@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -1550,26 +1550,6 @@ namespace Sprinkler
                             //commandSequencer.SetTimedEvent(music.GetNoteTime(bar + (beat - 1), 4, 1), () => ExecuteCommand(m_garden.MakeStepTimingCommand(Position.Hexagon.All, OperationTarget.TileOnly, stepTimingArray[beat - 1])));
                         }
                     }
-
-                    if (bar == 35)
-                    {
-                        /*
-                        ushort[] stepTimingArray =
-                        {
-                            (ushort)(stepTime * 1.0),
-                            (ushort)(stepTime * 0.8),
-                            (ushort)(stepTime * 0.4),
-                            (ushort)(stepTime * 0.2),
-                        };
-
-                        for (int beat = 1; beat <= 4; beat++)
-                        {
-                            commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, beat), () => ExecuteCommand(m_garden.MakeStepTimingCommand(Position.Hexagon.All, OperationTarget.TileOnly, stepTimingArray[beat - 1])));
-                        }
-                        */
-                    }
-
-                    /*
                     if (bar == 32)
                     {
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 1), () => ExecuteCommand(m_garden.MakeStepTimingCommand(Position.Hexagon.All, OperationTarget.TileOnly, stepTime)));
@@ -1586,68 +1566,37 @@ namespace Sprinkler
                     {
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 1), () => ExecuteCommand(m_garden.MakeStepTimingCommand(Position.Hexagon.All, OperationTarget.TileOnly, (ushort)(stepTime * 0.2))));
                     }
-                    */
 
-                    /*
                     const int delayMilliSeconds = 30;
 
                     if (bar % 4 == 0)
                     {
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.Up, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.RightUp, OperationTarget.InsertedOnly, delayMilliSeconds, false));
-
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.RightUp, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.RightDown, OperationTarget.InsertedOnly, delayMilliSeconds, false));
-
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 3), () => SequentialCommandOneShotSmoothly(Position.Hexagon.RightDown, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 3), () => SequentialCommandOneShotSmoothly(Position.Hexagon.Down, OperationTarget.InsertedOnly, delayMilliSeconds, false));
-
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 4), () => SequentialCommandOneShotSmoothly(Position.Hexagon.Down, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 4), () => SequentialCommandOneShotSmoothly(Position.Hexagon.LeftDown, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                     }
                     else if (bar % 4 == 1)
                     {
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.LeftDown, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.LeftUp, OperationTarget.InsertedOnly, delayMilliSeconds, false));
-
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.LeftUp, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.Up, OperationTarget.InsertedOnly, delayMilliSeconds, false));
-
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 3), () => SequentialCommandOneShotSmoothly(Position.Hexagon.Up, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 3), () => SequentialCommandOneShotSmoothly(Position.Hexagon.RightUp, OperationTarget.InsertedOnly, delayMilliSeconds, false));
-
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 4), () => SequentialCommandOneShotSmoothly(Position.Hexagon.RightUp, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 4), () => SequentialCommandOneShotSmoothly(Position.Hexagon.RightDown, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                     }
                     else if (bar % 4 == 2)
                     {
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.RightDown, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.Down, OperationTarget.InsertedOnly, delayMilliSeconds, false));
-
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.Down, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.LeftDown, OperationTarget.InsertedOnly, delayMilliSeconds, false));
-
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 3), () => SequentialCommandOneShotSmoothly(Position.Hexagon.LeftDown, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 3), () => SequentialCommandOneShotSmoothly(Position.Hexagon.LeftUp, OperationTarget.InsertedOnly, delayMilliSeconds, false));
-
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 4), () => SequentialCommandOneShotSmoothly(Position.Hexagon.LeftUp, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 4), () => SequentialCommandOneShotSmoothly(Position.Hexagon.Up, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                     }
                     else if (bar % 4 == 3)
                     {
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.Up, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 1), () => SequentialCommandOneShotSmoothly(Position.Hexagon.RightUp, OperationTarget.InsertedOnly, delayMilliSeconds, false));
-
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.RightUp, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 2), () => SequentialCommandOneShotSmoothly(Position.Hexagon.RightDown, OperationTarget.InsertedOnly, delayMilliSeconds, false));
-
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 3), () => SequentialCommandOneShotSmoothly(Position.Hexagon.RightDown, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 3), () => SequentialCommandOneShotSmoothly(Position.Hexagon.Down, OperationTarget.InsertedOnly, delayMilliSeconds, false));
-
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 4), () => SequentialCommandOneShotSmoothly(Position.Hexagon.Down, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 4), () => SequentialCommandOneShotSmoothly(Position.Hexagon.LeftDown, OperationTarget.InsertedOnly, delayMilliSeconds, false));
                     }
-                    */
                 }
                 else if (36 <= bar && bar <= 39)
                 {
@@ -2049,15 +1998,16 @@ namespace Sprinkler
             {
                 //int timing = music.GetNoteTime(1, 8, 1);      // イントロ (最初)
                 //int timing = music.GetNoteTime(9, 8, 1);        // イントロ・伴奏あり
-                //int timing = music.GetNoteTime(32, 8, 1);        // 静かなフレーズ
-                int timing = music.GetNoteTime(62, 8, 1);     // 静かなフレーズ
+                //int timing = music.GetNoteTime(20, 8, 1);        // 
+                //int timing = music.GetNoteTime(28, 8, 1);        // クールダウン
+                int timing = music.GetNoteTime(32, 8, 1);        // 静かなフレーズ
+                //int timing = music.GetNoteTime(62, 8, 1);     // 静かなフレーズ
                 //int timing = music.GetNoteTime(66, 8, 1);     // 静かなフレーズ・コーラス
                 //int timing = music.GetNoteTime(72, 8, 1);     // 静かなフレーズ・終盤
+                //int timing = music.GetNoteTime(78, 8, 1);     // 
+                //int timing = music.GetNoteTime(82, 8, 1);     // サビ
                 //int timing = music.GetNoteTime(103 - 1, 4, 2);     // ラスサビ直前から
                 //int timing = music.GetNoteTime(111 - 1, 4, 2);     // ラスサビ〆直前から
-
-                int a = 0;
-                Console.WriteLine(a);
 
                 reader.CurrentTime = TimeSpan.FromMilliseconds(timing);
                 waveOut.Play();
