@@ -1,10 +1,10 @@
-﻿using System;
+﻿using NAudio.Wave;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
-using NAudio.Wave;
 
 namespace Sprinkler
 {
@@ -15,9 +15,6 @@ namespace Sprinkler
         // 安全な Form 操作呼び出し
         private Action<string> m_serialSendAsync;
         private Action m_setScriptStartTick;
-
-        // 曲再生を中断可能にするためのトークン
-        private CancellationTokenSource m_PlayCancelToken;
 
         public GardenScripter(Action<string> serialSendAsync, Action setScriptStartTick)
         {
@@ -1219,176 +1216,16 @@ namespace Sprinkler
             await Task.Run(() => { });
         }
 
-        /// <summary>
-        /// 指定した時間後にコマンド実行するクラス
-        /// </summary>
-        public class CommandSequencer
-        {
-            // 本来は非公開で良いがデバッグ用のために公開
-            public List<(int timing, Action command)> TimedEventList { get; private set; }
+        ////////////////////////////////////////////////////////////////////////////////
+        //  Wizards in Winter 用コード
+        ////////////////////////////////////////////////////////////////////////////////
 
-            // 登録されたイベントの開始時刻
-            // これより以前の時刻のイベントは再生対象にならない
-            private int? m_StartTime;
-
-            public CommandSequencer()
-            {
-                TimedEventList = new List<(int, Action)>();
-            }
-
-            public void SetTimedEvent(int timing, Action command)
-            {
-                Trace.Assert(!m_StartTime.HasValue);
-                TimedEventList.Add((timing, command));
-            }
-
-            public void FixTimedEvents()
-            {
-                FixTimedEvents(0);
-            }
-
-            public void FixTimedEvents(int startTiming)
-            {
-                Trace.Assert(!m_StartTime.HasValue);
-                m_StartTime = startTiming;
-
-                // 昇順に並び替え
-                TimedEventList.Sort((a, b) => (a.timing - b.timing));
-            }
-
-            private int GetStartIndex()
-            {
-                // 開始タイミング以前のイベントはスキップ
-                int startIndex = 0;
-                foreach (var timedEvent in TimedEventList)
-                {
-                    // startTiming で指定したタイミングのコマンドも実行されることを
-                    // 想定しているので必要なので < ではなく <= とする必要がある
-                    if (m_StartTime.Value <= timedEvent.timing)
-                    {
-                        break;
-                    }
-                    startIndex++;
-                }
-                return startIndex;
-            }
-
-            // 実行が完了したら true、途中の場合は false が返る
-            public IEnumerable<bool> RunAndWait()
-            {
-                Trace.Assert(m_StartTime.HasValue);
-
-                int nowTime = Environment.TickCount - m_StartTime.Value;
-                for (int i = GetStartIndex(); i < TimedEventList.Count; i++)
-                {
-                    var timedEvent = TimedEventList[i];
-                    while (true)
-                    {
-                        int spentTime = Environment.TickCount - nowTime;
-                        if (spentTime > timedEvent.timing)
-                        {
-                            // コマンド自体が長時間のシーケンスの場合があるので非同期実行にする
-                            Task.Run(() => timedEvent.command());
-                            break;
-                        }
-                        yield return false;
-                    }
-                }
-                yield return true;
-            }
-        }
-
-        /// <summary>
-        /// GardeningBoard 用の曲クラス
-        /// </summary>
-        public class GardenMusic
-        {
-            // 曲のテンポ
-            // 整数だと合わない場合があるので浮動小数
-            public double Tempo { get; private set; }
-
-            // 曲の小節数 (1～)
-            public int BarCount { get; private set; }
-
-            // 曲再生タイミング遅延 (ミリ秒)
-            // - 曲の頭の無音区間も含む
-            // - PC 環境ごとに再設定が必要かも
-            public int PlayStartOffsetMilliSeconds { get; private set; }
-
-            public GardenMusic(double tempo, int barCount, int playStartOffsetMilliSeconds)
-            {
-                Tempo = tempo;
-                BarCount = barCount;
-                PlayStartOffsetMilliSeconds = playStartOffsetMilliSeconds;
-            }
-
-            // 小節内のタイミング
-            // - 2分音符  : half note
-            // - 4分音符  : quarter note
-            // - 8分音符  : eighth note
-            // - 16分音符 : sixteenth note
-            // 1  |1               |
-            // 2  |1       2       |
-            // 4  |1   2   3   4   |
-            // 8  |1 2 3 4 5 6 7 8 |
-            // 16 |123456789.......|
-            private int AllNoteTiming       => (int)((60 / Tempo * 4) * 1000);
-            private int HalfNoteTiming      => (int)((60 / Tempo * 2) * 1000);
-            private int QuarterNoteTiming   => (int)((60 / Tempo)     * 1000);
-            private int EightNoteTiming     => (int)((60 / Tempo / 2) * 1000);
-            private int SixteenthNoteTiming => (int)((60 / Tempo / 4) * 1000);
-
-            // 小節の開始時間 (秒・浮動小数) の取得
-            // オフセット考慮無しであることに注意
-            private double GetBarTime(int barNumber)
-            {
-                Trace.Assert(barNumber >= 1);
-                return (((barNumber - 1) * 4) / Tempo) * 60;
-            }
-
-            // 曲の中のノーツ時間の取得 (ミリ秒)
-            public int GetNoteTime(int barNumber, int beat, int noteNumber)
-            {
-                Trace.Assert(noteNumber >= 1);
-
-                // 小節開始時刻
-                int barTiming = (int)(GetBarTime(barNumber) * 1000 + PlayStartOffsetMilliSeconds);
-
-                switch (beat)
-                {
-                    case 1:
-                        return barTiming + AllNoteTiming * (noteNumber - 1);
-                    case 2:
-                        return barTiming + HalfNoteTiming * (noteNumber - 1);
-                    case 4:
-                        return barTiming + QuarterNoteTiming * (noteNumber - 1);
-                    case 8:
-                        return barTiming + EightNoteTiming * (noteNumber - 1);
-                    case 16:
-                        return barTiming + SixteenthNoteTiming * (noteNumber - 1);
-                    default:
-                        throw new NotSupportedException("");
-                }
-            }
-
-            // 小節開始時間
-            public int GetNoteTime(int barNumber)
-            {
-                return GetNoteTime(barNumber, 1, 1);
-            }
-
-            // 1音の長さの取得 (ミリ秒)
-            // - 例1: beat=8, notes=1 --> 8分音符1個分
-            // - 例2: beat=4, notes=3 --> 4分音符3個分
-            public int GetNoteLengthTime(int beat, int notes)
-            {
-                int begin = GetNoteTime(1, beat, 1);
-                int end = GetNoteTime(1, beat, notes + 1);
-                return end - begin;
-            }
-        }
+        // TODO: クラスの分離
 
         private Task m_Task;
+
+        // 曲再生を中断可能にするためのトークン
+        private CancellationTokenSource m_PlayCancelToken;
 
         public async void PlayWizardsInWinter()
         {
@@ -1401,6 +1238,61 @@ namespace Sprinkler
             // - 再生タイミング遅延との兼ね合いもあるが割と妥当な値のハズ
             var music = new GardenMusic(148.4, 113, 400);
 
+            CreateScore(music, commandSequencer);
+
+            var reader = new AudioFileReader("./Music/Wizards_in_Winter.mp3");
+            reader.Volume = 0.2f;
+
+            var waveOut = new WaveOut();
+            waveOut.Init(reader);
+
+            Action action = () =>
+            {
+                //int timing = music.GetNoteTime(1, 8, 1);      // イントロ (最初)
+                //int timing = music.GetNoteTime(9, 8, 1);        // イントロ・伴奏あり
+                //int timing = music.GetNoteTime(20, 8, 1);        // 
+                //int timing = music.GetNoteTime(28, 8, 1);        // クールダウン
+                int timing = music.GetNoteTime(32, 8, 1);        // 静かなフレーズ
+                //int timing = music.GetNoteTime(62, 8, 1);     // 静かなフレーズ
+                //int timing = music.GetNoteTime(66, 8, 1);     // 静かなフレーズ・コーラス
+                //int timing = music.GetNoteTime(72, 8, 1);     // 静かなフレーズ・終盤
+                //int timing = music.GetNoteTime(78, 8, 1);     // 
+                //int timing = music.GetNoteTime(82, 8, 1);     // サビ
+                //int timing = music.GetNoteTime(103 - 1, 4, 2);     // ラスサビ直前から
+                //int timing = music.GetNoteTime(111 - 1, 4, 2);     // ラスサビ〆直前から
+
+                reader.CurrentTime = TimeSpan.FromMilliseconds(timing);
+                waveOut.Play();
+
+                commandSequencer.FixTimedEvents(timing);
+
+                foreach (bool isFinished in commandSequencer.RunAndWait())
+                {
+                    if (isFinished || m_PlayCancelToken.IsCancellationRequested)
+                    {
+                        waveOut.Stop();
+                        break;
+                    }
+                    Thread.Sleep(1);
+                }
+            };
+
+            if (m_PlayCancelToken == null)
+            {
+                m_PlayCancelToken = new CancellationTokenSource();
+                m_Task = Task.Run(action, m_PlayCancelToken.Token);
+                await m_Task;
+            }
+            else
+            {
+                m_PlayCancelToken.Cancel();
+                m_Task.Wait();
+                m_PlayCancelToken = null;
+            }
+        }
+
+        private void CreateScore(GardenMusic music, CommandSequencer commandSequencer)
+        {
             for (int bar = 1; bar <= music.BarCount; bar++)
             {
                 if (1 <= bar && bar <= 8)
@@ -1986,56 +1878,6 @@ namespace Sprinkler
                     //commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 3), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10, true));
                     //commandSequencer.SetTimedEvent(music.GetNoteTime(bar, 4, 4), () => SequentialCommandOneShotSmoothly(Position.Hexagon.All, OperationTarget.TileOnly, 10, true));
                 }
-            }
-
-            var reader = new AudioFileReader("./Music/Wizards_in_Winter.mp3");
-            reader.Volume = 0.2f;
-
-            var waveOut = new WaveOut();
-            waveOut.Init(reader);
-
-            Action action = () =>
-            {
-                //int timing = music.GetNoteTime(1, 8, 1);      // イントロ (最初)
-                //int timing = music.GetNoteTime(9, 8, 1);        // イントロ・伴奏あり
-                //int timing = music.GetNoteTime(20, 8, 1);        // 
-                //int timing = music.GetNoteTime(28, 8, 1);        // クールダウン
-                int timing = music.GetNoteTime(32, 8, 1);        // 静かなフレーズ
-                //int timing = music.GetNoteTime(62, 8, 1);     // 静かなフレーズ
-                //int timing = music.GetNoteTime(66, 8, 1);     // 静かなフレーズ・コーラス
-                //int timing = music.GetNoteTime(72, 8, 1);     // 静かなフレーズ・終盤
-                //int timing = music.GetNoteTime(78, 8, 1);     // 
-                //int timing = music.GetNoteTime(82, 8, 1);     // サビ
-                //int timing = music.GetNoteTime(103 - 1, 4, 2);     // ラスサビ直前から
-                //int timing = music.GetNoteTime(111 - 1, 4, 2);     // ラスサビ〆直前から
-
-                reader.CurrentTime = TimeSpan.FromMilliseconds(timing);
-                waveOut.Play();
-
-                commandSequencer.FixTimedEvents(timing);
-
-                foreach (bool isFinished in commandSequencer.RunAndWait())
-                {
-                    if (isFinished || m_PlayCancelToken.IsCancellationRequested)
-                    {
-                        waveOut.Stop();
-                        break;
-                    }
-                    Thread.Sleep(1);
-                }
-            };
-
-            if (m_PlayCancelToken == null)
-            {
-                m_PlayCancelToken = new CancellationTokenSource();
-                m_Task = Task.Run(action, m_PlayCancelToken.Token);
-                await m_Task;
-            }
-            else
-            {
-                m_PlayCancelToken.Cancel();
-                m_Task.Wait();
-                m_PlayCancelToken = null;
             }
         }
     }

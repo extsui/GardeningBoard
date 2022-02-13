@@ -85,6 +85,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandSequencer.cs" />
+    <Compile Include="GardenMusic.cs" />
     <Compile Include="InputConverter.cs" />
     <Compile Include="Form.cs">
       <SubType>Form</SubType>
