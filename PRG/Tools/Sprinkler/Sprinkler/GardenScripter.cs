@@ -1248,12 +1248,13 @@ namespace Sprinkler
                 //int timing = music.GetNoteTime(20, 8, 1);        // 
                 //int timing = music.GetNoteTime(28, 8, 1);        // クールダウン
                 //int timing = music.GetNoteTime(32, 8, 1);        // 静かなフレーズ
+                int timing = music.GetNoteTime(48, 8, 1);        // サビ
                 //int timing = music.GetNoteTime(62, 8, 1);     // 静かなフレーズ
                 //int timing = music.GetNoteTime(66, 8, 1);     // 静かなフレーズ・コーラス
                 //int timing = music.GetNoteTime(72, 8, 1);     // 静かなフレーズ・終盤
                 //int timing = music.GetNoteTime(78, 8, 1);     // 
                 //int timing = music.GetNoteTime(82, 8, 1);     // サビ
-                int timing = music.GetNoteTime(93, 8, 1);     // サビ
+                //int timing = music.GetNoteTime(93, 8, 1);     // サビ
                 //int timing = music.GetNoteTime(103 - 1, 4, 2);     // ラスサビ直前から
                 //int timing = music.GetNoteTime(111 - 1, 4, 2);     // ラスサビ〆直前から
 
@@ -1533,14 +1534,79 @@ namespace Sprinkler
                 }
                 else if (48 <= bar && bar <= 55)
                 {
+                    // TODO: 各フレーズで関数に分けた方が良さそう? (フレーズのまとまりとして扱いやすくなりそう)
+                    var barInPhrase = bar - 48;
+
+                    var stepTiming = (ushort)(music.GetNoteLengthTime(16, 1) / 3);
+
                     // [サビ]
-                    if (bar % 4 != 0)
+                    // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ * 3
+                    if (0 <= barInPhrase && barInPhrase <= 2)
                     {
-                        // ﾃﾞﾚﾚﾚﾚﾚﾚﾚﾃﾞﾚﾚﾚﾚﾚﾚﾚ * 3
+                        var grass = new BrickCommandArgs.Pattern(PatternConstants.Grass.LeftToRightVertical3.Id, stepTiming, false);
+                        var tree = new BrickCommandArgs.Pattern(PatternConstants.Tree.LeftToRight.Id, stepTiming, false);
+                        // TODO: 家にも LeftToRight / RightToLeft が必要
+                        //var house = new BrickCommandArgs.Pattern(PatternConstants.House.Implosion.Id, stepTiming, false);
+                        var tile = new BrickCommandArgs.Pattern(PatternConstants.Tile.LeftToRight.Id, stepTiming, false);
+
+                        // 左列
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 0, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftUp, OperationTarget.TileOnly, tile)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 0, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftDown, OperationTarget.TileOnly, tile)));
+
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 4, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftUp, OperationTarget.InsertedOnly, tree)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 4, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftDown, OperationTarget.InsertedOnly, grass)));
+
+                        // 中列
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 12, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Up, OperationTarget.TileOnly, tile)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 12, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Center, OperationTarget.TileOnly, tile)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 12, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Down, OperationTarget.TileOnly, tile)));
+
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 14, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Up, OperationTarget.InsertedOnly, tree)));
+                        //commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 14, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Center, OperationTarget.InsertedOnly, house)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 14, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Down, OperationTarget.InsertedOnly, grass)));
+
+                        // 右列
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 24, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.RightUp, OperationTarget.TileOnly, tile)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 24, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.RightDown, OperationTarget.TileOnly, tile)));
+
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 26, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.RightUp, OperationTarget.InsertedOnly, tree)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 26, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.RightDown, OperationTarget.InsertedOnly, grass)));
+                    }
+                    else if (4 <= barInPhrase && barInPhrase <= 6)
+                    {
+                        var grass = new BrickCommandArgs.Pattern(PatternConstants.Grass.RightToLeftVertical3.Id, stepTiming, false);
+                        var tree = new BrickCommandArgs.Pattern(PatternConstants.Tree.RightToLeft.Id, stepTiming, false);
+                        // TODO: 家にも LeftToRight / RightToLeft が必要
+                        //var house = new BrickCommandArgs.Pattern(PatternConstants.House.Implosion.Id, stepTiming, false);
+                        var tile = new BrickCommandArgs.Pattern(PatternConstants.Tile.RightToLeft.Id, stepTiming, false);
+
+                        // 右列
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 0, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.RightUp, OperationTarget.TileOnly, tile)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 0, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.RightDown, OperationTarget.TileOnly, tile)));
+
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 4, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.RightUp, OperationTarget.InsertedOnly, tree)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 4, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.RightDown, OperationTarget.InsertedOnly, grass)));
+
+                        // 中列
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 12, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Up, OperationTarget.TileOnly, tile)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 12, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Center, OperationTarget.TileOnly, tile)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 12, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Down, OperationTarget.TileOnly, tile)));
+
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 14, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Up, OperationTarget.InsertedOnly, tree)));
+                        //commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 14, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Center, OperationTarget.InsertedOnly, house)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 14, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Down, OperationTarget.InsertedOnly, grass)));
+
+                        // 左列
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 26, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftUp, OperationTarget.TileOnly, tile)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 26, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftDown, OperationTarget.TileOnly, tile)));
+
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 24, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftUp, OperationTarget.InsertedOnly, tree)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 24, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftDown, OperationTarget.InsertedOnly, grass)));
                     }
                     else
                     {
                         // ﾃﾞｯﾚﾚﾚﾚﾚ
+                        // TODO: 何か作る
                     }
                 }
                 else if (56 <= bar && bar <= 61)
