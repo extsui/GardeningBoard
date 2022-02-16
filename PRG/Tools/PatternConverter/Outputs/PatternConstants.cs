@@ -57,12 +57,14 @@ public static class PatternConstants
         public static Pattern CloseDoor = new Pattern(6, 10);
         public static Pattern BottomToTop = new Pattern(7, 5);
         public static Pattern TopToBottom = new Pattern(8, 5);
-        public static Pattern SpreadFromBottomPoint = new Pattern(9, 12);
-        public static Pattern ShrinkFromTopPoint = new Pattern(10, 13);
-        public static Pattern ShootingStar = new Pattern(11, 14);
-        public static Pattern Pseudo3dRotation = new Pattern(12, 68);
-        public static Pattern Explosion = new Pattern(13, 8);
-        public static Pattern Implosion = new Pattern(14, 8);
+        public static Pattern LeftToRight = new Pattern(9, 12);
+        public static Pattern RightToLeft = new Pattern(10, 12);
+        public static Pattern SpreadFromBottomPoint = new Pattern(11, 12);
+        public static Pattern ShrinkFromTopPoint = new Pattern(12, 13);
+        public static Pattern ShootingStar = new Pattern(13, 14);
+        public static Pattern Pseudo3dRotation = new Pattern(14, 68);
+        public static Pattern Explosion = new Pattern(15, 8);
+        public static Pattern Implosion = new Pattern(16, 8);
     }
 
     public static class Tile

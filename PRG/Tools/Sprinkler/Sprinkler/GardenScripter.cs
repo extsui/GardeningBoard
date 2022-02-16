@@ -1193,12 +1193,12 @@ namespace Sprinkler
 
         public async void PatternTestKeyNumPad6()
         {
-            await Task.Run(() => { });
+            await Task.Run(() => SetHousePattern(PatternConstants.House.LeftToRight));
         }
 
         public async void PatternTestKeyNumPad7()
         {
-            await Task.Run(() => { });
+            await Task.Run(() => SetHousePattern(PatternConstants.House.RightToLeft));
         }
 
         public async void PatternTestKeyNumPad8()
