@@ -1545,8 +1545,7 @@ namespace Sprinkler
                     {
                         var grass = new BrickCommandArgs.Pattern(PatternConstants.Grass.LeftToRightVertical3.Id, stepTiming, false);
                         var tree = new BrickCommandArgs.Pattern(PatternConstants.Tree.LeftToRight.Id, stepTiming, false);
-                        // TODO: 家にも LeftToRight / RightToLeft が必要
-                        //var house = new BrickCommandArgs.Pattern(PatternConstants.House.Implosion.Id, stepTiming, false);
+                        var house = new BrickCommandArgs.Pattern(PatternConstants.House.LeftToRight.Id, stepTiming, false);
                         var tile = new BrickCommandArgs.Pattern(PatternConstants.Tile.LeftToRight.Id, stepTiming, false);
 
                         // 左列
@@ -1562,7 +1561,7 @@ namespace Sprinkler
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 12, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Down, OperationTarget.TileOnly, tile)));
 
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 14, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Up, OperationTarget.InsertedOnly, tree)));
-                        //commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 14, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Center, OperationTarget.InsertedOnly, house)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 13, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Center, OperationTarget.InsertedOnly, house)));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 14, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Down, OperationTarget.InsertedOnly, grass)));
 
                         // 右列
@@ -1576,8 +1575,7 @@ namespace Sprinkler
                     {
                         var grass = new BrickCommandArgs.Pattern(PatternConstants.Grass.RightToLeftVertical3.Id, stepTiming, false);
                         var tree = new BrickCommandArgs.Pattern(PatternConstants.Tree.RightToLeft.Id, stepTiming, false);
-                        // TODO: 家にも LeftToRight / RightToLeft が必要
-                        //var house = new BrickCommandArgs.Pattern(PatternConstants.House.Implosion.Id, stepTiming, false);
+                        var house = new BrickCommandArgs.Pattern(PatternConstants.House.RightToLeft.Id, stepTiming, false);
                         var tile = new BrickCommandArgs.Pattern(PatternConstants.Tile.RightToLeft.Id, stepTiming, false);
 
                         // 右列
@@ -1593,15 +1591,15 @@ namespace Sprinkler
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 12, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Down, OperationTarget.TileOnly, tile)));
 
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 14, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Up, OperationTarget.InsertedOnly, tree)));
-                        //commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 14, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Center, OperationTarget.InsertedOnly, house)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 13, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Center, OperationTarget.InsertedOnly, house)));
                         commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 14, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.Down, OperationTarget.InsertedOnly, grass)));
 
                         // 左列
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 26, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftUp, OperationTarget.TileOnly, tile)));
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 26, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftDown, OperationTarget.TileOnly, tile)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 24, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftUp, OperationTarget.TileOnly, tile)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 24, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftDown, OperationTarget.TileOnly, tile)));
 
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 24, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftUp, OperationTarget.InsertedOnly, tree)));
-                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 24, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftDown, OperationTarget.InsertedOnly, grass)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 26, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftUp, OperationTarget.InsertedOnly, tree)));
+                        commandSequencer.SetTimedEvent(music.GetNoteTime(bar) + stepTiming * 26, () => ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.LeftDown, OperationTarget.InsertedOnly, grass)));
                     }
                     else
                     {
