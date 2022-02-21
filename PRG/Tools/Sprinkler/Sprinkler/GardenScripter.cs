@@ -1241,22 +1241,38 @@ namespace Sprinkler
             var waveOut = new WaveOut();
             waveOut.Init(reader);
 
+            var MusicPhrase = new Dictionary<string, int>()
+            {
+                { "Intro",                  1   }, // イントロ
+                { "IntroWithAccompaniment", 9   }, // イントロ・伴奏つき
+
+                { "PreChorus1",             16  }, // サビ前の溜め
+                { "Chorus1",                20  }, // サビ
+                { "AfterChorus1",           28  }, // クールダウン
+
+                { "PreMelody1",             32  }, // 静かなフレーズ (ドラムのみ)
+                { "Melody1",                36  }, // 静かなフレーズ・メロディ
+
+                { "PreChorus2",             44  }, // サビ前の溜め
+                { "Chorus2",                48  }, // サビ
+                { "AfterChorus2",           56  }, // クールダウン
+
+                { "PreMelody2",             62  }, // 静かなフレーズ (リズムのみ)
+                { "Melody2",                66  }, // 静かなフレーズ・コーラス
+
+                { "PreChorus3",             78  }, // サビ前の溜め
+                { "Chorus3",                82  }, // サビ
+
+                { "PreChorusLast",          89  }, // ラスサビ前の溜め
+                { "ChorusLast",             93  }, // ラスサビ
+
+                { "Climax",                 103 }, // ラスト盛り上がり
+                { "ClimaxEnd",              111 }, // ラスサビ〆
+            };
+
             Action action = () =>
             {
-                //int timing = music.GetNoteTime(1, 8, 1);      // イントロ (最初)
-                //int timing = music.GetNoteTime(9, 8, 1);        // イントロ・伴奏あり
-                //int timing = music.GetNoteTime(20, 8, 1);        // 
-                //int timing = music.GetNoteTime(28, 8, 1);        // クールダウン
-                //int timing = music.GetNoteTime(32, 8, 1);        // 静かなフレーズ
-                int timing = music.GetNoteTime(48, 8, 1);        // サビ
-                //int timing = music.GetNoteTime(62, 8, 1);     // 静かなフレーズ
-                //int timing = music.GetNoteTime(66, 8, 1);     // 静かなフレーズ・コーラス
-                //int timing = music.GetNoteTime(72, 8, 1);     // 静かなフレーズ・終盤
-                //int timing = music.GetNoteTime(78, 8, 1);     // 
-                //int timing = music.GetNoteTime(82, 8, 1);     // サビ
-                //int timing = music.GetNoteTime(93, 8, 1);     // サビ
-                //int timing = music.GetNoteTime(103 - 1, 4, 2);     // ラスサビ直前から
-                //int timing = music.GetNoteTime(111 - 1, 4, 2);     // ラスサビ〆直前から
+                int timing = music.GetNoteTime(MusicPhrase["Intro"]);
 
                 reader.CurrentTime = TimeSpan.FromMilliseconds(timing);
                 waveOut.Play();
