@@ -70,7 +70,7 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C g_U8g2(
 
 namespace {
 
-static PillarMode g_Mode = PillarMode::Idle;
+static PillarMode g_Mode = PillarMode::Script;
 
 static IdleState g_IdleState;
 static BadAppleState g_BadAppleState;
@@ -92,6 +92,8 @@ static PillarOutput *g_pOutput;
 ////////////////////////////////////////////////////////////////////////////////
 void setup(void)
 {
+    bool hasError = false;
+
     Serial.begin(115200);
 
     // OLED, USB 以外の要因でエラーになった場合に
@@ -109,7 +111,7 @@ void setup(void)
     //g_U8g2.setFont(u8g2_font_8x13B_mf); // 参考
 
     // 描画の Y 座標は文字の左上ではなく左下基準であることに注意。
-    g_U8g2.drawStr(0, PillarOutput::FontHeight * 1, "== Pillar Start ==");
+    g_U8g2.drawStr(0, PillarOutput::FontHeight * 1, "Pillar Booting...");
     g_U8g2.sendBuffer();
 
     // USB ポートが開くまで一定時間待機
@@ -130,6 +132,7 @@ void setup(void)
         LOG("[ERR] SD Failed.\n");
         g_U8g2.drawStr(0, PillarOutput::FontHeight * 2, "[ERR] SD Failed.");
         g_U8g2.sendBuffer();
+        hasError = true;
     }
 
     g_UserButton.Initialize(PinNumberUserSwitch, false, true);
@@ -150,6 +153,7 @@ void setup(void)
         LOG("DFPlayerMini Failed.\n");
         g_U8g2.drawStr(0, PillarOutput::FontHeight * 3, "[ERR] DFP Failed.");
         g_U8g2.sendBuffer();
+        hasError = true;
     }
 
     static PillarInput input(&g_UserButton, &g_AudioVolume, &g_BrightnessVolume);
@@ -160,7 +164,10 @@ void setup(void)
 
     LOG("Setup Done.\n");
 
-    // TODO: 何かしらエラーが発生した場合は確認用にここで少しの間待ちを入れたい
+    // 何かしらエラーが発生した場合は確認用に少し待つ
+    if (hasError) {
+        delay(3000);
+    }
 
     // 重い処理実行中 (具体的には BadApple) だとメインループでの Update() 呼び出しが
     // 間に合わずダブルクリックを正しく認識できなくなるのでタイマ割り込みを使用する

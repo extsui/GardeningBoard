@@ -404,6 +404,8 @@ namespace Sprinkler
             public const uint LeftUp    = (FormationHexagon | 0x06);
             public const uint Center    = (FormationHexagon | 0x07);
 
+            public static uint Random(Random random) => (uint)random.Next((int)Up, (int)Center + 1);
+
             public static readonly List<uint> All = new List<uint>
             {
                 Up, RightUp, RightDown, Down, LeftDown, LeftUp, Center

@@ -7,6 +7,14 @@
     background-color: #00FF00;
 }
 
+.Grass_OutsideOn {
+    background-color: #00FF00;
+}
+
+.Grass_Vibration {
+    background-color: #00FF00;
+}
+
 .Grass_LeftToRight1 {
     background-color: #00FF00;
 }
@@ -27,11 +35,7 @@
     background-color: #00FF00;
 }
 
-.Grass_Vibration {
-    background-color: #00FF00;
-}
-
-.Grass_LeftToRightBuffer {
+.Grass_MiddleToBothEdge {
     background-color: #00FF00;
 }
 
@@ -43,11 +47,43 @@
     background-color: #00FF00;
 }
 
-.Grass_LeftToRightVertical {
+.Grass_LeftToRightVertical1 {
     background-color: #00FF00;
 }
 
-.Grass_RightToLeftVertical {
+.Grass_RightToLeftVertical1 {
+    background-color: #00FF00;
+}
+
+.Grass_LeftToRightVertical3 {
+    background-color: #00FF00;
+}
+
+.Grass_RightToLeftVertical3 {
+    background-color: #00FF00;
+}
+
+.Grass_BottomToTop {
+    background-color: #00FF00;
+}
+
+.Grass_TopToBottom {
+    background-color: #00FF00;
+}
+
+.Grass_Explosion {
+    background-color: #00FF00;
+}
+
+.Grass_Implosion {
+    background-color: #00FF00;
+}
+
+.Grass_LeftToRightBlock {
+    background-color: #00FF00;
+}
+
+.Grass_RightToLeftBlock {
     background-color: #00FF00;
 }
 
@@ -56,6 +92,10 @@
 }
 
 .House_AllOff {
+    background-color: #FF0000;
+}
+
+.House_OutsideOn {
     background-color: #FF0000;
 }
 
@@ -72,6 +112,46 @@
 }
 
 .House_CloseDoor {
+    background-color: #FF0000;
+}
+
+.House_BottomToTop {
+    background-color: #FF0000;
+}
+
+.House_TopToBottom {
+    background-color: #FF0000;
+}
+
+.House_LeftToRight {
+    background-color: #FF0000;
+}
+
+.House_RightToLeft {
+    background-color: #FF0000;
+}
+
+.House_SpreadFromBottomPoint {
+    background-color: #FF0000;
+}
+
+.House_ShrinkFromTopPoint {
+    background-color: #FF0000;
+}
+
+.House_ShootingStar {
+    background-color: #FF0000;
+}
+
+.House_Pseudo3dRotation {
+    background-color: #FF0000;
+}
+
+.House_Explosion {
+    background-color: #FF0000;
+}
+
+.House_Implosion {
     background-color: #FF0000;
 }
 
@@ -155,6 +235,10 @@
     background-color: #0000FF;
 }
 
+.Tree_OutsideOn {
+    background-color: #0000FF;
+}
+
 .Tree_OneByOne {
     background-color: #0000FF;
 }
@@ -187,6 +271,18 @@
     background-color: #0000FF;
 }
 
+.Tree_LeftToRight {
+    background-color: #0000FF;
+}
+
+.Tree_RightToLeft {
+    background-color: #0000FF;
+}
+
+.Tree_MiddleToBothEdge {
+    background-color: #0000FF;
+}
+
 .Tree_Candle {
     background-color: #0000FF;
 }
@@ -196,6 +292,14 @@
 }
 
 .Tree_Wave {
+    background-color: #0000FF;
+}
+
+.Tree_Explosion {
+    background-color: #0000FF;
+}
+
+.Tree_Implosion {
     background-color: #0000FF;
 }
 
