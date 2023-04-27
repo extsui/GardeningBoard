@@ -653,6 +653,30 @@ namespace Sprinkler
             });
         }
 
+        public async void PatternTestKeyF9()
+        {
+            // 展示会用のデモパターン
+            await Task.Run(() =>
+            {
+                var StepTimingMilliseconds = TestStepTiming;
+
+                {
+                    ExecuteCommand(m_garden.MakeBrightnessCommand(Position.Hexagon.All, OperationTarget.Both, new BrickCommandArgs.Brightness(10)));
+
+                    var pattern = PatternConstants.Tile.Circle_Led3Point2;
+                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, true);
+                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs));
+
+                    GroupCommandOfTree(PatternConstants.Tree.BottomToTop, StepTimingMilliseconds, true);
+                    GroupCommandOfGrass(PatternConstants.Grass.BothEdgeToMiddle, StepTimingMilliseconds, true);
+                    GroupCommandOfHouse(PatternConstants.House.OpenDoor, StepTimingMilliseconds, true);
+
+                    // パターンが終わるまで待つ
+                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
+                }
+            });
+        }
+
         public async void PatternTest2()
         {
             await Task.Run(() =>
