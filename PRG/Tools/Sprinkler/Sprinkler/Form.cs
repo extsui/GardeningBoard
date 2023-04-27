@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO.Ports;
 using System.Windows.Forms;
@@ -57,6 +57,11 @@ namespace Sprinkler
         private void buttonTest_Click(object sender, EventArgs e)
         {
             m_inputConverter.OnTestButton();
+        }
+
+        private void buttonDumpScript_Click(object sender, EventArgs e)
+        {
+            m_inputConverter.OnDumpScriptButton();
         }
 
         private void textBoxKeyInput_KeyDown(object sender, KeyEventArgs e)

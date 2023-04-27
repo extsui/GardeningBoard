@@ -36,6 +36,7 @@
             this.textBoxScript = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.buttonDumpScript = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // textBoxSerialLog
@@ -122,11 +123,23 @@
             this.label2.TabIndex = 7;
             this.label2.Text = "スクリプト形式";
             // 
+            // buttonDumpScript
+            // 
+            this.buttonDumpScript.Location = new System.Drawing.Point(218, 9);
+            this.buttonDumpScript.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.buttonDumpScript.Name = "buttonDumpScript";
+            this.buttonDumpScript.Size = new System.Drawing.Size(122, 30);
+            this.buttonDumpScript.TabIndex = 8;
+            this.buttonDumpScript.Text = "スクリプト出力";
+            this.buttonDumpScript.UseVisualStyleBackColor = true;
+            this.buttonDumpScript.Click += new System.EventHandler(this.buttonDumpScript_Click);
+            // 
             // Sprinkler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(802, 472);
+            this.Controls.Add(this.buttonDumpScript);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBoxScript);
@@ -156,6 +169,7 @@
         private System.Windows.Forms.TextBox textBoxScript;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button buttonDumpScript;
     }
 }
 

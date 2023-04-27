@@ -1,5 +1,6 @@
 ﻿using NAudio.Wave;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -250,6 +251,44 @@ namespace Sprinkler
                 Thread.Sleep(1000);
                 SequentialCommandTurnOffInHexagonForm();
             });
+        }
+
+        // Pillar に保存するスクリプト出力
+        public void DumpScript()
+        {
+            const string outputDir = @"./Scripts";
+
+            // 毎回スクリプトフォルダを空にする
+            if (Directory.Exists(outputDir))
+            {
+                Directory.Delete(outputDir, true);
+            }
+            Directory.CreateDirectory(outputDir);
+
+            // 本来はテキストボックスに出力するところを無理矢理横取りしてファイル出力する
+            string buffer = "";
+            Action<string> writeLine = (string value) =>
+            {
+                // 行頭の無駄文字を削除し、代わりに時間情報を追加する
+                // TODO: 時間有のシーケンスには未対応
+                buffer += value.Replace("@send ", "0,").Replace("\n", "\r\n");
+            };
+
+            var serialSendAsyncBackup = m_serialSendAsync;
+            m_serialSendAsync = writeLine;
+            {
+                // 輝度変更スクリプト出力
+                for (byte brightness = 0; brightness <= 15; brightness++)
+                {
+                    buffer = "";
+                    ExecuteCommand(m_garden.MakeBrightnessCommand(Position.Hexagon.All, OperationTarget.Both, new BrickCommandArgs.Brightness(brightness)));
+                    string filepath = outputDir + "/" + "br" + brightness + ".gbs";
+                    File.WriteAllText(filepath, buffer);
+                }
+
+                // TODO: 速度変更スクリプト、展示会デモスクリプト、･･･
+            }
+            m_serialSendAsync = serialSendAsyncBackup;
         }
 
         public async void SampleSequence()
