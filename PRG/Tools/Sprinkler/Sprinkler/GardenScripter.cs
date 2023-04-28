@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Sprinkler
 {
@@ -277,18 +278,38 @@ namespace Sprinkler
             var serialSendAsyncBackup = m_serialSendAsync;
             m_serialSendAsync = writeLine;
             {
+                string filepath = "";
+                
                 // 輝度変更スクリプト出力
                 for (byte brightness = 0; brightness <= 15; brightness++)
                 {
                     buffer = "";
                     ExecuteCommand(m_garden.MakeBrightnessCommand(Position.Hexagon.All, OperationTarget.Both, new BrickCommandArgs.Brightness(brightness)));
-                    string filepath = outputDir + "/" + "br" + brightness + ".gbs";
+                    filepath = outputDir + "/" + "br" + brightness + ".gbs";
                     File.WriteAllText(filepath, buffer);
                 }
 
-                // TODO: 速度変更スクリプト、展示会デモスクリプト、･･･
+                // 速度変更スクリプト
+                ushort[] speedToMilliseconds = { 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 65535 };
+                for (byte speed = 0; speed <= 31; speed++)
+                {
+                    buffer = "";
+                    ExecuteCommand(m_garden.MakeStepTimingCommand(Position.Hexagon.All, OperationTarget.Both, speedToMilliseconds[speed]));
+                    filepath = outputDir + "/" + "sp" + speed + ".gbs";
+                    File.WriteAllText(filepath, buffer);
+                }
+
+                // 展示会デモスクリプト
+                {
+                    buffer = "";
+                    ExecuteDemoPattern(90);
+                    filepath = outputDir + "/" + "demo.gbs";
+                    File.WriteAllText(filepath, buffer);
+                }
             }
             m_serialSendAsync = serialSendAsyncBackup;
+
+            MessageBox.Show("出力完了");
         }
 
         public async void SampleSequence()
@@ -692,27 +713,29 @@ namespace Sprinkler
             });
         }
 
+        private void ExecuteDemoPattern(ushort stepTimingMilliseconds)
+        {
+            ExecuteCommand(m_garden.MakeBrightnessCommand(Position.Hexagon.All, OperationTarget.Both, new BrickCommandArgs.Brightness(10)));
+
+            var pattern = PatternConstants.Tile.Circle_Led3Point2;
+            var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, stepTimingMilliseconds, true);
+            ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs));
+
+            GroupCommandOfTree(PatternConstants.Tree.BottomToTop, stepTimingMilliseconds, true);
+            GroupCommandOfGrass(PatternConstants.Grass.BothEdgeToMiddle, stepTimingMilliseconds, true);
+            GroupCommandOfHouse(PatternConstants.House.OpenDoor, stepTimingMilliseconds, true);
+
+            // パターンが終わるまで待つ
+            Thread.Sleep(pattern.GetTime(stepTimingMilliseconds));
+        }
+
         public async void PatternTestKeyF9()
         {
             // 展示会用のデモパターン
             await Task.Run(() =>
             {
                 var StepTimingMilliseconds = TestStepTiming;
-
-                {
-                    ExecuteCommand(m_garden.MakeBrightnessCommand(Position.Hexagon.All, OperationTarget.Both, new BrickCommandArgs.Brightness(10)));
-
-                    var pattern = PatternConstants.Tile.Circle_Led3Point2;
-                    var patternCommandArgs = new BrickCommandArgs.Pattern(pattern.Id, StepTimingMilliseconds, true);
-                    ExecuteCommand(m_garden.MakePatternCommand(Position.Hexagon.All, OperationTarget.TileOnly, patternCommandArgs));
-
-                    GroupCommandOfTree(PatternConstants.Tree.BottomToTop, StepTimingMilliseconds, true);
-                    GroupCommandOfGrass(PatternConstants.Grass.BothEdgeToMiddle, StepTimingMilliseconds, true);
-                    GroupCommandOfHouse(PatternConstants.House.OpenDoor, StepTimingMilliseconds, true);
-
-                    // パターンが終わるまで待つ
-                    Thread.Sleep(pattern.GetTime(StepTimingMilliseconds));
-                }
+                ExecuteDemoPattern(StepTimingMilliseconds);
             });
         }
 
