@@ -20,6 +20,14 @@
 #include "Utils.h"
 #endif
 
+#define PUMP_SCRIPT_DEBUG
+
+#if (defined(PUMP_SCRIPT_DEBUG))
+    #define SCRIPT_DEBUG_LOG(...)   LOG(__VA_ARGS__)
+#else
+    #define SCRIPT_DEBUG_LOG(...)
+#endif
+
 void PumpScript::ParseLine(ScriptPiece *pOutPiece, const char *line)
 {
     assert(pOutPiece != nullptr);
@@ -109,7 +117,7 @@ void PumpScript::Run()
     assert(m_isRunnable == true);
     
     // TODO: DEBUG 時のみ表示
-    LOG("ideal :  real :  diff\n");
+    SCRIPT_DEBUG_LOG("ideal :  real :  diff\n");
 
     auto startTime = std::chrono::system_clock::now();
     for (auto piece : m_script) {
@@ -124,14 +132,21 @@ void PumpScript::Run()
                 int64_t ideal = pieceTime.count();
                 int64_t real  = elapsedTimeMilliSeconds.count();
                 int64_t diff  = (elapsedTimeMilliSeconds - pieceTime).count();
-                LOG("%5d : %5d : %5d\n",
+                SCRIPT_DEBUG_LOG("%5d : %5d : %5d\n",
                     static_cast<int>(ideal),
                     static_cast<int>(real),
                     static_cast<int>(diff));
-                
+                UNUSED(ideal);
+                UNUSED(real);
+                UNUSED(diff);
+
                 #if CONFIG_XIAO
                     PumpUtil::WireTransaction(piece.commandByte, piece.commandLength);
                 #endif
+
+                // TORIAEZU:
+                // TODO: 遅延なしにするとおそらく低層 I2C の処理が間に合っていない
+                delay(1);
 
                 break;
             }

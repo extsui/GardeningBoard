@@ -22,6 +22,12 @@ int g_receiveBufferIndex = 0;
 // コマンド実行回数
 int g_ExecuteCommandCount = 0;
 
+// ボリュームが変化する度に LED 表示を更新させる用 (初期値は適当)
+uint8_t g_CurrentBrightnessLevel = 0;
+uint8_t g_CurrentSpeedLevel = 0;
+
+char g_PathBuffer[24];
+
 // 画面系
 bool g_IsUpdateDisplay = false;
 
@@ -174,7 +180,6 @@ int ExecutePumpScript(const char *path)
     PumpScript script;
     int result = script.Load(path);
     if (result == 0) {
-        LOG("[pump] Script Load: OK\n");
         script.Run();
     } else {
         LOG("[pump] Script Load: FAILED!!! (\"%s\")\n", path);
@@ -193,12 +198,23 @@ void ScriptState::OnEnter(PillarInput *pInput, PillarOutput *pOutput)
     pOutput->pU8g2->clearDisplay();
     pOutput->pU8g2->drawStr(0, PillarOutput::FontHeight * 1, "== Script Mode ==");
     pOutput->pU8g2->sendBuffer();
+
+    // 現在値を記録
+    g_CurrentBrightnessLevel = static_cast<uint8_t>(pInput->pBrightnessVolume->GetLevelCorrectedCurveAtoB());
+    g_CurrentSpeedLevel = static_cast<uint8_t>(pInput->pAudioVolume->GetLevelCorrectedCurveAtoB());
+
+    sprintf(g_PathBuffer, "/Scripts/reg.gbs");
+    LOG("%s\n", g_PathBuffer);
+    ExecutePumpScript(g_PathBuffer);
+
+    sprintf(g_PathBuffer, "/Scripts/demo.gbs");
+    LOG("%s\n", g_PathBuffer);
+    ExecutePumpScript(g_PathBuffer);
 }
 
 PillarMode ScriptState::OnExecute(PillarInput *pInput, PillarOutput *pOutput)
 {
     UNUSED(pOutput);
-
     if (pInput->pUserButton->WasDoubleClicked()) {
         return PillarMode::Idle;
     }
@@ -214,13 +230,35 @@ PillarMode ScriptState::OnExecute(PillarInput *pInput, PillarOutput *pOutput)
         OnSerialReceiveByte(data);
 	}
 
+    auto brightnessLevel = static_cast<uint8_t>(pInput->pBrightnessVolume->GetLevelCorrectedCurveAtoB());
+    auto speedLevel = static_cast<uint8_t>(pInput->pAudioVolume->GetLevelCorrectedCurveAtoB());
+
     if (pInput->pUserButton->WasSingleClicked()) {
-        // スクリプト実行
-        const char *path = PillarSettings::TestScriptPath;
-        int result = ExecutePumpScript(path);
-        if (result == -1) {
-            LOG("%s: File not found.\n", path);
-        }
+        sprintf(g_PathBuffer, "/Scripts/reg.gbs");
+        LOG("%s\n", g_PathBuffer);
+        ExecutePumpScript(g_PathBuffer);
+
+        sprintf(g_PathBuffer, "/Scripts/demo.gbs");
+        LOG("%s\n", g_PathBuffer);
+        ExecutePumpScript(g_PathBuffer);
+        /*
+        // クリック時は表示リセットが目的なので輝度と速度反映を必ず発火させる
+        g_CurrentBrightnessLevel = 0xFF;
+        g_CurrentSpeedLevel = 0xFF;
+        */
+    }
+
+    if (brightnessLevel != g_CurrentBrightnessLevel) {
+        sprintf(g_PathBuffer, "/Scripts/br%u.gbs", brightnessLevel);
+        LOG("%s\n", g_PathBuffer);
+        ExecutePumpScript(g_PathBuffer);
+        g_CurrentBrightnessLevel = brightnessLevel;
+    }
+    if (speedLevel != g_CurrentSpeedLevel) {
+        sprintf(g_PathBuffer, "/Scripts/sp%u.gbs", speedLevel);
+        LOG("%s\n", g_PathBuffer);
+        ExecutePumpScript(g_PathBuffer);
+        g_CurrentSpeedLevel = speedLevel;
     }
 
     // 必要があれば画面更新
