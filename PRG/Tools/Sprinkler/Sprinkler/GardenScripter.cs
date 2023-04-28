@@ -279,7 +279,15 @@ namespace Sprinkler
             m_serialSendAsync = writeLine;
             {
                 string filepath = "";
-                
+
+                // 登録スクリプト出力
+                {
+                    buffer = "";
+                    filepath = outputDir + "/" + "reg.gbs";
+                    ExecuteCommand(m_garden.MakeRegisterCommand());
+                    File.WriteAllText(filepath, buffer);
+                }
+
                 // 輝度変更スクリプト出力
                 for (byte brightness = 0; brightness <= 15; brightness++)
                 {
