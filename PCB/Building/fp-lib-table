@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name extsui)(type KiCad)(uri ${EXTSUI}/extsui.pretty)(options "")(descr ""))
+)
