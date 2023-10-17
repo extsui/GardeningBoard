@@ -1,4 +1,5 @@
 EESchema Schematic File Version 4
+LIBS:Fountain-cache
 EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
@@ -144,12 +145,12 @@ Wire Notes Line
 Text Notes 9500 4000 0    50   ~ 0
 Spacers for Tile board
 $Comp
-L Connector_Generic:Conn_01x04 CN?
+L Connector_Generic:Conn_01x04 CN3
 U 1 1 61333D2B
 P 2700 4750
-F 0 "CN?" H 2650 5100 50  0000 L CNN
+F 0 "CN3" H 2650 5100 50  0000 L CNN
 F 1 "GROVE_IIC_5V" H 2600 5000 50  0000 L CNN
-F 2 "Connector:NS-Tech_Grove_1x04_P2mm_Vertical" H 2700 4750 50  0001 C CNN
+F 2 "OPL_Connector:HW4-2.0-90D" H 2700 4750 50  0001 C CNN
 F 3 "~" H 2700 4750 50  0001 C CNN
 	1    2700 4750
 	-1   0    0    -1  
@@ -169,12 +170,12 @@ Wire Wire Line
 Text GLabel 3000 4850 2    50   Input ~ 0
 5V
 $Comp
-L Connector_Generic:Conn_01x04 CN?
+L Connector_Generic:Conn_01x04 CN4
 U 1 1 6135A67F
 P 2700 5700
-F 0 "CN?" H 2650 6050 50  0000 L CNN
+F 0 "CN4" H 2650 6050 50  0000 L CNN
 F 1 "GROVE_IIC_5V" H 2600 5950 50  0000 L CNN
-F 2 "Connector:NS-Tech_Grove_1x04_P2mm_Vertical" H 2700 5700 50  0001 C CNN
+F 2 "OPL_Connector:HW4-2.0-90D" H 2700 5700 50  0001 C CNN
 F 3 "~" H 2700 5700 50  0001 C CNN
 	1    2700 5700
 	-1   0    0    -1  
@@ -304,7 +305,7 @@ U 1 1 6528578F
 P 4400 5650
 F 0 "VOL1" H 4150 6050 50  0000 C CNN
 F 1 "(TBD)" H 4150 5950 50  0000 C CNN
-F 2 "" H 4650 5575 50  0001 C CNN
+F 2 "Potentiometer_THT:Potentiometer_Alps_RK097_Dual_Horizontal" H 4650 5575 50  0001 C CNN
 F 3 "~" H 4650 5575 50  0001 C CNN
 	1    4400 5650
 	1    0    0    -1  
@@ -339,7 +340,7 @@ U 1 1 6528F329
 P 5600 5650
 F 0 "VOL2" H 5350 6050 50  0000 C CNN
 F 1 "(TBD)" H 5350 5950 50  0000 C CNN
-F 2 "" H 5850 5575 50  0001 C CNN
+F 2 "Potentiometer_THT:Potentiometer_Alps_RK097_Dual_Horizontal" H 5850 5575 50  0001 C CNN
 F 3 "~" H 5850 5575 50  0001 C CNN
 	1    5600 5650
 	1    0    0    -1  
@@ -374,18 +375,18 @@ U 1 1 65281C94
 P 5200 2900
 F 0 "IC1" H 5200 3465 50  0000 C CNN
 F 1 "XIAO-ESP32-C3" H 5200 3374 50  0000 C CNN
-F 2 "" H 5200 3400 50  0001 C CNN
+F 2 "extsui:SeeeduinoXIAO" H 5200 3400 50  0001 C CNN
 F 3 "" H 5200 3400 50  0001 C CNN
 	1    5200 2900
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:Buzzer BZ?
+L Device:Buzzer BZ1
 U 1 1 65296ED3
 P 3700 3550
-F 0 "BZ?" H 3706 3840 50  0000 C CNN
+F 0 "BZ1" H 3706 3840 50  0000 C CNN
 F 1 "Buzzer" H 3706 3749 50  0000 C CNN
-F 2 "" V 3675 3650 50  0001 C CNN
+F 2 "Buzzer_Beeper:Buzzer_TDK_PS1240P02BT_D12.2mm_H6.5mm" V 3675 3650 50  0001 C CNN
 F 3 "~" V 3675 3650 50  0001 C CNN
 	1    3700 3550
 	-1   0    0    -1  
@@ -409,29 +410,29 @@ U 1 1 652A9266
 P 5200 4350
 F 0 "IC2" H 5200 4765 50  0000 C CNN
 F 1 "AE-PCA9306" H 5200 4674 50  0000 C CNN
-F 2 "" H 5150 4300 50  0001 C CNN
+F 2 "Package_DIP:DIP-8_W7.62mm_Socket" H 5150 4300 50  0001 C CNN
 F 3 "" H 5150 4300 50  0001 C CNN
 	1    5200 4350
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:R_Small R?
+L Device:R_Small R2
 U 1 1 652A93D1
 P 4000 3450
-F 0 "R?" V 3804 3450 50  0000 C CNN
+F 0 "R2" V 3804 3450 50  0000 C CNN
 F 1 "1k" V 3895 3450 50  0000 C CNN
-F 2 "" H 4000 3450 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" H 4000 3450 50  0001 C CNN
 F 3 "~" H 4000 3450 50  0001 C CNN
 	1    4000 3450
 	0    1    1    0   
 $EndComp
 $Comp
-L Device:R_Small R?
+L Device:R_Small R1
 U 1 1 652AB595
 P 6550 2550
-F 0 "R?" V 6354 2550 50  0000 C CNN
+F 0 "R1" V 6354 2550 50  0000 C CNN
 F 1 "10k" V 6445 2550 50  0000 C CNN
-F 2 "" H 6550 2550 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" H 6550 2550 50  0001 C CNN
 F 3 "~" H 6550 2550 50  0001 C CNN
 	1    6550 2550
 	0    1    1    0   
@@ -447,16 +448,14 @@ Wire Wire Line
 $Comp
 L power:GND #PWR0106
 U 1 1 652B2B11
-P 5800 4550
-F 0 "#PWR0106" H 5800 4300 50  0001 C CNN
-F 1 "GND" H 5805 4377 50  0000 C CNN
-F 2 "" H 5800 4550 50  0001 C CNN
-F 3 "" H 5800 4550 50  0001 C CNN
-	1    5800 4550
+P 5800 4500
+F 0 "#PWR0106" H 5800 4250 50  0001 C CNN
+F 1 "GND" H 5805 4327 50  0000 C CNN
+F 2 "" H 5800 4500 50  0001 C CNN
+F 3 "" H 5800 4500 50  0001 C CNN
+	1    5800 4500
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	5800 4500 5800 4550
 Text GLabel 4550 4200 0    50   Input ~ 0
 3V3
 Text GLabel 4550 4300 0    50   Input ~ 0
@@ -523,23 +522,23 @@ Wire Wire Line
 	6750 3100 6750 3300
 Connection ~ 6750 3100
 $Comp
-L Connector:Conn_01x05_Female CN?
+L Connector:Conn_01x05_Female CN1
 U 1 1 6530C310
 P 6950 5550
-F 0 "CN?" V 7050 5600 50  0000 R CNN
+F 0 "CN1" V 7050 5600 50  0000 R CNN
 F 1 "Conn_01x05_Female" V 7150 5900 50  0000 R CNN
-F 2 "" H 6950 5550 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical" H 6950 5550 50  0001 C CNN
 F 3 "~" H 6950 5550 50  0001 C CNN
 	1    6950 5550
 	0    -1   1    0   
 $EndComp
 $Comp
-L Connector:Conn_01x05_Female CN?
+L Connector:Conn_01x05_Female CN2
 U 1 1 6530DA1A
 P 8000 5550
-F 0 "CN?" V 8100 5600 50  0000 R CNN
+F 0 "CN2" V 8100 5600 50  0000 R CNN
 F 1 "CardEdgeConnector5P" V 8200 5950 50  0000 R CNN
-F 2 "" H 8000 5550 50  0001 C CNN
+F 2 "extsui:CONN_CARD_EDGE_395-010-521-201" H 8000 5550 50  0001 C CNN
 F 3 "~" H 8000 5550 50  0001 C CNN
 	1    8000 5550
 	0    -1   1    0   
@@ -635,12 +634,12 @@ F 3 "" H 6750 3700 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L extsui:DIPSW-4P SW?
+L extsui:DIPSW-4P SW3
 U 1 1 6535A61C
 P 3000 3550
-F 0 "SW?" V 3050 4100 50  0000 R CNN
+F 0 "SW3" V 3050 4100 50  0000 R CNN
 F 1 "DIPSW-4P" V 2950 4250 50  0000 R CNN
-F 2 "" H 3000 3900 60  0000 C CNN
+F 2 "Button_Switch_THT:SW_DIP_SPSTx04_Slide_9.78x12.34mm_W7.62mm_P2.54mm" H 3000 3900 60  0001 C CNN
 F 3 "" H 3000 3900 60  0000 C CNN
 	1    3000 3550
 	0    -1   -1   0   
@@ -706,4 +705,6 @@ Wire Notes Line
 	4050 2100 4050 2400
 Wire Notes Line
 	4050 2400 4300 2400
+Text Notes 4700 4850 0    50   ~ 0
+AE-PCA9306 has pull-up\nresistors (1k) on both sides.
 $EndSCHEMATC
