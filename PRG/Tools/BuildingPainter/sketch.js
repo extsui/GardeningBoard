@@ -33,49 +33,62 @@ function displayPattern(x, y, scale, pattern) {
     let segmentOriginY = segmentOriginYBase * scale;
 
     // a, b, c, d, e, f, g, * が pattern の bit[7:0] に対応
+    // a
     drawSegment(
         x + segmentOriginX + verticalSegmentWidth + segmentGap,
         y + segmentOriginY,
         horizontalSegmentWidth,
         horizontalSegmentHeight,
         pattern & (1<<7));
+    // b
     drawSegment(
         x + segmentOriginX + (verticalSegmentWidth + segmentGap) + horizontalSegmentWidth + segmentGap,
         y + segmentOriginY + (horizontalSegmentHeight + segmentGap),
         verticalSegmentWidth,
         verticalSegmentHeight,
         pattern & (1<<6));
+    // c
     drawSegment(
         x + segmentOriginX + (verticalSegmentWidth + segmentGap) + horizontalSegmentWidth + segmentGap,
         y + segmentOriginY + (horizontalSegmentHeight + segmentGap) + verticalSegmentHeight + (horizontalSegmentHeight + segmentGap * 2),
         verticalSegmentWidth,
         verticalSegmentHeight,
         pattern & (1<<5));
+    // d
     drawSegment(
         x + segmentOriginX + verticalSegmentWidth + segmentGap,
         y + segmentOriginY + (horizontalSegmentHeight + segmentGap) + (verticalSegmentHeight + segmentGap) + (horizontalSegmentHeight + segmentGap + verticalSegmentHeight + segmentGap),
         horizontalSegmentWidth,
         horizontalSegmentHeight,
         pattern & (1<<4));
+    // e
     drawSegment(
         x + segmentOriginX,
         y + segmentOriginY + (horizontalSegmentHeight + segmentGap) + verticalSegmentHeight + (horizontalSegmentHeight + segmentGap * 2),
         verticalSegmentWidth,
         verticalSegmentHeight,
         pattern & (1<<3));
+    // f
     drawSegment(
         x + segmentOriginX,
         y + segmentOriginY + (horizontalSegmentHeight + segmentGap),
         verticalSegmentWidth,
         verticalSegmentHeight,
         pattern & (1<<2));
+    // g
     drawSegment(
         x + segmentOriginX + verticalSegmentWidth + segmentGap,
         y + segmentOriginY + (horizontalSegmentHeight + segmentGap) + (verticalSegmentHeight + segmentGap),
         horizontalSegmentWidth,
         horizontalSegmentHeight,
         pattern & (1<<1));
-    // dot はとりあえず無し
+    // dot
+    drawSegment(
+        x + segmentOriginX + (verticalSegmentWidth + segmentGap) + (horizontalSegmentWidth + segmentGap) + verticalSegmentWidth,
+        y + segmentOriginY + (horizontalSegmentHeight + segmentGap) + (verticalSegmentHeight + segmentGap) + (horizontalSegmentHeight + segmentGap + verticalSegmentHeight + segmentGap),
+        horizontalSegmentHeight,
+        verticalSegmentWidth,
+        pattern & (1<<0));
 }
 
 // 数字を表示する関数
