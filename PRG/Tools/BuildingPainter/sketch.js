@@ -13,11 +13,11 @@ function drawSegment(x, y, w, h, on) {
 // パターンを表示する関数
 function displayPattern(x, y, scale, pattern) {
     // a, g, d セグ (横方向セグメント)
-    const horizontalSegmentHeightBase = 10;
-    const horizontalSegmentWidthBase = 40;
+    const horizontalSegmentHeightBase = 10 + 5;
+    const horizontalSegmentWidthBase = 40 + 5;
     // b, c, e, f セグ (縦方向セグメント)
-    const verticalSegmentHeightBase = 40;
-    const verticalSegmentWidthBase = 10;
+    const verticalSegmentHeightBase = 40 + 5;
+    const verticalSegmentWidthBase = 10 + 5;
     // セグメント間の隙間
     const segmentGapBase = 10;
     // セグメント原点 (f セグの x 座標, a セグの y 座標)
@@ -108,7 +108,7 @@ function displayNumber(x, y, scale, number) {
 
 function setup() {
     createCanvas(600, 800); // キャンバスのサイズを設定
-    background(255 - 10); // 白い背景を設定
+    background(0);
 
     slider1 = select('#slider1');
     slider1.input(updateValue);
@@ -120,6 +120,7 @@ function setup() {
 function draw() {
     // 画面クリア
     clear();
+    background(0);
 
     // スライダ値を取得
     let slider1Value = slider1.value();
@@ -137,9 +138,15 @@ function draw() {
         line(pmouseX, pmouseY, mouseX, mouseY); // 前回のマウス位置から現在の位置まで線を引く
     }
 
+    const OriginX = 10;
+    const OriginY = 10;
+
     for (let y = 0; y < 6; y++) {
         for (let x = 0; x < 6; x++) {
-            displayPattern(x * slider1Value * 2, y * slider2Value * 2, 0.5, 0xFF);
+            displayPattern(
+                OriginX + x * slider1Value * 2,
+                OriginY + y * slider2Value * 2,
+                0.5, 0xFF);
         }
     }
 }
