@@ -25,9 +25,51 @@ const SegmentOriginYBase = 10;
 let slider1;
 let slider2;
 
+const ButtonType = {
+    Clear: 0,
+    Fill: 1,
+    Toggle: 2,
+};
+
+let g_ButtonEvent = null;
+
 function assert(condition, message) {
     if (!condition) {
         console.error('Assertion failed: ', message);
+    }
+}
+
+// 7セグテーブル初期化
+function init7SegTable() {
+    for (let y = 0; y < DigitYCount; y++) {
+        g_7SegTable[y] = [];
+        for (let x = 0; x < DigitXCount; x++) {
+            g_7SegTable[y][x] = 0x00;
+        }
+    }
+}
+
+function clear7SegTable() {
+    for (let y = 0; y < DigitYCount; y++) {
+        for (let x = 0; x < DigitXCount; x++) {
+            g_7SegTable[y][x] = 0x00;
+        }
+    }
+}
+
+function fill7SegTable() {
+    for (let y = 0; y < DigitYCount; y++) {
+        for (let x = 0; x < DigitXCount; x++) {
+            g_7SegTable[y][x] = 0xFF;
+        }
+    }
+}
+
+function toggle7SegTable() {
+    for (let y = 0; y < DigitYCount; y++) {
+        for (let x = 0; x < DigitXCount; x++) {
+            g_7SegTable[y][x] ^= 0xFF;
+        }
     }
 }
 
@@ -233,15 +275,11 @@ function detectSegmentCollisions(drawX, drawY, drawScale, clickedX, clickedY) {
 }
 
 function setup() {
-    // 7セグテーブル初期化
-    for (let y = 0; y < DigitYCount; y++) {
-        g_7SegTable[y] = [];
-        for (let x = 0; x < DigitXCount; x++) {
-            g_7SegTable[y][x] = 0x00;
-        }
-    }
+    init7SegTable();
 
-    createCanvas(600, 800); // キャンバスのサイズを設定
+    let canvas = createCanvas(600, 800);
+    canvas.parent('canvas');    // canvas 表示位置を html 内と連動させる
+
     background(0);
 
     slider1 = select('#slider1');
@@ -249,6 +287,16 @@ function setup() {
 
     slider2 = select('#slider2');
     slider2.input(updateValue);
+
+    // ボタンの要素を取得
+    buttonClear = select('#buttonClear');
+    buttonFill = select('#buttonFill');
+    buttonToggle = select('#buttonToggle');
+    
+    // ボタンがクリックされたときに関数を呼び出す
+    buttonClear.mousePressed(onButtonClearClicked);
+    buttonFill.mousePressed(onButtonFillClicked);
+    buttonToggle.mousePressed(onButtonToggleClicked);
 }
 
 function debugLog(x, y, str) {
@@ -267,6 +315,23 @@ function draw() {
     let slider1Value = slider1.value();
     let slider2Value = slider2.value();
 
+    // ボタン押下イベント
+    if (g_ButtonEvent != null) {
+        switch (g_ButtonEvent) {
+            case ButtonType.Clear:
+                clear7SegTable();
+                break;
+            case ButtonType.Fill:
+                fill7SegTable();
+                break;
+            case ButtonType.Toggle:
+                toggle7SegTable();
+                break;
+        }
+        g_ButtonEvent = null;
+    }
+
+    // マウスイベント
     if (mouseIsPressed) {
         // 白い枠線の円
         noFill();
@@ -275,7 +340,6 @@ function draw() {
         ellipse(mouseX, mouseY, 20, 20); // マウスの位置に小さな白い円を描く
         debugLog(500, 10, `(x, y) = (${Math.floor(mouseX)}, ${Math.floor(mouseY)})`);
 
-        // TODO: 左クリックされた箇所のセグメントを点灯
         for (let y = 0; y < DigitYCount; y++) {
             for (let x = 0; x < DigitXCount; x++) {
                 // 座標・スケールパラメータは描画時と共通にしておくこと
@@ -284,17 +348,17 @@ function draw() {
                     OriginY + y * slider2Value * 2,
                     0.5,
                     mouseX, mouseY);
+                    
+                // 左クリックされた箇所のセグメントを点灯
                 if (mouseButton === LEFT) {
                     g_7SegTable[y][x] |= detectPattern;
                 }
+                // 右クリックされた箇所のセグメントを消灯
                 if (mouseButton === RIGHT) {
                     g_7SegTable[y][x] &= ~detectPattern;
                 }
             }
         }
-
-        // TODO: 右クリックされた箇所のセグメントを消灯
-
     }
 
     // データテーブルを表示
@@ -321,6 +385,18 @@ function updateValue() {
 
     console.log(`Slider1 Value: ${slider1Value}`);
     console.log(`Slider2 Value: ${slider2Value}`);
+}
+
+function onButtonClearClicked() {
+    g_ButtonEvent = ButtonType.Clear;
+}
+
+function onButtonFillClicked() {
+    g_ButtonEvent = ButtonType.Fill;
+}
+
+function onButtonToggleClicked() {
+    g_ButtonEvent = ButtonType.Toggle;
 }
 
 // 右クリック時にブラウザでメニューが表示されるのを防止する
