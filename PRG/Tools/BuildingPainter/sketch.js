@@ -219,3 +219,8 @@ function updateValue() {
     console.log(`Slider1 Value: ${slider1Value}`);
     console.log(`Slider2 Value: ${slider2Value}`);
 }
+
+// 右クリック時にブラウザでメニューが表示されるのを防止する
+document.addEventListener("contextmenu", (e) => {
+    e.preventDefault(); // デフォルトの右クリックメニューを無効化
+});
