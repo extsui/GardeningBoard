@@ -8,7 +8,10 @@
 </head>
 
 <body>
+    <!-- p5.js の描画部分 -->
     <div id="canvas"></div>
+
+    <!-- 操作ボタン等 -->
     <div>
         <input type="range" id="slider1" min="0" max="100" value="30">
         <p id="slider1-value">X = 30</p>
@@ -19,6 +22,13 @@
         <button id="buttonClear">Clear</button>
         <button id="buttonFill">Fill</button>
         <button id="buttonToggle">Toggle</button>
+    </div>
+    <div>
+        <textarea id="textAreaHexDumpProgram" rows="7" cols="80"></textarea>
+        <textarea id="textAreaHexDumpOneline" rows="1" cols="80"></textarea>
+    </div>
+    <div>
+        <button id="buttonImport">Import</button>
     </div>
     <script src="sketch.js"></script>
 </body>

@@ -29,6 +29,7 @@ const ButtonType = {
     Clear: 0,
     Fill: 1,
     Toggle: 2,
+    Import: 3,
 };
 
 let g_ButtonEvent = null;
@@ -71,6 +72,27 @@ function toggle7SegTable() {
             g_7SegTable[y][x] ^= 0xFF;
         }
     }
+}
+
+function hexDump7SegTable() {
+    let programText = '';
+    for (let y = 0; y < DigitYCount; y++) {
+        for (let x = 0; x < DigitXCount; x++) {
+            programText += '0x' + g_7SegTable[y][x].toString(16).padStart(2, '0').toUpperCase() + ', ';
+        }
+        programText += '\n';
+    }
+    textAreaHexDumpProgram = select('#textAreaHexDumpProgram');
+    textAreaHexDumpProgram.value(programText);
+
+    let onelineText = '';
+    for (let y = 0; y < DigitYCount; y++) {
+        for (let x = 0; x < DigitXCount; x++) {
+            onelineText += g_7SegTable[y][x].toString(16).padStart(2, '0').toUpperCase();
+        }
+    }
+    textAreaHexDumpOneline = select('#textAreaHexDumpOneline');
+    textAreaHexDumpOneline.value(onelineText);
 }
 
 // 7セグメントLEDのセグメントを描画する関数
@@ -292,11 +314,13 @@ function setup() {
     buttonClear = select('#buttonClear');
     buttonFill = select('#buttonFill');
     buttonToggle = select('#buttonToggle');
+    buttonImport = select('#buttonImport');
     
     // ボタンがクリックされたときに関数を呼び出す
     buttonClear.mousePressed(onButtonClearClicked);
     buttonFill.mousePressed(onButtonFillClicked);
     buttonToggle.mousePressed(onButtonToggleClicked);
+    buttonImport.mousePressed(onButtonImportClicked);
 }
 
 function debugLog(x, y, str) {
@@ -326,6 +350,10 @@ function draw() {
                 break;
             case ButtonType.Toggle:
                 toggle7SegTable();
+                break;
+            case ButtonType.Import:
+                // TODO:
+                alert('Not Implemented');
                 break;
         }
         g_ButtonEvent = null;
@@ -372,9 +400,14 @@ function draw() {
         }
     }
 
+    // 現状のデータの16進数データを更新 (テキスト領域)
+    hexDump7SegTable();
+
+    /*
     // DEBUG: 
     displayNumber(500, 500, 0.2, Math.floor(slider1Value / 10) % 10);
     displayNumber(530, 500, 0.2, slider1Value % 10);
+    */
 }
 
 function updateValue() {
@@ -397,6 +430,10 @@ function onButtonFillClicked() {
 
 function onButtonToggleClicked() {
     g_ButtonEvent = ButtonType.Toggle;
+}
+
+function onButtonImportClicked() {
+    g_ButtonEvent = ButtonType.Import;
 }
 
 // 右クリック時にブラウザでメニューが表示されるのを防止する
