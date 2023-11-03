@@ -1,6 +1,24 @@
+// a, g, d セグ (横方向セグメント)
+const HorizontalSegmentHeightBase = 10 + 5;
+const HorizontalSegmentWidthBase = 40 + 5;
+// b, c, e, f セグ (縦方向セグメント)
+const VerticalSegmentHeightBase = 40 + 5;
+const VerticalSegmentWidthBase = 10 + 5;
+// セグメント間の隙間
+const SegmentGapBase = 10;
+// セグメント原点 (f セグの x 座標, a セグの y 座標)
+const SegmentOriginXBase = 10;
+const SegmentOriginYBase = 10;
+
 // スライダー要素を格納する変数
 let slider1;
 let slider2;
+
+function assert(condition, message) {
+    if (!condition) {
+        console.error('Assertion failed: ', message);
+    }
+}
 
 // 7セグメントLEDのセグメントを描画する関数
 function drawSegment(x, y, w, h, on) {
@@ -12,25 +30,13 @@ function drawSegment(x, y, w, h, on) {
 
 // パターンを表示する関数
 function displayPattern(x, y, scale, pattern) {
-    // a, g, d セグ (横方向セグメント)
-    const horizontalSegmentHeightBase = 10 + 5;
-    const horizontalSegmentWidthBase = 40 + 5;
-    // b, c, e, f セグ (縦方向セグメント)
-    const verticalSegmentHeightBase = 40 + 5;
-    const verticalSegmentWidthBase = 10 + 5;
-    // セグメント間の隙間
-    const segmentGapBase = 10;
-    // セグメント原点 (f セグの x 座標, a セグの y 座標)
-    const segmentOriginXBase = 10;
-    const segmentOriginYBase = 10;
-
-    let horizontalSegmentHeight = horizontalSegmentHeightBase * scale;
-    let horizontalSegmentWidth = horizontalSegmentWidthBase * scale;
-    let verticalSegmentHeight = verticalSegmentHeightBase * scale;
-    let verticalSegmentWidth = verticalSegmentWidthBase * scale;
-    let segmentGap = segmentGapBase * scale;
-    let segmentOriginX = segmentOriginXBase * scale;
-    let segmentOriginY = segmentOriginYBase * scale;
+    let horizontalSegmentHeight = HorizontalSegmentHeightBase * scale;
+    let horizontalSegmentWidth = HorizontalSegmentWidthBase * scale;
+    let verticalSegmentHeight = VerticalSegmentHeightBase * scale;
+    let verticalSegmentWidth = VerticalSegmentWidthBase * scale;
+    let segmentGap = SegmentGapBase * scale;
+    let segmentOriginX = SegmentOriginXBase * scale;
+    let segmentOriginY = SegmentOriginYBase * scale;
 
     // a, b, c, d, e, f, g, * が pattern の bit[7:0] に対応
     // a
@@ -93,29 +99,29 @@ function displayPattern(x, y, scale, pattern) {
 
 // 数字を表示する関数
 function displayNumber(x, y, scale, number) {
-    const segments = [
-        [true, true, true, true, true, true, false], // 数字0
-        [false, true, true, false, false, false, false], // 数字1
-        [true, true, false, true, true, false, true], // 数字2
-        [true, true, true, true, false, false, true], // 数字3
-        [false, true, true, false, false, true, true], // 数字4
-        [true, false, true, true, false, true, true], // 数字5
-        [true, false, true, true, true, true, true], // 数字6
-        [true, true, true, false, false, false, false], // 数字7
-        [true, true, true, true, true, true, true], // 数字8
-        [true, true, true, true, false, true, true], // 数字9
+    assert(0 <= number && number <= 9, 'displayNumber()');
+    const NumberSegmentPattern = [
+        0b1111_1100,    // 0
+        0b0110_0000,    // 1
+        0b1101_1010,    // 2
+        0b1111_0010,    // 3
+        0b0110_0110,    // 4
+        0b1011_0110,    // 5
+        0b1011_1110,    // 6
+        0b1110_0100,    // 7
+        0b1111_1110,    // 8
+        0b1111_0110,    // 9
     ];
-    
-    patternArray = segments[number];
+    reference = NumberSegmentPattern[number];
     pattern = 0x00;
-    pattern |= (patternArray[0]) ? (1<<7) : 0;
-    pattern |= (patternArray[1]) ? (1<<6) : 0;
-    pattern |= (patternArray[2]) ? (1<<5) : 0;
-    pattern |= (patternArray[3]) ? (1<<4) : 0;
-    pattern |= (patternArray[4]) ? (1<<3) : 0;
-    pattern |= (patternArray[5]) ? (1<<2) : 0;
-    pattern |= (patternArray[6]) ? (1<<1) : 0;
-    pattern |= (patternArray[7]) ? (1<<0) : 0;
+    pattern |= (reference & (1<<7)) ? (1<<7) : 0; // a
+    pattern |= (reference & (1<<6)) ? (1<<6) : 0; // b
+    pattern |= (reference & (1<<5)) ? (1<<5) : 0; // c
+    pattern |= (reference & (1<<4)) ? (1<<4) : 0; // d
+    pattern |= (reference & (1<<3)) ? (1<<3) : 0; // e
+    pattern |= (reference & (1<<2)) ? (1<<2) : 0; // f
+    pattern |= (reference & (1<<1)) ? (1<<1) : 0; // g
+    pattern |= (reference & (1<<0)) ? (1<<0) : 0; // dot
     displayPattern(x, y, scale, pattern);
 }
 
@@ -162,6 +168,9 @@ function draw() {
                 0.5, 0xFF);
         }
     }
+    
+    displayNumber(500, 500, 0.2, Math.floor(slider1Value / 10) % 10);
+    displayNumber(530, 500, 0.2, slider1Value % 10);
 }
 
 function updateValue() {
