@@ -136,10 +136,100 @@ function convertToSegmentPattern(number, dot = false) {
     return pattern;
 }
 
-
 // 数字を表示する関数
 function displayNumber(x, y, scale, number) {
     displayPattern(x, y, scale, convertToSegmentPattern(number));
+}
+
+// 描画された 7 セグメント LED 内で各セグメントに当たっているかの判定
+// @param [in] drawX 描画時のX座標
+// @param [in] drawY 描画時のY座標
+// @param [in] drawScale 描画時のスケール
+// @param [in] clickedX クリックされたX座標
+// @param [in] clickedY クリックされたY座標
+// @return クリックされていたセグメントパターン (未クリックなら 0x00)
+function detectSegmentCollisions(drawX, drawY, drawScale, clickedX, clickedY) {
+    let horizontalSegmentHeight = HorizontalSegmentHeightBase * drawScale;
+    let horizontalSegmentWidth = HorizontalSegmentWidthBase * drawScale;
+    let verticalSegmentHeight = VerticalSegmentHeightBase * drawScale;
+    let verticalSegmentWidth = VerticalSegmentWidthBase * drawScale;
+    let segmentGap = SegmentGapBase * drawScale;
+    let segmentOriginX = SegmentOriginXBase * drawScale;
+    let segmentOriginY = SegmentOriginYBase * drawScale;
+
+    function isInsideRectangle(rectX, rectY, rectWidth, rectHeight, targetX, targetY) {
+        return (targetX >= rectX) && (targetX <= rectX + rectWidth) &&
+               (targetY >= rectY) && (targetY <= rectY + rectHeight);
+    }
+    
+    detectPattern = 0x00;
+    
+    // TODO: 描画ロジックとの共通化    
+    // a
+    detectPattern |= isInsideRectangle(
+        drawX + segmentOriginX + verticalSegmentWidth + segmentGap,
+        drawY + segmentOriginY,
+        horizontalSegmentWidth,
+        horizontalSegmentHeight,
+        clickedX, clickedY)
+        ? (1<<7) : 0;
+    // b
+    detectPattern |= isInsideRectangle(
+        drawX + segmentOriginX + (verticalSegmentWidth + segmentGap) + horizontalSegmentWidth + segmentGap,
+        drawY + segmentOriginY + (horizontalSegmentHeight + segmentGap),
+        verticalSegmentWidth,
+        verticalSegmentHeight,
+        clickedX, clickedY)
+        ? (1<<6) : 0;
+    // c
+    detectPattern |= isInsideRectangle(
+        drawX + segmentOriginX + (verticalSegmentWidth + segmentGap) + horizontalSegmentWidth + segmentGap,
+        drawY + segmentOriginY + (horizontalSegmentHeight + segmentGap) + verticalSegmentHeight + (horizontalSegmentHeight + segmentGap * 2),
+        verticalSegmentWidth,
+        verticalSegmentHeight,
+        clickedX, clickedY)
+        ? (1<<5) : 0;
+    // d
+    detectPattern |= isInsideRectangle(
+        drawX + segmentOriginX + verticalSegmentWidth + segmentGap,
+        drawY + segmentOriginY + (horizontalSegmentHeight + segmentGap) + (verticalSegmentHeight + segmentGap) + (horizontalSegmentHeight + segmentGap + verticalSegmentHeight + segmentGap),
+        horizontalSegmentWidth,
+        horizontalSegmentHeight,
+        clickedX, clickedY)
+        ? (1<<4) : 0;
+    // e
+    detectPattern |= isInsideRectangle(
+        drawX + segmentOriginX,
+        drawY + segmentOriginY + (horizontalSegmentHeight + segmentGap) + verticalSegmentHeight + (horizontalSegmentHeight + segmentGap * 2),
+        verticalSegmentWidth,
+        verticalSegmentHeight,
+        clickedX, clickedY)
+        ? (1<<3) : 0;
+    // f
+    detectPattern |= isInsideRectangle(
+        drawX + segmentOriginX,
+        drawY + segmentOriginY + (horizontalSegmentHeight + segmentGap),
+        verticalSegmentWidth,
+        verticalSegmentHeight,
+        clickedX, clickedY)
+        ? (1<<2) : 0;
+    // g
+    detectPattern |= isInsideRectangle(
+        drawX + segmentOriginX + verticalSegmentWidth + segmentGap,
+        drawY + segmentOriginY + (horizontalSegmentHeight + segmentGap) + (verticalSegmentHeight + segmentGap),
+        horizontalSegmentWidth,
+        horizontalSegmentHeight,
+        clickedX, clickedY)
+        ? (1<<1) : 0;
+    // dot
+    detectPattern |= isInsideRectangle(
+        drawX + segmentOriginX + (verticalSegmentWidth + segmentGap) + (horizontalSegmentWidth + segmentGap) + verticalSegmentWidth,
+        drawY + segmentOriginY + (horizontalSegmentHeight + segmentGap) + (verticalSegmentHeight + segmentGap) + (horizontalSegmentHeight + segmentGap + verticalSegmentHeight + segmentGap),
+        horizontalSegmentHeight,
+        verticalSegmentWidth,
+        clickedX, clickedY)
+        ? (1<<0) : 0;
+    return detectPattern;
 }
 
 function setup() {
@@ -186,12 +276,25 @@ function draw() {
         debugLog(500, 10, `(x, y) = (${Math.floor(mouseX)}, ${Math.floor(mouseY)})`);
 
         // TODO: 左クリックされた箇所のセグメントを点灯
+        for (let y = 0; y < DigitYCount; y++) {
+            for (let x = 0; x < DigitXCount; x++) {
+                // 座標・スケールパラメータは描画時と共通にしておくこと
+                detectPattern = detectSegmentCollisions(
+                    OriginX + x * slider1Value * 2,
+                    OriginY + y * slider2Value * 2,
+                    0.5,
+                    mouseX, mouseY);
+                if (mouseButton === LEFT) {
+                    g_7SegTable[y][x] |= detectPattern;
+                }
+                if (mouseButton === RIGHT) {
+                    g_7SegTable[y][x] &= ~detectPattern;
+                }
+            }
+        }
 
         // TODO: 右クリックされた箇所のセグメントを消灯
 
-        // TORIAEZU:
-        g_7SegTable[0][0] = convertToSegmentPattern(Math.floor(slider1Value / 10) % 10);
-        g_7SegTable[0][1] = convertToSegmentPattern(slider1Value % 10);
     }
 
     // データテーブルを表示
