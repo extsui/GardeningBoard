@@ -99,7 +99,7 @@ function hexDump7SegTable() {
 function drawSegment(x, y, w, h, on) {
     stroke(0);
     strokeWeight(0);
-    fill(on ? color(255, 0, 0) : color(200)); // 赤色で塗りつぶす
+    fill(on ? color(255, 0, 0) : color(50)); // 赤色で塗りつぶす
     rect(x, y, w, h);
 }
 
