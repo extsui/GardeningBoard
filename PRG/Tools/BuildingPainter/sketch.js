@@ -2,6 +2,13 @@
 const OriginX = 10;
 const OriginY = 10;
 
+// 7セグの桁数
+const DigitXCount = 6;
+const DigitYCount = 6;
+
+// 7セグデータテーブル
+let g_7SegTable = [];
+
 // a, g, d セグ (横方向セグメント)
 const HorizontalSegmentHeightBase = 10 + 5;
 const HorizontalSegmentWidthBase = 40 + 5;
@@ -101,9 +108,9 @@ function displayPattern(x, y, scale, pattern) {
         pattern & (1<<0));
 }
 
-// 数字を表示する関数
-function displayNumber(x, y, scale, number) {
-    assert(0 <= number && number <= 9, 'displayNumber()');
+// 数字から7セグパターンに変換
+function convertToSegmentPattern(number, dot = false) {
+    assert(0 <= number && number <= 9, 'convertToSegmentPattern()');
     const NumberSegmentPattern = [
         0b1111_1100,    // 0
         0b0110_0000,    // 1
@@ -125,11 +132,25 @@ function displayNumber(x, y, scale, number) {
     pattern |= (reference & (1<<3)) ? (1<<3) : 0; // e
     pattern |= (reference & (1<<2)) ? (1<<2) : 0; // f
     pattern |= (reference & (1<<1)) ? (1<<1) : 0; // g
-    pattern |= (reference & (1<<0)) ? (1<<0) : 0; // dot
-    displayPattern(x, y, scale, pattern);
+    pattern |= (dot) ? (1<<0) : 0; // dot
+    return pattern;
+}
+
+
+// 数字を表示する関数
+function displayNumber(x, y, scale, number) {
+    displayPattern(x, y, scale, convertToSegmentPattern(number));
 }
 
 function setup() {
+    // 7セグテーブル初期化
+    for (let y = 0; y < DigitYCount; y++) {
+        g_7SegTable[y] = [];
+        for (let x = 0; x < DigitXCount; x++) {
+            g_7SegTable[y][x] = 0x00;
+        }
+    }
+
     createCanvas(600, 800); // キャンバスのサイズを設定
     background(0);
 
@@ -163,17 +184,28 @@ function draw() {
         stroke(255);
         ellipse(mouseX, mouseY, 20, 20); // マウスの位置に小さな白い円を描く
         debugLog(500, 10, `(x, y) = (${Math.floor(mouseX)}, ${Math.floor(mouseY)})`);
+
+        // TODO: 左クリックされた箇所のセグメントを点灯
+
+        // TODO: 右クリックされた箇所のセグメントを消灯
+
+        // TORIAEZU:
+        g_7SegTable[0][0] = convertToSegmentPattern(Math.floor(slider1Value / 10) % 10);
+        g_7SegTable[0][1] = convertToSegmentPattern(slider1Value % 10);
     }
 
-    for (let y = 0; y < 6; y++) {
-        for (let x = 0; x < 6; x++) {
+    // データテーブルを表示
+    for (let y = 0; y < DigitYCount; y++) {
+        for (let x = 0; x < DigitXCount; x++) {
             displayPattern(
                 OriginX + x * slider1Value * 2,
                 OriginY + y * slider2Value * 2,
-                0.5, 0xFF);
+                0.5,
+                g_7SegTable[y][x]);
         }
     }
-    
+
+    // DEBUG: 
     displayNumber(500, 500, 0.2, Math.floor(slider1Value / 10) % 10);
     displayNumber(530, 500, 0.2, slider1Value % 10);
 }
