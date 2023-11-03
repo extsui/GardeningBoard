@@ -1,3 +1,7 @@
+// 7セグ全体描画の原点
+const OriginX = 10;
+const OriginY = 10;
+
 // a, g, d セグ (横方向セグメント)
 const HorizontalSegmentHeightBase = 10 + 5;
 const HorizontalSegmentWidthBase = 40 + 5;
@@ -136,6 +140,13 @@ function setup() {
     slider2.input(updateValue);
 }
 
+function debugLog(x, y, str) {
+    fill(255); // 白色のテキスト
+    strokeWeight(0);
+    textSize(9); // フォントサイズ
+    text(str, x, y); // メッセージを指定した座標に表示
+}
+
 function draw() {
     // 画面クリア
     clear();
@@ -144,21 +155,15 @@ function draw() {
     // スライダ値を取得
     let slider1Value = slider1.value();
     let slider2Value = slider2.value();
-/*
-    // スライダ値のデバッグ表示
-    strokeWeight(0);
-    textSize(24);
-    text(`Slider1 Value: ${slider1Value}`, 100, 30);
-    text(`Slider2 Value: ${slider2Value}`, 100, 60);
-*/
-    if (mouseIsPressed) {
-        stroke(0);             // 線の色を黒に設定
-        strokeWeight(4);       // 線の太さを設定
-        line(pmouseX, pmouseY, mouseX, mouseY); // 前回のマウス位置から現在の位置まで線を引く
-    }
 
-    const OriginX = 10;
-    const OriginY = 10;
+    if (mouseIsPressed) {
+        // 白い枠線の円
+        noFill();
+        strokeWeight(1);
+        stroke(255);
+        ellipse(mouseX, mouseY, 20, 20); // マウスの位置に小さな白い円を描く
+        debugLog(500, 10, `(x, y) = (${Math.floor(mouseX)}, ${Math.floor(mouseY)})`);
+    }
 
     for (let y = 0; y < 6; y++) {
         for (let x = 0; x < 6; x++) {
