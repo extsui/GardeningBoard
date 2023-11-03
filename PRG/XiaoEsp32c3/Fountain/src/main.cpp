@@ -76,6 +76,11 @@ public:
         memset(m_Display, 0, sizeof(m_Display));
     }
 
+    void Fill() noexcept
+    {
+        memset(m_Display, 0xFF, sizeof(m_Display));
+    }
+
     void SetPattern(int x, int y, uint8_t pattern) noexcept
     {
         ASSERT(0 <= x && x < DigitX);
@@ -88,6 +93,13 @@ public:
         ASSERT(0 <= x && x < DigitX);
         ASSERT(0 <= y && y < DigitY);
         m_Display[y][x] |= pattern;
+    }
+
+    void AndPattern(int x, int y, uint8_t pattern) noexcept
+    {
+        ASSERT(0 <= x && x < DigitX);
+        ASSERT(0 <= y && y < DigitY);
+        m_Display[y][x] &= ~pattern;
     }
 
     void Update() noexcept
@@ -226,7 +238,8 @@ void setup()
     constexpr uint32_t UsbSerialTimeoutMilliSeconds = 500;
     uint32_t start = millis();
     while (!Serial) {
-        if (start + UsbSerialTimeoutMilliSeconds >= millis()) {
+        // TODO: 判定式が正しいか要確認
+        if (start + UsbSerialTimeoutMilliSeconds < millis()) {
             break;
         }
     }
@@ -253,17 +266,25 @@ void loop()
     g_LeftVolume.Update();
     g_RightVolume.Update();
 
-    static int s_NextUpdateTick = 0;
+    static int s_NextUpdateTick = 1000; // TORIAEZU:
     if (currentTick + 500 < s_NextUpdateTick)
     {
         return;
     }
     s_NextUpdateTick += 500;
 
+    // TODO: 輝度更新と数字更新の頻度は独立させるべき
+
     // 輝度更新はあまり高頻度では行わない
     uint32_t brightness = g_LeftVolume.GetLevel();
-    LOG("brightness = %d\n", brightness);
     g_Building.SetBrightness(brightness);
+
+    static bool s_ReverseMode = false;
+    if (g_LeftButton.WasSingleClicked()) {
+        s_ReverseMode = !s_ReverseMode;
+        LOG("Mode Changed! (--> Reverse=%d)\n", s_ReverseMode);
+        g_LeftButton.ClearEvents();
+    }
 
     static int s_Number = 0;
     s_Number++;
@@ -271,7 +292,14 @@ void loop()
         s_Number = 0;
     }
 
-    g_Building.Clear();
+    if (s_ReverseMode)
+    {
+        g_Building.Fill();
+    }
+    else
+    {
+        g_Building.Clear();
+    }
     uint8_t numberPattern = NumberSegmentTable[s_Number];
     for (int metaSeg = 0; metaSeg < 8; metaSeg++)
     {
@@ -281,7 +309,15 @@ void loop()
                 for (int x = 0; x < Building::DigitX; x++)
                 {
                     uint8_t pattern = MetaSegmentTable[metaSeg][y][x];
-                    g_Building.OrPattern(x, y, pattern);
+
+                    if (s_ReverseMode)
+                    {
+                        g_Building.AndPattern(x, y, pattern);
+                    }
+                    else
+                    {
+                        g_Building.OrPattern(x, y, pattern);
+                    }
                 }
             }
         }
