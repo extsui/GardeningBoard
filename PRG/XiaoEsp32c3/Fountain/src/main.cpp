@@ -1,14 +1,41 @@
 #include <Arduino.h>
 #include <stdint.h>
 #include "Ht16k33.h"
-#include "Utils.h"
-
 #include "MetaSegmentTable.h"
 
-constexpr int OnDelay = 950;
-constexpr int OffDelay = 50;
+#include "Button.h"
+#include "Volume.h"
+#include "Utils.h"
+
+namespace {
+    
+////////////////////////////////////////////////////////////////////////////////
+//  ピン関連
+////////////////////////////////////////////////////////////////////////////////
+constexpr int PinNumberLeftButton = D8;
+constexpr int PinNumberRightButton = D9;
+Button g_LeftButton;
+Button g_RightButton;
+
+////////////////////////////////////////////////////////////////////////////////
+//  ボリューム関連
+////////////////////////////////////////////////////////////////////////////////
+constexpr int PinNumberLeftVolume = A0;
+constexpr int PinNumberRightVolume = A1;
+Volume g_LeftVolume;
+Volume g_RightVolume;
+
+// RC フィルタ比率 (1~99)
+constexpr int LowPassFilterRate = 80;
+RcFilter g_LeftVolumeFilter(LowPassFilterRate);
+RcFilter g_RightVolumeFilter(LowPassFilterRate);
+
+constexpr uint32_t LeftVolumeLevel = 16; // 輝度調整向け
+constexpr uint32_t RightVolumeLevel = 100;  // 範囲は適当
 
 TwoWire& g_Wire = Wire;
+
+}
 
 class Building
 {
@@ -31,9 +58,17 @@ public:
         }
     }
 
-    void SetBrightness() noexcept
+    void SetBrightness(uint8_t brightness) noexcept
     {
-        // TODO:
+        if (brightness >= 16)
+        {
+            LOG("brightness range error! (%d)\n", brightness);
+            return;
+        }
+        for (int unit = 0; unit < UnitCount; unit++)
+        {
+            Ht16k33::SetBrightness(&g_Wire, Ht16k33::BaseAddress + unit, brightness);
+        }
     }
 
     void Clear() noexcept
@@ -57,6 +92,7 @@ public:
 
     void Update() noexcept
     {
+/*
         LOG("Pattern:\n");
         for (int y = 0; y < DigitY; y++)
         {
@@ -67,7 +103,7 @@ public:
             LOG("\n");
         }
         LOG("\n\n");
-
+*/
         for (int unit = 0; unit < UnitCount; unit++)
         {
             // HT16K33 1個に接続されている 7 セグは 12 個だが、表示用の
@@ -81,14 +117,14 @@ public:
                     CreateDisplayData(display, (y * DigitX) + x, m_Display[(unit * 2) + y][x]);
                 }
             }
-
+/*
             // DEBUG:
             for (int i = 0; i < DigitCount; i++)
             {
                 LOG("%02x ", display[i]);
             }
             LOG("\n");
-
+*/
             Ht16k33::SetDisplay(&g_Wire, Ht16k33::BaseAddress + unit, display, DigitCount);
 
         }
@@ -178,44 +214,77 @@ Building g_Building;
 
 void setup()
 {
-    pinMode(A0, INPUT);
-    pinMode(A1, INPUT);
-
-    //g_Wire.begin(SDA, SCL, 400000);
     g_Wire.begin(D10, D7, 400000);
 
     g_Building.Initialize();
     g_Building.Clear();
     g_Building.Update();
 
+    // USB ポートが開くまで一定時間待機
+    // USB-CDC 非搭載のものは常に true
     Serial.begin(115200);
-    LOG("Building: Startup.\n");
+    constexpr uint32_t UsbSerialTimeoutMilliSeconds = 500;
+    uint32_t start = millis();
+    while (!Serial) {
+        if (start + UsbSerialTimeoutMilliSeconds >= millis()) {
+            break;
+        }
+    }
+    LOG("Build: %s %s\n", __DATE__, __TIME__);
+    LOG("Serial: Initialized.\n");
+
+    g_LeftButton.Initialize(PinNumberLeftButton, false, false); // プルアップ抵抗が外付け
+    g_RightButton.Initialize(PinNumberRightButton, false, true);
+    LOG("Button: Initialized.\n");
+
+    g_LeftVolume.Initialize(PinNumberLeftVolume, &g_LeftVolumeFilter, LeftVolumeLevel);
+    g_RightVolume.Initialize(PinNumberRightVolume, &g_RightVolumeFilter, RightVolumeLevel);
+    LOG("Volume: Initialized.\n");
+
+    LOG("Building Startup!\n");
 }
 
 void loop()
 {
-    for (int number = 0; number <= 9; number++)
+    int currentTick = millis();
+
+    g_LeftButton.Update();
+    g_RightButton.Update();
+    g_LeftVolume.Update();
+    g_RightVolume.Update();
+
+    static int s_NextUpdateTick = 0;
+    if (currentTick + 500 < s_NextUpdateTick)
     {
-        uint8_t numberPattern = NumberSegmentTable[number];
+        return;
+    }
+    s_NextUpdateTick += 500;
 
-        LOG("number = %d\n", number);
+    // 輝度更新はあまり高頻度では行わない
+    uint32_t brightness = g_LeftVolume.GetLevel();
+    LOG("brightness = %d\n", brightness);
+    g_Building.SetBrightness(brightness);
 
-        g_Building.Clear();
-        for (int seg = 0; seg < 8; seg++)
-        {
-            if (numberPattern & (1 << (7 - seg))) {
-                for (int y = 0; y < Building::DigitY; y++)
+    static int s_Number = 0;
+    s_Number++;
+    if (s_Number >= 10) {
+        s_Number = 0;
+    }
+
+    g_Building.Clear();
+    uint8_t numberPattern = NumberSegmentTable[s_Number];
+    for (int metaSeg = 0; metaSeg < 8; metaSeg++)
+    {
+        if (numberPattern & (1 << (7 - metaSeg))) {
+            for (int y = 0; y < Building::DigitY; y++)
+            {
+                for (int x = 0; x < Building::DigitX; x++)
                 {
-                    for (int x = 0; x < Building::DigitX; x++)
-                    {
-                        uint8_t pattern = MetaSegmentTable[seg][y][x];
-                        g_Building.OrPattern(x, y, pattern);
-                    }
+                    uint8_t pattern = MetaSegmentTable[metaSeg][y][x];
+                    g_Building.OrPattern(x, y, pattern);
                 }
             }
         }
-
-        g_Building.Update();
-        delay(500);
     }
+    g_Building.Update();
 }
