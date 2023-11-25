@@ -5,7 +5,8 @@
 
 #include "Button.h"
 #include "Volume.h"
-#include "Utils.h"
+#include "Shell.h"
+#include "Util.h"
 
 namespace {
     
@@ -260,6 +261,12 @@ void setup()
 void loop()
 {
     int currentTick = millis();
+
+    // シリアル経由コマンド実行
+    if (Serial.available()) {
+        uint8_t data = Serial.read();
+        ParseAndExecuteCommand(data);
+    }
 
     g_LeftButton.Update();
     g_RightButton.Update();
