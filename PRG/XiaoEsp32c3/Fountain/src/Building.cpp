@@ -35,6 +35,11 @@ void Building::Fill() noexcept
     memset(m_Display, 0xFF, sizeof(m_Display));
 }
 
+void Building::SetDisplay(const uint8_t* pDisplay) noexcept
+{
+    memcpy(m_Display, pDisplay, sizeof(m_Display));
+}
+
 void Building::SetPattern(int x, int y, uint8_t pattern) noexcept
 {
     ASSERT(0 <= x && x < DigitX);

@@ -128,7 +128,8 @@ void loop()
         LOG("Mode Changed! (--> Reverse=%d)\n", s_ReverseMode);
         g_LeftButton.ClearEvents();
     }
-
+/*
+    // 順繰りに7セグ7セグの表示を自動更新し続ける
     static int s_Number = 0;
     s_Number++;
     if (s_Number >= 10) {
@@ -166,4 +167,5 @@ void loop()
         }
     }
     g_Building.Update();
+*/
 }

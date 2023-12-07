@@ -21,6 +21,7 @@ public:
     void SetBrightness(uint8_t brightness) noexcept;
     void Clear() noexcept;
     void Fill() noexcept;
+    void SetDisplay(const uint8_t* pDisplay) noexcept;
     void SetPattern(int x, int y, uint8_t pattern) noexcept;
     void OrPattern(int x, int y, uint8_t pattern) noexcept;
     void AndPattern(int x, int y, uint8_t pattern) noexcept;
