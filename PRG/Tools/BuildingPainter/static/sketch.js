@@ -74,23 +74,36 @@ function toggle7SegTable() {
     }
 }
 
-function hexDump7SegTable() {
+// 7 セグテーブルからプログラム形式 (C 配列) に変換
+function convertToProgramFormat(_7SegTable) {
     let programText = '';
     for (let y = 0; y < DigitYCount; y++) {
         for (let x = 0; x < DigitXCount; x++) {
-            programText += '0x' + g_7SegTable[y][x].toString(16).padStart(2, '0').toUpperCase() + ', ';
+            programText += '0x' + _7SegTable[y][x].toString(16).padStart(2, '0').toUpperCase() + ', ';
         }
         programText += '\n';
     }
-    textAreaHexDumpProgram = select('#textAreaHexDumpProgram');
-    textAreaHexDumpProgram.value(programText);
+    return programText;
+}
 
+// 7 セグテーブルから 1 行の 16 進数文字列に変換
+function convertToHexOneline(_7SegTable) {
     let onelineText = '';
     for (let y = 0; y < DigitYCount; y++) {
         for (let x = 0; x < DigitXCount; x++) {
-            onelineText += g_7SegTable[y][x].toString(16).padStart(2, '0').toUpperCase();
+            onelineText += _7SegTable[y][x].toString(16).padStart(2, '0').toUpperCase();
         }
     }
+    return onelineText;
+}
+
+// 7 セグテーブルを元に HTML の 16 進数文字列を更新
+function updateHtmlHexString(_7SegTable) {
+    let programText = convertToProgramFormat(_7SegTable);
+    textAreaHexDumpProgram = select('#textAreaHexDumpProgram');
+    textAreaHexDumpProgram.value(programText);
+
+    let onelineText = convertToHexOneline(_7SegTable)
     textAreaHexDumpOneline = select('#textAreaHexDumpOneline');
     textAreaHexDumpOneline.value(onelineText);
 }
@@ -401,7 +414,7 @@ function draw() {
     }
 
     // 現状のデータの16進数データを更新 (テキスト領域)
-    hexDump7SegTable();
+    updateHtmlHexString(g_7SegTable);
 
     /*
     // DEBUG: 
