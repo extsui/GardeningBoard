@@ -1,3 +1,6 @@
+// WebSocketサーバーへの接続を確立
+const g_Socket = io.connect('http://127.0.0.1:5000');  // サーバーのURLに適宜変更
+
 // 7セグ全体描画の原点
 const OriginX = 10;
 const OriginY = 10;
@@ -8,6 +11,9 @@ const DigitYCount = 6;
 
 // 7セグデータテーブル
 let g_7SegTable = [];
+
+// 直前の 16 進数 1 行データ
+let g_PreviousHexOneline = '';
 
 // a, g, d セグ (横方向セグメント)
 const HorizontalSegmentHeightBase = 10 + 5;
@@ -415,6 +421,12 @@ function draw() {
 
     // 現状のデータの16進数データを更新 (テキスト領域)
     updateHtmlHexString(g_7SegTable);
+
+    const currentHexOneline = convertToHexOneline(g_7SegTable);
+    if (currentHexOneline !== g_PreviousHexOneline) {
+        g_PreviousHexOneline = currentHexOneline;
+        g_Socket.emit('7segUpdated', currentHexOneline);
+    }
 
     /*
     // DEBUG: 

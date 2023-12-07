@@ -8,11 +8,10 @@ socketio = SocketIO(app)
 def index():
     return render_template('index.html')
 
-@socketio.on('message')
+@socketio.on('7segUpdated')
 def handle_message(message):
-    # WebSocketメッセージを処理
+    # クライアントからのメッセージ受信
     print('Received message:', message)
-    socketio.emit('response', 'Server received: ' + message)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
