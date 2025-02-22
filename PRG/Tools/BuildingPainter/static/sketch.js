@@ -1,5 +1,6 @@
 // WebSocketサーバーへの接続を確立
-const g_Socket = io.connect('http://127.0.0.1:5000');  // サーバーのURLに適宜変更
+//const g_Socket = io.connect('http://127.0.0.1:5000');  // ローカル環境向け
+const g_Socket = io.connect(window.location.origin);
 
 // 7セグ全体描画の原点
 const OriginX = 10;

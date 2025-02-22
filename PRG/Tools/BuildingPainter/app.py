@@ -5,9 +5,9 @@ import sys
 import threading
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins='*')  # IP アドレスを絞りたい場合はここで指定
 
-ser = serial.Serial('COM4', 115200)
+ser = serial.Serial('COM3', 115200)
 
 def serial_listener():
     while True:
@@ -38,4 +38,4 @@ def handle_message(message):
 
 if __name__ == '__main__':
     # シリアルポートへのアクセスを可能にするために use_reloader=False を指定
-    socketio.run(app, debug=True, use_reloader=False)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True, use_reloader=False)
